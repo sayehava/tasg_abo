@@ -56,6 +56,9 @@ final class Plugin {
 			return;
 		}
 
+		Subscriptions\Schema::maybe_install();
+		( new Checkout\CheckoutRules() )->register();
+		( new Subscriptions\Creator( new Subscriptions\Repository() ) )->register();
 		( new Frontend\ProductToggle() )->register();
 		( new Cart\CartHandler() )->register();
 
