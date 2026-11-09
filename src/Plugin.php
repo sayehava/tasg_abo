@@ -56,6 +56,9 @@ final class Plugin {
 			return;
 		}
 
+		( new Frontend\ProductToggle() )->register();
+		( new Cart\CartHandler() )->register();
+
 		if ( is_admin() ) {
 			( new Admin\ProductSettings() )->register();
 		}
