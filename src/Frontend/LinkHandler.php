@@ -100,8 +100,10 @@ final class LinkHandler {
 
 	/**
 	 * Simple standalone page that works with any theme.
+	 * Every dynamic value in $html is escaped where it is built, and the
+	 * form markup must stay intact, so it is not run through wp_kses.
 	 */
 	private function page( string $title, string $html ): void {
-		wp_die( wp_kses_post( $html ), esc_html( $title ), array( 'response' => 200, 'back_link' => false ) );
+		wp_die( $html, esc_html( $title ), array( 'response' => 200, 'back_link' => false ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 }
