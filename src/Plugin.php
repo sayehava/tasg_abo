@@ -55,6 +55,10 @@ final class Plugin {
 			add_action( 'admin_notices', array( $this, 'woocommerce_missing_notice' ) );
 			return;
 		}
+
+		if ( is_admin() ) {
+			( new Admin\ProductSettings() )->register();
+		}
 	}
 
 	public function woocommerce_missing_notice(): void {
