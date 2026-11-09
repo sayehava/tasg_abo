@@ -45,7 +45,8 @@ final class Repository {
 	}
 
 	/**
-	 * Active subscriptions whose next payment is at or before the given UTC time.
+	 * Active subscriptions that are due and whose reminder email already went out.
+	 * A subscription is never charged before the customer was warned.
 	 *
 	 * @return object[]
 	 */
@@ -54,7 +55,23 @@ final class Repository {
 
 		return (array) $wpdb->get_results(
 			$wpdb->prepare(
-				'SELECT * FROM ' . Schema::table() . " WHERE status = 'active' AND next_payment <= %s ORDER BY next_payment ASC",
+				'SELECT * FROM ' . Schema::table() . " WHERE status = 'active' AND reminder_sent = 1 AND next_payment <= %s ORDER BY next_payment ASC",
+				$until_utc
+			)
+		);
+	}
+
+	/**
+	 * Active subscriptions due before the given UTC time that were not warned yet.
+	 *
+	 * @return object[]
+	 */
+	public function needing_reminder( string $until_utc ): array {
+		global $wpdb;
+
+		return (array) $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT * FROM ' . Schema::table() . " WHERE status = 'active' AND reminder_sent = 0 AND next_payment <= %s ORDER BY next_payment ASC",
 				$until_utc
 			)
 		);
