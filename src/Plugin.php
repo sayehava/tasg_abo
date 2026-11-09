@@ -57,6 +57,7 @@ final class Plugin {
 		}
 
 		Subscriptions\Schema::maybe_install();
+		( new Subscriptions\Scheduler( new Subscriptions\Repository() ) )->register();
 		( new Checkout\CheckoutRules() )->register();
 		( new Subscriptions\Creator( new Subscriptions\Repository() ) )->register();
 		( new Frontend\ProductToggle() )->register();
