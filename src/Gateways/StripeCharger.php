@@ -48,8 +48,14 @@ final class StripeCharger {
 	public function charge( \WC_Order $order, object $sub, string $idempotency ): array {
 		$key = $this->secret_key();
 
-		if ( '' === $key || '' === $sub->gateway_customer || '' === $sub->gateway_method ) {
-			return $this->result( 'failed', '', '', 'Missing Stripe key, customer or payment method.' );
+		// No card data is stored by this plugin. The Stripe references come from
+		// the last order of the subscription, where the Stripe plugin keeps them.
+		$last     = wc_get_order( (int) $sub->last_order_id );
+		$customer = $last ? (string) $last->get_meta( '_stripe_customer_id' ) : '';
+		$method   = $last ? (string) $last->get_meta( '_stripe_source_id' ) : '';
+
+		if ( '' === $key || '' === $customer || '' === $method ) {
+			return $this->result( 'failed', '', '', 'Missing Stripe key, customer or payment method on the last order.' );
 		}
 
 		$response = $this->request(
@@ -57,8 +63,8 @@ final class StripeCharger {
 			array(
 				'amount'                                     => $this->minor_units( (float) $order->get_total(), $order->get_currency() ),
 				'currency'                                   => strtolower( $order->get_currency() ),
-				'customer'                                   => $sub->gateway_customer,
-				'payment_method'                             => $sub->gateway_method,
+				'customer'                                   => $customer,
+				'payment_method'                             => $method,
 				'off_session'                                => 'true',
 				'confirm'                                    => 'true',
 				'automatic_payment_methods[enabled]'         => 'true',
