@@ -14,9 +14,17 @@ final class Period {
 	public const UNITS = array( 'minute', 'hour', 'day', 'week', 'month' );
 
 	/**
-	 * Timestamp after adding a period. Months follow the calendar.
+	 * Timestamp after adding a period.
+	 *
+	 * Minutes, hours, days and weeks are exact lengths of time. "Every 30 days"
+	 * is always 30 days later, whatever the month.
+	 *
+	 * Months follow the calendar and the day the subscription started on
+	 * ($anchor_day): started on the 30th, it renews on the 30th of every month,
+	 * and on the last day of a shorter month (28th or 29th of February), without
+	 * the day drifting afterwards.
 	 */
-	public static function add( int $timestamp, int $value, string $unit ): int {
+	public static function add( int $timestamp, int $value, string $unit, int $anchor_day = 0 ): int {
 		$value = max( 1, $value );
 
 		switch ( $unit ) {
@@ -30,7 +38,7 @@ final class Period {
 				// Calendar months in the shop time zone. A day that does not exist in the
 				// target month (31st to February) becomes the last day of that month.
 				$date   = ( new \DateTimeImmutable( '@' . $timestamp ) )->setTimezone( wp_timezone() );
-				$day    = (int) $date->format( 'j' );
+				$day    = $anchor_day > 0 ? $anchor_day : (int) $date->format( 'j' );
 				$first  = $date->modify( 'first day of this month' )->modify( '+' . $value . ' months' );
 				$target = $first->setDate( (int) $first->format( 'Y' ), (int) $first->format( 'n' ), min( $day, (int) $first->format( 't' ) ) );
 
@@ -38,6 +46,18 @@ final class Period {
 		}
 
 		return $timestamp + $value * WEEK_IN_SECONDS;
+	}
+
+	/**
+	 * Day of the month the subscription started on, in the shop time zone.
+	 * Monthly renewals stay on this day, or on the last day of a shorter month.
+	 */
+	public static function anchor_day( object $sub ): int {
+		if ( empty( $sub->created ) ) {
+			return 0;
+		}
+
+		return (int) ( new \DateTimeImmutable( $sub->created . ' UTC' ) )->setTimezone( wp_timezone() )->format( 'j' );
 	}
 
 	/**
