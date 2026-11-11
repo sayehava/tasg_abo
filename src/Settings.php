@@ -15,6 +15,7 @@ final class Settings {
 	public const REMINDER_HOURS      = 'tasg_abo_reminder_hours';
 	public const PAUSE_REMINDER_DAYS = 'tasg_abo_pause_reminder_days';
 	public const PAYPAL_ENABLED      = 'tasg_abo_paypal_enabled';
+	public const ADMIN_ONLY          = 'tasg_abo_admin_only';
 
 	/** Maximum number of "continue or cancel" reminders before a paused subscription is cancelled. */
 	public const PAUSE_MAX_REMINDERS = 3;
@@ -40,6 +41,19 @@ final class Settings {
 	 */
 	public static function reminder_hours(): int {
 		return max( 48, (int) get_option( self::REMINDER_HOURS, 72 ) );
+	}
+
+	/**
+	 * Test phase switch. While on (the default), only shop managers see and can use
+	 * the subscribe option. Customers see nothing. Renewals of existing subscriptions
+	 * keep running either way.
+	 */
+	public static function admin_only(): bool {
+		return 'no' !== get_option( self::ADMIN_ONLY, 'yes' );
+	}
+
+	public static function visible_to_current_user(): bool {
+		return ! self::admin_only() || current_user_can( 'manage_woocommerce' );
 	}
 
 	/**
