@@ -16,7 +16,9 @@ final class Registry {
 	}
 
 	public function add_emails( array $emails ): array {
-		$emails['tasg_abo_reminder'] = new ReminderEmail();
+		$emails['tasg_abo_reminder']       = new ReminderEmail();
+		$emails['tasg_abo_pause_reminder'] = new PauseReminderEmail();
+		$emails['tasg_abo_failed']         = new FailedEmail();
 
 		return $emails;
 	}
