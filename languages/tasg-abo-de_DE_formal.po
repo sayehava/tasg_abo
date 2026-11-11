@@ -296,6 +296,22 @@ msgid "See the past orders of the subscription"
 msgstr "Die bisherigen Bestellungen des Abos sehen"
 
 #: src/Admin/SettingsPage.php
+msgid "Expiring card warning"
+msgstr "Warnung bei ablaufender Karte"
+
+#: src/Admin/SettingsPage.php
+msgid "Email customers whose saved card expires before the next order"
+msgstr "Kunden per E-Mail warnen, deren gespeicherte Karte vor der nächsten Bestellung abläuft"
+
+#: src/Admin/SettingsPage.php
+msgid "Check this many days before the order:"
+msgstr "So viele Tage vor der Bestellung prüfen:"
+
+#: src/Admin/SettingsPage.php
+msgid "Only for Stripe cards, and only while customers may change their payment method (see below), because the email links to that page."
+msgstr "Nur für Stripe-Karten und nur, solange Kunden ihre Zahlungsmethode ändern dürfen (siehe unten), weil die E-Mail auf diese Seite verlinkt."
+
+#: src/Admin/SettingsPage.php
 msgid "What customers may do"
 msgstr "Was Kunden selbst tun dürfen"
 
@@ -399,6 +415,26 @@ msgstr "Ein Abo muss einzeln bestellt werden. Bitte schließen Sie zuerst Ihren 
 msgid "A subscription must be ordered on its own. Please remove the other products from your cart."
 msgstr "Ein Abo muss einzeln bestellt werden. Bitte entfernen Sie die anderen Produkte aus Ihrem Warenkorb."
 
+#: src/Emails/CardExpiringEmail.php
+msgid "Card expires before next order"
+msgstr "Karte läuft vor der nächsten Bestellung ab"
+
+#: src/Emails/CardExpiringEmail.php
+msgid "Sent when the saved card of a subscription expires before the next order, so the customer can choose another payment method in time."
+msgstr "Wird gesendet, wenn die gespeicherte Karte eines Abos vor der nächsten Bestellung abläuft, damit der Kunde rechtzeitig eine andere Zahlungsmethode wählen kann."
+
+#: src/Emails/CardExpiringEmail.php
+msgid "Your payment method expires before your next order of {product_name}"
+msgstr "Ihre Zahlungsmethode läuft vor Ihrer nächsten Bestellung von {product_name} ab"
+
+#: src/Emails/CardExpiringEmail.php
+msgid "Your card is about to expire"
+msgstr "Ihre Karte läuft bald ab"
+
+#: src/Emails/CardExpiringEmail.php
+msgid "Hello {customer_name},\n\nthe payment method {card_name} for your subscription of {product_name} expires on {card_expiry}, before your next order on {next_date}. Please choose another payment method so that your order can be charged:\n{payment_url}\n\nIf the payment fails, the subscription is cancelled."
+msgstr "Hallo {customer_name},\n\ndie Zahlungsmethode {card_name} für Ihr Abo von {product_name} läuft am {card_expiry} ab, vor Ihrer nächsten Bestellung am {next_date}. Bitte wählen Sie eine andere Zahlungsmethode, damit Ihre Bestellung abgebucht werden kann:\n{payment_url}\n\nWenn die Zahlung fehlschlägt, wird das Abo gekündigt."
+
 #: src/Emails/EmailTexts.php
 msgid "All languages"
 msgstr "Alle Sprachen"
@@ -496,8 +532,8 @@ msgid "Email text"
 msgstr "E-Mail-Text"
 
 #: src/Emails/SubscriptionEmail.php
-msgid "Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url}"
-msgstr "Platzhalter: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url}"
+msgid "Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url} {card_name} {card_expiry}"
+msgstr "Platzhalter: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url} {card_name} {card_expiry}"
 
 #: src/Frontend/LinkHandler.php
 msgid "Link not valid"
