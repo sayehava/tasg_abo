@@ -73,7 +73,9 @@ final class Pricing {
 	}
 
 	public static function is_enabled( \WC_Product $product ): bool {
-		return Settings::visible_to_current_user()
+		// Only simple products are supported, a product that became variable is ignored.
+		return $product->is_type( 'simple' )
+			&& Settings::visible_to_current_user()
 			&& 'yes' === $product->get_meta( '_tasg_abo_enabled' )
 			&& ! empty( self::plans( $product ) );
 	}
