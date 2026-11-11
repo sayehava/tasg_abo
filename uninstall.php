@@ -17,6 +17,6 @@ if ( function_exists( 'as_unschedule_all_actions' ) ) {
 	}
 }
 
-foreach ( array( 'tasg_abo_renewal_status', 'tasg_abo_reminder_hours', 'tasg_abo_pause_reminder_days', 'tasg_abo_rewrites_flushed' ) as $option ) {
+foreach ( array( 'tasg_abo_renewal_status', 'tasg_abo_reminder_hours', 'tasg_abo_pause_reminder_days', 'tasg_abo_rewrites_flushed', 'tasg_abo_plans', 'tasg_abo_plan_next_id', 'tasg_abo_admin_only', 'tasg_abo_paypal_enabled', 'tasg_abo_email_texts' ) as $option ) {
 	delete_option( $option );
 }
