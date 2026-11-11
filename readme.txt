@@ -20,6 +20,7 @@ Customers tick "Subscribe and save" on a product page and choose an interval. Th
 * If a payment fails, no order is kept and the subscription is cancelled. The customer is informed.
 * Address, shipping method and cost follow the last order of the subscription: the first renewal copies the first order, the second copies the first renewal, and so on. Free shipping can be granted per subscription or for all active subscriptions, with an optional end date.
 * Customers manage their subscriptions under My Account > Subscriptions: see plan, next order, address and past orders, and cancel, skip, pause, continue, change the address, change the plan or choose another saved Stripe payment method. The shop owner decides in the settings which of these (except cancelling) customers may do. The reminder email only offers the options that are switched on.
+* An email warns customers whose saved Stripe card expires before the next order, so they can pick another card in time. It can be switched off and the number of days is set in the settings.
 * The reminder email shows the address of the next order and a link to correct it before the order is placed.
 * A subscription must be ordered on its own, for one piece: no other product can be in the cart.
 * No card data is stored by the plugin. Payment references stay with the payment plugin on the orders.
