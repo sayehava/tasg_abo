@@ -107,6 +107,9 @@ final class DiagnosticsPage {
 			array(
 				'Test phase (managers only)' => $this->yes_no( Settings::admin_only() ),
 				'Renewal order status'       => Settings::renewal_status(),
+				'Email design setting'       => Settings::email_designer(),
+				'YayMail found'              => $this->yes_no( Settings::yaymail_installed() ),
+				'Emails designed in'         => Settings::use_yaymail() ? 'YayMail' : 'plugin editor',
 				'PayPal switched on'         => $this->yes_no( Settings::paypal_enabled() ),
 				'Stripe mode'                => $test ? 'test' : 'live',
 				'Stripe secret key present'  => $this->yes_no( ! empty( $stripe[ $key_name ] ) ),
