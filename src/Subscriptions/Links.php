@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 
 final class Links {
 
-	public const ACTIONS = array( 'cancel', 'skip', 'pause', 'continue' );
+	public const ACTIONS = array( 'cancel', 'skip', 'pause', 'continue', 'address' );
 
 	public static function url( object $subscription, string $action ): string {
 		return add_query_arg(
