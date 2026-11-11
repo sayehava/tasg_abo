@@ -7,6 +7,7 @@
  *
  * Placeholders: {customer_name} {product_name} {next_date} {amount}
  *               {cancel_url} {skip_url} {pause_url} {continue_url}
+ *               {shipping_address} {address_url}
  *
  * @package TasgAbo
  */
@@ -43,6 +44,8 @@ abstract class SubscriptionEmail extends \WC_Email {
 			'{skip_url}'      => '',
 			'{pause_url}'     => '',
 			'{continue_url}'  => '',
+			'{shipping_address}' => '',
+			'{address_url}'      => '',
 		);
 	}
 
@@ -52,7 +55,7 @@ abstract class SubscriptionEmail extends \WC_Email {
 		$this->form_fields['body'] = array(
 			'title'       => __( 'Email text', 'tasg-abo' ),
 			'type'        => 'textarea',
-			'description' => __( 'Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url}', 'tasg-abo' ),
+			'description' => __( 'Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url}', 'tasg-abo' ),
 			'default'     => static::default_body(),
 			'desc_tip'    => false,
 		);
@@ -91,6 +94,17 @@ abstract class SubscriptionEmail extends \WC_Email {
 			$this->placeholders['{skip_url}']      = Links::url( $row, 'skip' );
 			$this->placeholders['{pause_url}']     = Links::url( $row, 'pause' );
 			$this->placeholders['{continue_url}']  = Links::url( $row, 'continue' );
+
+			// The address that will be used comes from the customer account.
+			$customer = new \WC_Customer( (int) $row->user_id );
+			$address  = $customer->get_shipping();
+			if ( empty( $address['address_1'] ) ) {
+				$address = $customer->get_billing();
+			}
+			$formatted = str_replace( array( '<br/>', '<br>', '<br />' ), "\n", WC()->countries->get_formatted_address( $address ) );
+
+			$this->placeholders['{shipping_address}'] = wp_strip_all_tags( $formatted );
+			$this->placeholders['{address_url}']      = wc_get_endpoint_url( 'edit-address', 'shipping', wc_get_page_permalink( 'myaccount' ) );
 
 			if ( $this->is_enabled() && $this->get_recipient() ) {
 				$sent = (bool) $this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
