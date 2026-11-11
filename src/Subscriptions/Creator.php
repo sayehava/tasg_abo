@@ -43,6 +43,15 @@ final class Creator {
 			return;
 		}
 
+		// Stripe can only charge again if the order carries the references to the saved payment
+		// method. Without them (a method that cannot be reused, or a guest payment) the renewal
+		// would fail later, so it is said now instead.
+		if ( 0 === strpos( $gateway, 'stripe' ) && ( '' === (string) $order->get_meta( '_stripe_customer_id' ) || '' === (string) $order->get_meta( '_stripe_source_id' ) ) ) {
+			$order->add_order_note( __( 'No subscription created: the payment method cannot be charged again.', 'tasg-abo' ) );
+			\TasgAbo\Log::warning( sprintf( 'Order #%d: no subscription created, the Stripe payment method is not saved for reuse.', $order->get_id() ) );
+			return;
+		}
+
 		foreach ( $order->get_items() as $item ) {
 			// Copy of the plan as it was when the customer ordered.
 			$plan = json_decode( (string) $item->get_meta( '_tasg_abo_plan' ), true );
