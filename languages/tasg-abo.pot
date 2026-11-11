@@ -974,6 +974,10 @@ msgid "No subscription created: the customer did not save the PayPal payment met
 msgstr ""
 
 #: src/Subscriptions/Creator.php
+msgid "No subscription created: the payment method cannot be charged again."
+msgstr ""
+
+#: src/Subscriptions/Creator.php
 msgid "%d subscription created."
 msgid_plural "%d subscriptions created."
 msgstr[0] ""
