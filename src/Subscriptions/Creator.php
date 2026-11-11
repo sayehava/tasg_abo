@@ -69,7 +69,7 @@ final class Creator {
 					'origin_order_id'  => $order->get_id(),
 					'gateway'          => (string) $order->get_payment_method(),
 					'last_order_id'    => $order->get_id(),
-					'language'         => $this->order_language( $order ),
+					'language'         => $this->order_language( $order, $item ),
 				)
 			);
 			++$made;
@@ -89,8 +89,13 @@ final class Creator {
 	/**
 	 * Language of the order as stored by WPML, or the site locale as fallback.
 	 */
-	private function order_language( \WC_Order $order ): string {
-		$lang = (string) $order->get_meta( 'wpml_language' );
+	private function order_language( \WC_Order $order, \WC_Order_Item $item ): string {
+		// Taken at checkout in the customer's language, then the order's own WPML meta.
+		$lang = (string) $item->get_meta( '_tasg_abo_lang' );
+
+		if ( '' === $lang ) {
+			$lang = (string) $order->get_meta( 'wpml_language' );
+		}
 
 		return '' !== $lang ? $lang : (string) determine_locale();
 	}
