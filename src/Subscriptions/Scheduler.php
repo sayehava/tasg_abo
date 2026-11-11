@@ -10,11 +10,14 @@
  *   tasg_abo_send_reminder( subscription_id )
  *   tasg_abo_renew( subscription_id )
  *   tasg_abo_pause_reminder( subscription_id )
+ *   tasg_abo_card_check( subscription_id )
  *
  * @package TasgAbo
  */
 
 namespace TasgAbo\Subscriptions;
+
+use TasgAbo\Settings;
 
 
 defined( 'ABSPATH' ) || exit;
@@ -63,6 +66,12 @@ final class Scheduler {
 
 		foreach ( $this->repository->due( $now_utc ) as $row ) {
 			$this->queue( 'tasg_abo_renew', (int) $row->id );
+		}
+
+		if ( Settings::card_notice() ) {
+			foreach ( $this->repository->needing_card_check( $now_utc, Settings::card_notice_days() ) as $row ) {
+				$this->queue( 'tasg_abo_card_check', (int) $row->id );
+			}
 		}
 
 		foreach ( $this->repository->paused_due( $now_utc ) as $row ) {
