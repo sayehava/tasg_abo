@@ -40,7 +40,7 @@ final class ProductToggle {
 			echo '<option value="' . esc_attr( (string) $weeks ) . '">' . esc_html( $label ) . '</option>';
 		}
 		echo '</select></label>';
-		echo '<p class="tasg-abo-note">' . esc_html__( 'Cancel, skip or pause any time.', 'tasg-abo' ) . '</p>';
+		echo '<p class="tasg-abo-note">' . esc_html__( 'A subscription is for one piece. Cancel, skip or pause any time.', 'tasg-abo' ) . '</p>';
 		echo '</div>';
 	}
 }
