@@ -17,6 +17,7 @@ namespace TasgAbo\Renewal;
 
 use TasgAbo\Gateways\PayPalCharger;
 use TasgAbo\Gateways\StripeCharger;
+use TasgAbo\Plans\Period;
 use TasgAbo\Settings;
 use TasgAbo\Subscriptions\Actions;
 use TasgAbo\Subscriptions\Repository;
@@ -57,9 +58,9 @@ final class RenewalHandler {
 		}
 
 		// Move the schedule on first. Only one worker can win this step.
-		$next = $due + (int) $row->interval_weeks * WEEK_IN_SECONDS;
-		if ( $next <= time() + Settings::reminder_hours() * HOUR_IN_SECONDS ) {
-			$next = time() + (int) $row->interval_weeks * WEEK_IN_SECONDS;
+		$next = Period::add( $due, (int) $row->period_value, (string) $row->period_unit );
+		if ( $next <= time() + (int) $row->reminder_minutes * MINUTE_IN_SECONDS + 15 * MINUTE_IN_SECONDS ) {
+			$next = Period::add( time(), (int) $row->period_value, (string) $row->period_unit );
 		}
 
 		if ( ! $this->repository->claim( (int) $row->id, gmdate( 'Y-m-d H:i:s', $next ) ) ) {
