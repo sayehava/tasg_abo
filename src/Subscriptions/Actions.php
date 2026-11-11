@@ -10,12 +10,11 @@
 
 namespace TasgAbo\Subscriptions;
 
+use TasgAbo\Plans\Period;
+
 defined( 'ABSPATH' ) || exit;
 
 final class Actions {
-
-	/** After "continue" the customer still gets the full notice before the charge. */
-	private const RESUME_DELAY = 49 * HOUR_IN_SECONDS;
 
 	private $repository;
 
@@ -48,7 +47,7 @@ final class Actions {
 			$this->repository->update(
 				(int) $sub->id,
 				array(
-					'next_payment'  => gmdate( 'Y-m-d H:i:s', $due + (int) $sub->interval_weeks * WEEK_IN_SECONDS ),
+					'next_payment'  => gmdate( 'Y-m-d H:i:s', Period::add( $due, (int) $sub->period_value, (string) $sub->period_unit ) ),
 					'reminder_sent' => 0,
 					'skip_next'     => 0,
 				)
@@ -84,7 +83,7 @@ final class Actions {
 	}
 
 	/**
-	 * Continue after a pause. The next order follows after the usual notice.
+	 * Continue after a pause. The next order follows after the notice time of its plan.
 	 */
 	public function resume( object $sub ): bool {
 		if ( 'paused' !== $sub->status ) {
@@ -95,7 +94,7 @@ final class Actions {
 			(int) $sub->id,
 			array(
 				'status'          => 'active',
-				'next_payment'    => gmdate( 'Y-m-d H:i:s', time() + self::RESUME_DELAY ),
+				'next_payment'    => gmdate( 'Y-m-d H:i:s', time() + (int) $sub->reminder_minutes * MINUTE_IN_SECONDS + 5 * MINUTE_IN_SECONDS ),
 				'reminder_sent'   => 0,
 				'pause_reminders' => 0,
 			)
