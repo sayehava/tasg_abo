@@ -82,13 +82,14 @@ final class ProductSettings {
 			$suffix   = $plan->test ? ' ' . __( '(test plan)', 'tasg-abo' ) : '';
 
 			echo '<p class="form-field"><label>' . esc_html( $plan->title() . $suffix ) . '</label>';
-			echo '<input type="checkbox" class="checkbox" name="_tasg_abo_plan[' . esc_attr( (string) $id ) . ']" value="1"' . checked( $checked, true, false ) . '> ';
+			echo '<input type="checkbox" class="checkbox" style="margin:0 8px 0 0" name="_tasg_abo_plan[' . esc_attr( (string) $id ) . ']" value="1"' . checked( $checked, true, false ) . '> ';
 			echo '<span class="description" style="margin-left:0">' . esc_html( $plan->period_label() ) . '</span> ';
 			echo '<input type="text" class="short wc_input_price" style="width:90px" name="_tasg_abo_plan_discount[' . esc_attr( (string) $id ) . ']" value="' . esc_attr( $override ) . '" placeholder="' . esc_attr__( 'Discount', 'tasg-abo' ) . '"> ';
 
 			// The product's own default wins. Without one the global default plan is shown as selected.
 			$is_default = $chosen ? $chosen === $id : ( $is_new && $plan->default );
-			echo '<label><input type="radio" name="_tasg_abo_default_plan" value="' . esc_attr( (string) $id ) . '"' . checked( $is_default, true, false ) . '> ' . esc_html__( 'Default for this product', 'tasg-abo' ) . '</label>';
+			// WooCommerce styles every label in a field as a fixed width column, so this one is reset to sit inline.
+			echo '<label style="float:none;width:auto;margin:0 0 0 12px;padding:0"><input type="radio" name="_tasg_abo_default_plan" value="' . esc_attr( (string) $id ) . '"' . checked( $is_default, true, false ) . '> ' . esc_html__( 'Default for this product', 'tasg-abo' ) . '</label>';
 			echo '</p>';
 		}
 
