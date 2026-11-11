@@ -140,7 +140,10 @@ final class RenewalHandler {
 
 		// Standard WooCommerce payment completion: stock, emails and hooks run as usual.
 		$order->payment_complete( $order->get_transaction_id() );
-		$this->repository->update( (int) $sub->id, array( 'last_order_id' => $order->get_id() ) );
+		$this->repository->update( (int) $sub->id, array(
+				'last_order_id'    => $order->get_id(),
+				'address_override' => null,
+			) );
 
 		$target = Settings::renewal_status();
 		if ( $order->get_status() !== $target ) {
@@ -156,7 +159,10 @@ final class RenewalHandler {
 	private function hold( \WC_Order $order, object $sub, array $result ): void {
 		$this->remember_payment( $order, $sub, $result );
 		$order->update_status( 'on-hold', __( 'Payment is still processing at the payment provider.', 'tasg-abo' ) );
-		$this->repository->update( (int) $sub->id, array( 'last_order_id' => $order->get_id() ) );
+		$this->repository->update( (int) $sub->id, array(
+				'last_order_id'    => $order->get_id(),
+				'address_override' => null,
+			) );
 	}
 
 	/**
