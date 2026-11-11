@@ -7,7 +7,7 @@
  *
  * Placeholders: {customer_name} {product_name} {next_date} {amount}
  *               {cancel_url} {skip_url} {pause_url} {continue_url}
- *               {shipping_address} {address_url}
+ *               {shipping_address} {address_url} {payment_url} {plan_url}
  *
  * @package TasgAbo
  */
@@ -58,6 +58,8 @@ abstract class SubscriptionEmail extends \WC_Email {
 			'{continue_url}'  => '',
 			'{shipping_address}' => '',
 			'{address_url}'      => '',
+			'{payment_url}'      => '',
+			'{plan_url}'         => '',
 		);
 	}
 
@@ -67,7 +69,7 @@ abstract class SubscriptionEmail extends \WC_Email {
 		$this->form_fields['body'] = array(
 			'title'       => __( 'Email text', 'tasg-abo' ),
 			'type'        => 'textarea',
-			'description' => __( 'Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url}', 'tasg-abo' ),
+			'description' => __( 'Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url}', 'tasg-abo' ),
 			'default'     => static::default_body(),
 			'desc_tip'    => false,
 		);
@@ -120,6 +122,8 @@ abstract class SubscriptionEmail extends \WC_Email {
 			// The address of the next order, with a link to correct it for that order.
 			$this->placeholders['{shipping_address}'] = Address::formatted( Address::shipping( $row ) );
 			$this->placeholders['{address_url}']      = Links::url( $row, 'address' );
+			$this->placeholders['{payment_url}']      = Links::url( $row, 'payment' );
+			$this->placeholders['{plan_url}']         = Links::url( $row, 'plan' );
 
 			if ( ( '' !== $test_to || $this->is_enabled() ) && $this->get_recipient() ) {
 				$sent = (bool) $this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
