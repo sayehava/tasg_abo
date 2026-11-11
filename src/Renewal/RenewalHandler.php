@@ -7,8 +7,11 @@
  *   exactly like a normal order (stock, emails, invoice automation).
  * - Payment declined: no order is kept, the subscription is cancelled and the
  *   customer is told.
- * - Temporary problem (network, Stripe outage): nothing is charged, the
- *   renewal is tried again on the next hourly check, up to three times.
+ * - Temporary problem (network, Stripe outage, unexpected error before the
+ *   charge): nothing is charged, the renewal is tried again after 1 hour, then
+ *   after 2 hours, and cancelled at the third failure.
+ * - An error after the money was taken is only logged. The order stays and the
+ *   renewal is never repeated, so the customer cannot be charged twice.
  *
  * @package TasgAbo
  */
@@ -53,7 +56,7 @@ final class RenewalHandler {
 
 		$due = strtotime( $row->next_payment . ' UTC' );
 
-		if ( $due > time() ) {
+		if ( $due > time() || (int) get_transient( 'tasg_abo_retry_at_' . (int) $row->id ) > time() ) {
 			return;
 		}
 
@@ -79,29 +82,39 @@ final class RenewalHandler {
 			return;
 		}
 
-		$order = $this->builder->build( $row );
+		$order = null;
 
-		if ( ! $order ) {
-			$this->fail( $row, null, 'Renewal order could not be created.' );
+		// Everything up to and including the charge. Any unexpected error here means
+		// nothing was taken, so the renewal goes back for another try.
+		try {
+			$order = $this->builder->build( $row );
+
+			if ( ! $order ) {
+				$this->fail( $row, null, 'Renewal order could not be created.' );
+				return;
+			}
+
+			$result = (float) $order->get_total() > 0
+				? $charger->charge( $order, $row, 'tasg-abo-' . (int) $row->id . '-' . md5( $row->next_payment ) )
+				: array(
+					'status'  => 'succeeded',
+					'id'      => '',
+					'charge'  => '',
+					'message' => '',
+				);
+		} catch ( \Throwable $e ) {
+			$this->retry_later( $row, $order, $e->getMessage() );
 			return;
 		}
 
-		$result = (float) $order->get_total() > 0
-			? $charger->charge( $order, $row, 'tasg-abo-' . (int) $row->id . '-' . md5( $row->next_payment ) )
-			: array(
-				'status'  => 'succeeded',
-				'id'      => '',
-				'charge'  => '',
-				'message' => '',
-			);
-
 		switch ( $result['status'] ) {
 			case 'succeeded':
-				delete_transient( 'tasg_abo_retry_' . (int) $row->id );
+				$this->clear_retry( $row );
 				$this->complete( $order, $row, $result );
 				break;
 
 			case 'processing':
+				$this->clear_retry( $row );
 				$this->hold( $order, $row, $result );
 				break;
 
@@ -112,6 +125,11 @@ final class RenewalHandler {
 			default:
 				$this->fail( $row, $order, $result['message'] );
 		}
+	}
+
+	private function clear_retry( object $sub ): void {
+		delete_transient( 'tasg_abo_retry_' . (int) $sub->id );
+		delete_transient( 'tasg_abo_retry_at_' . (int) $sub->id );
 	}
 
 	private function remember_payment( \WC_Order $order, object $sub, array $result ): void {
@@ -135,23 +153,45 @@ final class RenewalHandler {
 		$order->update_meta_data( '_stripe_charge_captured', 'yes' );
 	}
 
-	private function complete( \WC_Order $order, object $sub, array $result ): void {
-		$this->remember_payment( $order, $sub, $result );
-		$order->save();
-
-		// Standard WooCommerce payment completion: stock, emails and hooks run as usual.
-		$order->payment_complete( $order->get_transaction_id() );
-		$this->repository->update( (int) $sub->id, array(
+	/**
+	 * Link the new order as the last order of the subscription. Done before any
+	 * payment hooks run, so a faulty hook of another plugin cannot leave the
+	 * subscription pointing at an older order. The address correction is used up.
+	 */
+	private function link_order( \WC_Order $order, object $sub ): void {
+		$this->repository->update(
+			(int) $sub->id,
+			array(
 				'last_order_id'    => $order->get_id(),
 				'address_override' => null,
-			) );
+			)
+		);
+	}
 
-		$target = Settings::renewal_status();
-		if ( $order->get_status() !== $target ) {
-			$order->update_status( $target, __( 'Status set by the subscription settings.', 'tasg-abo' ) );
+	private function complete( \WC_Order $order, object $sub, array $result ): void {
+		try {
+			$this->remember_payment( $order, $sub, $result );
+			$order->save();
+			$this->link_order( $order, $sub );
+
+			// Standard WooCommerce payment completion: stock, emails and hooks run as usual.
+			$order->payment_complete( $order->get_transaction_id() );
+
+			$target = Settings::renewal_status();
+			if ( $order->get_status() !== $target ) {
+				$order->update_status( $target, __( 'Status set by the subscription settings.', 'tasg-abo' ) );
+			}
+
+			do_action( 'tasg_abo_renewal_completed', $order, $sub );
+		} catch ( \Throwable $e ) {
+			// The customer has paid. Never retry, only make the problem visible.
+			$this->link_order( $order, $sub );
+			$order->add_order_note( 'Payment taken, but a follow-up step failed: ' . $e->getMessage() );
+			wc_get_logger()->critical(
+				sprintf( 'Subscription #%d order #%d is paid but a follow-up step failed: %s', (int) $sub->id, $order->get_id(), $e->getMessage() ),
+				array( 'source' => 'tasg-abo' )
+			);
 		}
-
-		do_action( 'tasg_abo_renewal_completed', $order, $sub );
 	}
 
 	/**
@@ -159,30 +199,36 @@ final class RenewalHandler {
 	 */
 	private function hold( \WC_Order $order, object $sub, array $result ): void {
 		$this->remember_payment( $order, $sub, $result );
+		$order->save();
+		$this->link_order( $order, $sub );
 		$order->update_status( 'on-hold', __( 'Payment is still processing at the payment provider.', 'tasg-abo' ) );
-		$this->repository->update( (int) $sub->id, array(
-				'last_order_id'    => $order->get_id(),
-				'address_override' => null,
-			) );
 	}
 
 	/**
-	 * Nothing was charged. Put the subscription back so the next hourly check
-	 * repeats the renewal, or give up after a few tries.
+	 * Nothing was charged. Put the subscription back so the renewal is tried
+	 * again after a pause (1 hour, then 2), or give up at the third failure.
 	 */
-	private function retry_later( object $sub, \WC_Order $order, string $message ): void {
-		$order->delete( true );
+	private function retry_later( object $sub, ?\WC_Order $order, string $message ): void {
+		if ( $order ) {
+			$order->delete( true );
+		}
 
 		$key   = 'tasg_abo_retry_' . (int) $sub->id;
 		$tries = (int) get_transient( $key ) + 1;
 
+		wc_get_logger()->warning(
+			sprintf( 'Subscription #%d renewal attempt %d failed: %s', (int) $sub->id, $tries, $message ),
+			array( 'source' => 'tasg-abo' )
+		);
+
 		if ( $tries >= self::MAX_TEMPORARY_ERRORS ) {
-			delete_transient( $key );
+			$this->clear_retry( $sub );
 			$this->fail( $sub, null, $message );
 			return;
 		}
 
 		set_transient( $key, $tries, DAY_IN_SECONDS );
+		set_transient( 'tasg_abo_retry_at_' . (int) $sub->id, time() + $tries * HOUR_IN_SECONDS, DAY_IN_SECONDS );
 
 		// Restore the original due date, so the same payment is retried with the same idempotency key.
 		$this->repository->update(
