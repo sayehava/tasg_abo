@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin options with their defaults. Edited on WooCommerce > Subscriptions.
+ * Plugin options with their defaults. Edited on WooCommerce > Settings > Subscriptions.
  *
  * @package TasgAbo
  */
