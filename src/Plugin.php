@@ -40,7 +40,29 @@ final class Plugin {
 	 */
 	public function boot(): void {
 		add_action( 'before_woocommerce_init', array( $this, 'declare_hpos_compatibility' ) );
+		register_shutdown_function( array( $this, 'log_fatal' ) );
 		add_action( 'plugins_loaded', array( $this, 'init' ) );
+	}
+
+	/**
+	 * Records a fatal PHP error that happened inside this plugin, which would
+	 * otherwise only show as a blank page. Errors of other plugins are ignored.
+	 */
+	public function log_fatal(): void {
+		$error = error_get_last();
+
+		if ( ! $error || ! in_array( $error['type'], array( E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR, E_RECOVERABLE_ERROR ), true ) ) {
+			return;
+		}
+
+		$file = str_replace( '\\', '/', (string) $error['file'] );
+		$dir  = str_replace( '\\', '/', TASG_ABO_DIR );
+
+		if ( 0 !== strpos( $file, $dir ) ) {
+			return;
+		}
+
+		Log::critical( sprintf( 'PHP fatal error in %s line %d: %s', substr( $file, strlen( $dir ) ), (int) $error['line'], $error['message'] ) );
 	}
 
 	/**
