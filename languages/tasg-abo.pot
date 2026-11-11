@@ -296,6 +296,22 @@ msgid "See the past orders of the subscription"
 msgstr ""
 
 #: src/Admin/SettingsPage.php
+msgid "Expiring card warning"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Email customers whose saved card expires before the next order"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Check this many days before the order:"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Only for Stripe cards, and only while customers may change their payment method (see below), because the email links to that page."
+msgstr ""
+
+#: src/Admin/SettingsPage.php
 msgid "What customers may do"
 msgstr ""
 
@@ -399,6 +415,26 @@ msgstr ""
 msgid "A subscription must be ordered on its own. Please remove the other products from your cart."
 msgstr ""
 
+#: src/Emails/CardExpiringEmail.php
+msgid "Card expires before next order"
+msgstr ""
+
+#: src/Emails/CardExpiringEmail.php
+msgid "Sent when the saved card of a subscription expires before the next order, so the customer can choose another payment method in time."
+msgstr ""
+
+#: src/Emails/CardExpiringEmail.php
+msgid "Your payment method expires before your next order of {product_name}"
+msgstr ""
+
+#: src/Emails/CardExpiringEmail.php
+msgid "Your card is about to expire"
+msgstr ""
+
+#: src/Emails/CardExpiringEmail.php
+msgid "Hello {customer_name},\n\nthe payment method {card_name} for your subscription of {product_name} expires on {card_expiry}, before your next order on {next_date}. Please choose another payment method so that your order can be charged:\n{payment_url}\n\nIf the payment fails, the subscription is cancelled."
+msgstr ""
+
 #: src/Emails/EmailTexts.php
 msgid "All languages"
 msgstr ""
@@ -496,7 +532,7 @@ msgid "Email text"
 msgstr ""
 
 #: src/Emails/SubscriptionEmail.php
-msgid "Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url}"
+msgid "Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url} {card_name} {card_expiry}"
 msgstr ""
 
 #: src/Frontend/LinkHandler.php
