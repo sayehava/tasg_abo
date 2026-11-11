@@ -28,7 +28,8 @@ final class ProductSettings {
 		global $post;
 
 		$product = $post ? wc_get_product( $post->ID ) : null;
-		$offered = $product ? $product->get_meta( '_tasg_abo_plans' ) : array();
+		$offered = $product ? $product->get_meta( '_tasg_abo_plans' ) : '';
+		$is_new  = ! is_array( $offered );
 		$offered = is_array( $offered ) ? $offered : array();
 
 		echo '<div class="options_group show_if_simple">';
@@ -73,7 +74,8 @@ final class ProductSettings {
 		echo '</span></p>';
 
 		foreach ( $plans as $id => $plan ) {
-			$checked  = isset( $offered[ $id ] );
+			// A product without a saved choice starts with the default plan ticked.
+			$checked  = isset( $offered[ $id ] ) || ( $is_new && $plan->default );
 			$override = $checked ? (string) $offered[ $id ] : '';
 			$suffix   = $plan->test ? ' ' . __( '(test plan)', 'tasg-abo' ) : '';
 
