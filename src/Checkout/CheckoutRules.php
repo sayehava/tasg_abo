@@ -11,6 +11,7 @@
 namespace TasgAbo\Checkout;
 
 use TasgAbo\Gateways\PayPalCharger;
+use TasgAbo\Gateways\StripeMethods;
 use TasgAbo\Settings;
 
 defined( 'ABSPATH' ) || exit;
@@ -25,6 +26,7 @@ final class CheckoutRules {
 		add_filter( 'wc_stripe_payment_request_supported_types', array( $this, 'hide_express_checkout' ) );
 		add_filter( 'wc_stripe_upe_params', array( $this, 'flag_subscription_cart' ) );
 		add_filter( 'wc_stripe_params', array( $this, 'flag_subscription_cart' ) );
+		add_filter( 'wc_stripe_generate_create_intent_request', array( $this, 'exclude_on_payment_request' ), 20, 2 );
 	}
 
 	public static function cart_has_subscription(): bool {
@@ -78,9 +80,42 @@ final class CheckoutRules {
 		if ( is_array( $params ) && self::cart_has_subscription() ) {
 			$params['cartContainsSubscription']          = true;
 			$params['subscriptionRequiresManualRenewal'] = false;
+
+			// Methods the owner did not allow for subscriptions stay out of Stripe's payment form.
+			$existing                             = isset( $params['excludedPaymentMethodTypes'] ) && is_array( $params['excludedPaymentMethodTypes'] ) ? $params['excludedPaymentMethodTypes'] : array();
+			$params['excludedPaymentMethodTypes'] = array_values( array_unique( array_merge( $existing, StripeMethods::excluded_types() ) ) );
 		}
 
 		return $params;
+	}
+
+	/**
+	 * The same exclusion on the server, so Stripe also refuses a method the form did not show.
+	 *
+	 * @param array          $request Payment request about to be sent to Stripe.
+	 * @param \WC_Order|null $order   Order being paid.
+	 */
+	public function exclude_on_payment_request( $request, $order = null ) {
+		if ( ! is_array( $request ) || ! $order instanceof \WC_Order || ! isset( $request['automatic_payment_methods'] ) ) {
+			return $request;
+		}
+
+		$has_subscription = false;
+		foreach ( $order->get_items() as $item ) {
+			if ( '' !== (string) $item->get_meta( '_tasg_abo_plan' ) ) {
+				$has_subscription = true;
+				break;
+			}
+		}
+
+		$excluded = StripeMethods::excluded_types();
+
+		if ( $has_subscription && $excluded ) {
+			$existing                                 = isset( $request['excluded_payment_method_types'] ) ? (array) $request['excluded_payment_method_types'] : array();
+			$request['excluded_payment_method_types'] = array_values( array_unique( array_merge( $existing, $excluded ) ) );
+		}
+
+		return $request;
 	}
 
 	public function require_account( $required ) {
@@ -108,7 +143,12 @@ final class CheckoutRules {
 			return $gateways;
 		}
 
-		$prefixes = Settings::paypal_enabled() ? array_merge( array( 'stripe' ), PayPalCharger::GATEWAY_IDS ) : array( 'stripe' );
+		$prefixes = Settings::stripe_enabled() ? array( 'stripe' ) : array();
+
+		if ( Settings::paypal_enabled() ) {
+			$prefixes = array_merge( $prefixes, PayPalCharger::GATEWAY_IDS );
+		}
+
 		$allowed  = (array) apply_filters( 'tasg_abo_supported_gateway_prefixes', $prefixes );
 
 		foreach ( array_keys( $gateways ) as $id ) {
