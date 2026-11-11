@@ -62,6 +62,15 @@ final class Period {
 	}
 
 	/**
+	 * Plan name with its period for a subscription row, for example "Weekly (1 week)".
+	 */
+	public static function row_label( object $row ): string {
+		$period = self::label( (int) $row->period_value, (string) $row->period_unit );
+
+		return '' !== (string) $row->plan_name && $period !== $row->plan_name ? $row->plan_name . ' (' . $period . ')' : $period;
+	}
+
+	/**
 	 * Names for a unit drop down.
 	 *
 	 * @return array<string,string>
