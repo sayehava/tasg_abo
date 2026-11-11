@@ -18,6 +18,13 @@ final class Plugin {
 	 */
 	private static $instance = null;
 
+	/**
+	 * Message of an error that stopped the plugin from starting, if any.
+	 *
+	 * @var string
+	 */
+	private $load_error = '';
+
 	public static function instance(): Plugin {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
@@ -56,6 +63,17 @@ final class Plugin {
 			return;
 		}
 
+		// A fault while starting must never take the shop down: show it to admins instead.
+		try {
+			$this->register_components();
+		} catch ( \Throwable $e ) {
+			$this->load_error = $e->getMessage();
+			error_log( 'Tasg Abo could not start: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			add_action( 'admin_notices', array( $this, 'load_error_notice' ) );
+		}
+	}
+
+	private function register_components(): void {
 		Subscriptions\Schema::maybe_install();
 		( new Subscriptions\Scheduler( new Subscriptions\Repository() ) )->register();
 		( new Subscriptions\ReminderHandler( new Subscriptions\Repository() ) )->register();
@@ -76,6 +94,12 @@ final class Plugin {
 			( new Admin\SubscriptionsPage() )->register();
 			( new Admin\EmailDesigner() )->register();
 		}
+	}
+
+	public function load_error_notice(): void {
+		echo '<div class="notice notice-error"><p>'
+			. esc_html( sprintf( /* translators: %s: error message */ __( 'Tasg Abo could not start: %s', 'tasg-abo' ), $this->load_error ) )
+			. '</p></div>';
 	}
 
 	public function woocommerce_missing_notice(): void {
