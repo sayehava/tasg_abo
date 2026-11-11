@@ -56,10 +56,24 @@ final class Plan {
 	}
 
 	/**
+	 * The name in the current language. With WPML String Translation the plan name
+	 * can be translated (context "Tasg Abo"), otherwise the name as typed is used.
+	 */
+	public function display_name(): string {
+		if ( '' === $this->name || $this->id < 1 ) {
+			return $this->name;
+		}
+
+		return (string) apply_filters( 'wpml_translate_single_string', $this->name, PlanRepository::WPML_CONTEXT, 'plan-' . $this->id . '-name' );
+	}
+
+	/**
 	 * Name for customers: the given name, or the period if there is none.
 	 */
 	public function title(): string {
-		return '' !== $this->name ? $this->name : $this->period_label();
+		$name = $this->display_name();
+
+		return '' !== $name ? $name : $this->period_label();
 	}
 
 	/**
