@@ -96,6 +96,18 @@ msgid "Subscription settings"
 msgstr ""
 
 #: src/Admin/SettingsPage.php
+msgid "Test phase"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Only shop managers can see and use subscriptions"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Keep this on until you tested a full cycle yourself. Customers then see nothing. Untick it to open subscriptions to everyone."
+msgstr ""
+
+#: src/Admin/SettingsPage.php
 msgid "Status of renewal orders after payment"
 msgstr ""
 
@@ -468,7 +480,15 @@ msgid "Deliver every"
 msgstr ""
 
 #: src/Frontend/ProductToggle.php
+msgid "Test phase: only shop managers can see this option."
+msgstr ""
+
+#: src/Frontend/ProductToggle.php
 msgid "A subscription is for one piece. Cancel, skip or pause any time."
+msgstr ""
+
+#: src/Plugin.php
+msgid "Tasg Abo could not start: %s"
 msgstr ""
 
 #: src/Plugin.php
