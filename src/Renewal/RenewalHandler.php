@@ -106,8 +106,15 @@ final class RenewalHandler {
 	private function remember_payment( \WC_Order $order, object $sub, array $result ): void {
 		$order->set_transaction_id( '' !== $result['charge'] ? $result['charge'] : $result['id'] );
 		$order->update_meta_data( '_stripe_intent_id', $result['id'] );
-		$order->update_meta_data( '_stripe_customer_id', $sub->gateway_customer );
-		$order->update_meta_data( '_stripe_source_id', $sub->gateway_method );
+
+		// Hand the Stripe references on from the last order, so the chain continues.
+		$last = wc_get_order( (int) $sub->last_order_id );
+		foreach ( array( '_stripe_customer_id', '_stripe_source_id' ) as $meta_key ) {
+			$value = $last ? (string) $last->get_meta( $meta_key ) : '';
+			if ( '' !== $value ) {
+				$order->update_meta_data( $meta_key, $value );
+			}
+		}
 		$order->update_meta_data( '_stripe_charge_captured', 'yes' );
 	}
 
@@ -117,6 +124,7 @@ final class RenewalHandler {
 
 		// Standard WooCommerce payment completion: stock, emails and hooks run as usual.
 		$order->payment_complete( $order->get_transaction_id() );
+		$this->repository->update( (int) $sub->id, array( 'last_order_id' => $order->get_id() ) );
 
 		$target = Settings::renewal_status();
 		if ( $order->get_status() !== $target ) {
@@ -132,6 +140,7 @@ final class RenewalHandler {
 	private function hold( \WC_Order $order, object $sub, array $result ): void {
 		$this->remember_payment( $order, $sub, $result );
 		$order->update_status( 'on-hold', __( 'Payment is still processing at Stripe.', 'tasg-abo' ) );
+		$this->repository->update( (int) $sub->id, array( 'last_order_id' => $order->get_id() ) );
 	}
 
 	/**
