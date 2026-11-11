@@ -12,6 +12,7 @@
 namespace TasgAbo\Frontend;
 
 use TasgAbo\Subscriptions\Actions;
+use TasgAbo\Subscriptions\Address;
 use TasgAbo\Subscriptions\Links;
 use TasgAbo\Subscriptions\Repository;
 
@@ -43,6 +44,10 @@ final class LinkHandler {
 			$this->page( __( 'Link not valid', 'tasg-abo' ), '<p>' . esc_html__( 'This link is not valid any more.', 'tasg-abo' ) . '</p>' );
 		}
 
+		if ( 'address' === $action ) {
+			$this->address_form( $sub, $post );
+		}
+
 		if ( ! $post ) {
 			$this->confirm( $sub, $action );
 		}
@@ -53,6 +58,105 @@ final class LinkHandler {
 			$done ? $this->done_title( $action ) : __( 'Nothing changed', 'tasg-abo' ),
 			'<p>' . esc_html( $done ? $this->done_text( $action ) : __( 'This subscription cannot be changed this way right now.', 'tasg-abo' ) ) . '</p>'
 		);
+	}
+
+	/**
+	 * Lets the customer correct the shipping address of the next order.
+	 * The correction is stored on the subscription and used by the next renewal.
+	 */
+	private function address_form( object $sub, bool $post ): void {
+		if ( ! in_array( $sub->status, array( 'active', 'paused' ), true ) ) {
+			$this->page( __( 'Nothing changed', 'tasg-abo' ), '<p>' . esc_html__( 'This subscription cannot be changed this way right now.', 'tasg-abo' ) . '</p>' );
+		}
+
+		$values = Address::shipping( $sub );
+		$errors = array();
+
+		if ( $post ) {
+			// phpcs:disable WordPress.Security.NonceVerification.Missing
+			$values = array_merge( $values, $this->posted_address() );
+			// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+			$errors = $this->address_errors( $values );
+
+			if ( ! $errors ) {
+				$saved = array_intersect_key( $values, array_flip( Address::FIELDS ) );
+				( new Repository() )->update( (int) $sub->id, array( 'address_override' => wp_json_encode( $saved ) ) );
+
+				$this->page(
+					__( 'Address saved', 'tasg-abo' ),
+					'<p>' . esc_html__( 'Your next order will be sent to this address:', 'tasg-abo' ) . '</p><p>' . nl2br( esc_html( Address::formatted( $values ) ) ) . '</p>'
+				);
+			}
+		}
+
+		$labels = array(
+			'first_name' => __( 'First name', 'tasg-abo' ),
+			'last_name'  => __( 'Last name', 'tasg-abo' ),
+			'company'    => __( 'Company (optional)', 'tasg-abo' ),
+			'address_1'  => __( 'Street and number', 'tasg-abo' ),
+			'address_2'  => __( 'Address line 2 (optional)', 'tasg-abo' ),
+			'postcode'   => __( 'Postcode', 'tasg-abo' ),
+			'city'       => __( 'City', 'tasg-abo' ),
+			'state'      => __( 'State or region (optional)', 'tasg-abo' ),
+		);
+
+		$html = '';
+		foreach ( $errors as $error ) {
+			$html .= '<p style="color:#b32d2e">' . esc_html( $error ) . '</p>';
+		}
+
+		$html .= '<form method="post" action="">';
+		$html .= '<input type="hidden" name="tasg_abo" value="address"><input type="hidden" name="key" value="' . esc_attr( $sub->cancel_key ) . '">';
+
+		foreach ( $labels as $field => $label ) {
+			$html .= '<p><label>' . esc_html( $label ) . '<br><input type="text" name="' . esc_attr( $field ) . '" value="' . esc_attr( (string) ( $values[ $field ] ?? '' ) ) . '" style="width:100%"></label></p>';
+		}
+
+		$html .= '<p><label>' . esc_html__( 'Country', 'tasg-abo' ) . '<br><select name="country" style="width:100%">';
+		foreach ( WC()->countries->get_shipping_countries() as $code => $name ) {
+			$html .= '<option value="' . esc_attr( $code ) . '"' . selected( (string) ( $values['country'] ?? '' ), $code, false ) . '>' . esc_html( $name ) . '</option>';
+		}
+		$html .= '</select></label></p>';
+		$html .= '<button type="submit" class="button">' . esc_html__( 'Save address', 'tasg-abo' ) . '</button></form>';
+
+		$this->page( __( 'Check your shipping address', 'tasg-abo' ), $html );
+	}
+
+	/**
+	 * @return array Cleaned address fields from the form.
+	 */
+	private function posted_address(): array {
+		$posted = array();
+
+		foreach ( Address::FIELDS as $field ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$posted[ $field ] = isset( $_POST[ $field ] ) ? sanitize_text_field( wp_unslash( $_POST[ $field ] ) ) : '';
+		}
+
+		return $posted;
+	}
+
+	/**
+	 * @return string[] Messages, empty when the address is fine.
+	 */
+	private function address_errors( array $address ): array {
+		$errors = array();
+
+		foreach ( array( 'first_name', 'last_name', 'address_1', 'postcode', 'city', 'country' ) as $field ) {
+			if ( '' === trim( (string) ( $address[ $field ] ?? '' ) ) ) {
+				$errors[] = __( 'Please fill in all fields that are not marked optional.', 'tasg-abo' );
+				break;
+			}
+		}
+
+		if ( ! isset( WC()->countries->get_shipping_countries()[ $address['country'] ?? '' ] ) ) {
+			$errors[] = __( 'We cannot ship to this country.', 'tasg-abo' );
+		} elseif ( '' !== ( $address['postcode'] ?? '' ) && ! \WC_Validation::is_postcode( $address['postcode'], $address['country'] ) ) {
+			$errors[] = __( 'The postcode is not valid for this country.', 'tasg-abo' );
+		}
+
+		return $errors;
 	}
 
 	private function confirm( object $sub, string $action ): void {
