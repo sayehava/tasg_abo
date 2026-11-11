@@ -97,6 +97,7 @@ final class Plugin {
 			( new Admin\PlansPage() )->register();
 			( new Admin\SubscriptionsPage() )->register();
 			( new Admin\EmailDesigner() )->register();
+			( new Admin\DiagnosticsPage() )->register();
 		}
 	}
 
