@@ -1,6 +1,6 @@
 <?php
 /**
- * Hourly check run by WooCommerce's own Action Scheduler (no server cron).
+ * Regular check (every 5 minutes) run by WooCommerce's own Action Scheduler (no server cron).
  *
  * Every hour it finds subscriptions that need a reminder email or a renewal
  * and queues one separate Action Scheduler job for each, so a failure in one
@@ -16,13 +16,18 @@
 
 namespace TasgAbo\Subscriptions;
 
-use TasgAbo\Settings;
 
 defined( 'ABSPATH' ) || exit;
 
 final class Scheduler {
 
 	public const GROUP = 'tasg-abo';
+
+	/** How often the check runs. Short plans for tests need a fine grid. */
+	private const TICK_SECONDS = 5 * MINUTE_IN_SECONDS;
+
+	/** Reminders go out this many minutes early, covering the delay of the tick. */
+	private const MARGIN_MINUTES = 15;
 
 	private $repository;
 
@@ -37,19 +42,18 @@ final class Scheduler {
 
 	public function schedule_tick(): void {
 		if ( false === as_next_scheduled_action( 'tasg_abo_tick', array(), self::GROUP ) ) {
-			as_schedule_recurring_action( time(), HOUR_IN_SECONDS, 'tasg_abo_tick', array(), self::GROUP );
+			as_schedule_recurring_action( time(), self::TICK_SECONDS, 'tasg_abo_tick', array(), self::GROUP );
 		}
 	}
 
 	public function run_tick(): void {
 		$now = time();
 
-		$remind_until = gmdate( 'Y-m-d H:i:s', $now + Settings::reminder_hours() * HOUR_IN_SECONDS );
-		foreach ( $this->repository->needing_reminder( $remind_until ) as $row ) {
+		$now_utc = gmdate( 'Y-m-d H:i:s', $now );
+
+		foreach ( $this->repository->needing_reminder( $now_utc, self::MARGIN_MINUTES ) as $row ) {
 			$this->queue( 'tasg_abo_send_reminder', (int) $row->id );
 		}
-
-		$now_utc = gmdate( 'Y-m-d H:i:s', $now );
 
 		foreach ( $this->repository->due( $now_utc ) as $row ) {
 			$this->queue( 'tasg_abo_renew', (int) $row->id );
