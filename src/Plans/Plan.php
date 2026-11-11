@@ -87,6 +87,7 @@ final class Plan {
 			'value'            => $this->value,
 			'unit'             => $this->unit,
 			'reminder_minutes' => $this->reminder_minutes,
+			'test'             => $this->test,
 		);
 	}
 
