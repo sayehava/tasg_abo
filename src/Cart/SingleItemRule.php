@@ -53,7 +53,7 @@ final class SingleItemRule {
 	 * A subscription line shows a fixed quantity of 1 in the cart.
 	 */
 	public function lock_quantity( $html, $cart_item_key, $cart_item ) {
-		if ( empty( $cart_item['tasg_abo_interval'] ) ) {
+		if ( empty( $cart_item['tasg_abo_plan'] ) ) {
 			return $html;
 		}
 
@@ -65,7 +65,7 @@ final class SingleItemRule {
 	 */
 	public function validate_cart(): void {
 		foreach ( WC()->cart->get_cart() as $key => $item ) {
-			if ( ! empty( $item['tasg_abo_interval'] ) && 1 !== (int) $item['quantity'] ) {
+			if ( ! empty( $item['tasg_abo_plan'] ) && 1 !== (int) $item['quantity'] ) {
 				WC()->cart->set_quantity( $key, 1, true );
 			}
 		}
