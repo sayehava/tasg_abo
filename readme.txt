@@ -28,6 +28,8 @@ Customers tick "Subscribe and save" on a product page and choose an interval. Th
 * Privacy: subscriptions are included in the WordPress personal data export and erase tools, and suggested privacy policy text is added. The plugin stores no card or bank data.
 * An email warns customers whose saved Stripe card expires before the next order, so they can pick another card in time. It can be switched off and the number of days is set in the settings.
 * The reminder email shows the address of the next order and a link to correct it before the order is placed.
+* Under the subscribe checkbox a short text shows how much the customer saves, calculated from the actual price with placeholders or shortcodes, and the text follows the chosen plan. It can be set globally or per product and translated with WPML.
+* The cart is arranged automatically (the newest choice wins) or a message is shown, as the shop owner chooses.
 * A subscription must be ordered on its own, for one piece: no other product can be in the cart.
 * No card data is stored by the plugin. Payment references stay with the payment plugin on the orders.
 * Emails are real WooCommerce emails. A built in editor (WooCommerce > Settings > Subscriptions > Emails) lets you write subject, heading and text per language. Logo and colours come from the WooCommerce email settings. They are sent in the language of the original order (WPML).
