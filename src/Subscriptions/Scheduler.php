@@ -17,6 +17,7 @@
 
 namespace TasgAbo\Subscriptions;
 
+use TasgAbo\Log;
 use TasgAbo\Settings;
 
 
@@ -87,5 +88,6 @@ final class Scheduler {
 		}
 
 		as_enqueue_async_action( $hook, $args, self::GROUP );
+		Log::info( sprintf( 'Queued job %s for subscription #%d.', $hook, $id ) );
 	}
 }
