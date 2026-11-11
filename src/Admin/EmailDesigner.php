@@ -199,7 +199,7 @@ final class EmailDesigner {
 		echo '</h2>';
 
 		echo '<p>' . esc_html( $email->get_description() ) . '</p>';
-		echo '<p><strong>' . esc_html__( 'Placeholders:', 'tasg-abo' ) . '</strong> {customer_name} {product_name} {next_date} {amount} {shipping_address} {address_url} {skip_url} {pause_url} {cancel_url} {continue_url}</p>';
+		echo '<p><strong>' . esc_html__( 'Placeholders:', 'tasg-abo' ) . '</strong> {customer_name} {product_name} {next_date} {amount} {shipping_address} {address_url} {skip_url} {pause_url} {cancel_url} {continue_url} {payment_url} {plan_url}</p>';
 		echo '<p class="description">' . esc_html__( 'Leave subject or heading empty to use the default. Logo, colours and footer are set in WooCommerce > Settings > Emails.', 'tasg-abo' ) . '</p>';
 
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
