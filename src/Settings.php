@@ -16,6 +16,8 @@ final class Settings {
 	public const PAYPAL_ENABLED      = 'tasg_abo_paypal_enabled';
 	public const ADMIN_ONLY          = 'tasg_abo_admin_only';
 	public const EMAIL_DESIGNER      = 'tasg_abo_email_designer';
+	public const BOX_TEXT            = 'tasg_abo_box_text';
+	public const CART_CONFLICT       = 'tasg_abo_cart_conflict';
 	public const TEST_MARKER_TEXT    = 'tasg_abo_test_marker';
 	public const TEST_MARKER_NOTE    = 'tasg_abo_test_marker_note';
 	public const CARD_NOTICE         = 'tasg_abo_card_notice';
@@ -84,6 +86,21 @@ final class Settings {
 	 */
 	public static function paypal_enabled(): bool {
 		return 'yes' === get_option( self::PAYPAL_ENABLED, 'no' );
+	}
+
+	/**
+	 * Text under the subscribe checkbox, as typed (empty = the default text).
+	 */
+	public static function box_text_raw(): string {
+		return trim( (string) get_option( self::BOX_TEXT, '' ) );
+	}
+
+	/**
+	 * What happens when a subscription and other products meet in the cart:
+	 * replace (the newest choice wins, the cart is arranged automatically) or block.
+	 */
+	public static function cart_conflict(): string {
+		return 'block' === get_option( self::CART_CONFLICT, 'replace' ) ? 'block' : 'replace';
 	}
 
 	/**
