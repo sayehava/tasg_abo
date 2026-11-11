@@ -30,12 +30,14 @@ final class ProductToggle {
 		echo '<div class="tasg-abo-toggle">';
 		echo '<label><input type="checkbox" name="tasg_abo_subscribe" value="1"> ' . esc_html__( 'Subscribe and save', 'tasg-abo' ) . '</label> ';
 
+		$default_id = Pricing::default_plan_id( $plans, $product );
+
 		echo '<label>' . esc_html__( 'Plan', 'tasg-abo' ) . ' <select name="tasg_abo_plan">';
 		foreach ( $plans as $id => $plan ) {
 			$price = html_entity_decode( wp_strip_all_tags( wc_price( Pricing::subscriber_price( $product, (int) $id ) ) ), ENT_QUOTES, 'UTF-8' );
 			$name  = '' !== $plan->name ? $plan->name . ' (' . $plan->period_label() . ')' : $plan->period_label();
 
-			echo '<option value="' . esc_attr( (string) $id ) . '"' . selected( $plan->default, true, false ) . '>' . esc_html( $name . ': ' . $price ) . '</option>';
+			echo '<option value="' . esc_attr( (string) $id ) . '"' . selected( (int) $id === $default_id, true, false ) . '>' . esc_html( $name . ': ' . $price ) . '</option>';
 		}
 		echo '</select></label>';
 
