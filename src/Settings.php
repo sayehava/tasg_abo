@@ -15,6 +15,7 @@ final class Settings {
 	public const PAUSE_REMINDER_DAYS = 'tasg_abo_pause_reminder_days';
 	public const PAYPAL_ENABLED      = 'tasg_abo_paypal_enabled';
 	public const ADMIN_ONLY          = 'tasg_abo_admin_only';
+	public const EMAIL_DESIGNER      = 'tasg_abo_email_designer';
 	public const CARD_NOTICE         = 'tasg_abo_card_notice';
 	public const CARD_NOTICE_DAYS    = 'tasg_abo_card_notice_days';
 
@@ -81,6 +82,32 @@ final class Settings {
 	 */
 	public static function paypal_enabled(): bool {
 		return 'yes' === get_option( self::PAYPAL_ENABLED, 'no' );
+	}
+
+	/**
+	 * Is YayMail installed and loaded? Only meaningful after all plugins are loaded,
+	 * because YayMail may load after this plugin.
+	 */
+	public static function yaymail_installed(): bool {
+		return class_exists( '\YayMail\Abstracts\BaseEmail' ) && defined( 'YAYMAIL_NON_ORDER_EMAILS' );
+	}
+
+	/**
+	 * Who designs the subscription emails: auto (YayMail if installed, else the plugin
+	 * editor), yaymail, or plugin.
+	 */
+	public static function email_designer(): string {
+		$value = (string) get_option( self::EMAIL_DESIGNER, 'auto' );
+
+		return in_array( $value, array( 'auto', 'yaymail', 'plugin' ), true ) ? $value : 'auto';
+	}
+
+	/**
+	 * True when the emails are designed in YayMail. Choosing YayMail without YayMail
+	 * installed falls back to the plugin editor, so an email is never left without a design.
+	 */
+	public static function use_yaymail(): bool {
+		return 'plugin' !== self::email_designer() && self::yaymail_installed();
 	}
 
 	/**
