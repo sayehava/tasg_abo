@@ -7,6 +7,7 @@
 
 namespace TasgAbo\Subscriptions;
 
+use TasgAbo\Log;
 use TasgAbo\Plans\Period;
 
 defined( 'ABSPATH' ) || exit;
@@ -53,7 +54,7 @@ final class Creator {
 			$value = (int) $plan['value'];
 			$unit  = in_array( $plan['unit'] ?? '', Period::UNITS, true ) ? $plan['unit'] : 'week';
 
-			$this->repository->insert(
+			$new_id = $this->repository->insert(
 				array(
 					'user_id'          => $user_id,
 					'product_id'       => (int) $item->get_product_id(),
@@ -72,6 +73,7 @@ final class Creator {
 				)
 			);
 			++$made;
+			Log::info( sprintf( 'Subscription #%d created from order #%d (plan "%s", every %d %s).', $new_id, $order->get_id(), (string) ( $plan['name'] ?? '' ), $value, $unit ) );
 		}
 
 		if ( $made > 0 ) {
