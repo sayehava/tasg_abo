@@ -50,9 +50,19 @@ final class StripeCharger {
 
 		// No card data is stored by this plugin. The Stripe references come from
 		// the last order of the subscription, where the Stripe plugin keeps them.
-		$last     = wc_get_order( (int) $sub->last_order_id );
-		$customer = $last ? (string) $last->get_meta( '_stripe_customer_id' ) : '';
-		$method   = $last ? (string) $last->get_meta( '_stripe_source_id' ) : '';
+		$customer = '';
+		$method   = '';
+
+		// The last order first, the first order if the last one no longer exists.
+		foreach ( array( (int) $sub->last_order_id, (int) $sub->origin_order_id ) as $order_id ) {
+			$source = $order_id ? wc_get_order( $order_id ) : false;
+
+			if ( $source && '' !== (string) $source->get_meta( '_stripe_customer_id' ) && '' !== (string) $source->get_meta( '_stripe_source_id' ) ) {
+				$customer = (string) $source->get_meta( '_stripe_customer_id' );
+				$method   = (string) $source->get_meta( '_stripe_source_id' );
+				break;
+			}
+		}
 
 		if ( '' === $key || '' === $customer || '' === $method ) {
 			return $this->result( 'failed', '', '', 'Missing Stripe key, customer or payment method on the last order.' );
