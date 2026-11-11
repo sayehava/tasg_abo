@@ -47,7 +47,8 @@ final class ReminderHandler {
 
 		// Never let the notice be shorter than the plan promises (five minutes of safety added).
 		$earliest = time() + (int) $row->reminder_minutes * MINUTE_IN_SECONDS + 5 * MINUTE_IN_SECONDS;
-		if ( $due < $earliest ) {
+		$pushed = $due < $earliest;
+		if ( $pushed ) {
 			$this->repository->update( (int) $row->id, array( 'next_payment' => gmdate( 'Y-m-d H:i:s', $earliest ) ) );
 		}
 
@@ -55,6 +56,23 @@ final class ReminderHandler {
 
 		if ( isset( $emails['tasg_abo_reminder'] ) && $emails['tasg_abo_reminder']->trigger( (int) $row->id ) ) {
 			$this->repository->update( (int) $row->id, array( 'reminder_sent' => 1 ) );
+			return;
+		}
+
+		// Not sent (email switched off, no recipient, mail failure). Put the date back so
+		// it does not slide forward on every check, and say so once a day. Nothing is
+		// charged until a reminder has gone out.
+		if ( $pushed ) {
+			$this->repository->update( (int) $row->id, array( 'next_payment' => $row->next_payment ) );
+		}
+
+		$key = 'tasg_abo_reminder_log_' . (int) $row->id;
+		if ( ! get_transient( $key ) ) {
+			set_transient( $key, 1, DAY_IN_SECONDS );
+			wc_get_logger()->error(
+				sprintf( 'Reminder email for subscription #%d was not sent, so it will not be charged. Is the email switched on?', (int) $row->id ),
+				array( 'source' => 'tasg-abo' )
+			);
 		}
 	}
 }
