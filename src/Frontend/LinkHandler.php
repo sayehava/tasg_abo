@@ -11,6 +11,8 @@
 
 namespace TasgAbo\Frontend;
 
+use TasgAbo\Pricing;
+use TasgAbo\Settings;
 use TasgAbo\Subscriptions\Actions;
 use TasgAbo\Subscriptions\Address;
 use TasgAbo\Subscriptions\Links;
@@ -44,8 +46,21 @@ final class LinkHandler {
 			$this->page( __( 'Link not valid', 'tasg-abo' ), '<p>' . esc_html__( 'This link is not valid any more.', 'tasg-abo' ) . '</p>' );
 		}
 
+		// Options the shop owner switched off in the settings.
+		if ( ! Settings::customer_may( $action ) ) {
+			$this->page( __( 'Not available', 'tasg-abo' ), '<p>' . esc_html__( 'The shop has switched this option off. Please contact us if you need help.', 'tasg-abo' ) . '</p>' );
+		}
+
 		if ( 'address' === $action ) {
 			$this->address_form( $sub, $post );
+		}
+
+		if ( 'plan' === $action ) {
+			$this->plan_form( $sub, $post );
+		}
+
+		if ( 'payment' === $action ) {
+			$this->payment_form( $sub, $post );
 		}
 
 		if ( ! $post ) {
@@ -157,6 +172,86 @@ final class LinkHandler {
 		}
 
 		return $errors;
+	}
+
+	/**
+	 * Lets the customer switch to another plan the product offers.
+	 */
+	private function plan_form( object $sub, bool $post ): void {
+		$product = wc_get_product( (int) $sub->product_id );
+		$plans   = $product ? Pricing::plans( $product ) : array();
+
+		if ( ! $plans || ! in_array( $sub->status, array( 'active', 'paused' ), true ) ) {
+			$this->page( __( 'Nothing changed', 'tasg-abo' ), '<p>' . esc_html__( 'This subscription cannot be changed this way right now.', 'tasg-abo' ) . '</p>' );
+		}
+
+		if ( $post ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$chosen = isset( $_POST['plan'] ) ? absint( $_POST['plan'] ) : 0;
+
+			if ( isset( $plans[ $chosen ] ) && ( new Actions( new Repository() ) )->change_plan( $sub, $plans[ $chosen ] ) ) {
+				$this->page( __( 'Plan changed', 'tasg-abo' ), '<p>' . esc_html__( 'Your plan was changed. You will get a reminder before the next order, with the new date and price.', 'tasg-abo' ) . '</p>' );
+			}
+		}
+
+		$html  = '<form method="post" action="">';
+		$html .= '<input type="hidden" name="tasg_abo" value="plan"><input type="hidden" name="key" value="' . esc_attr( $sub->cancel_key ) . '">';
+
+		foreach ( $plans as $id => $plan ) {
+			$price = html_entity_decode( wp_strip_all_tags( wc_price( Pricing::subscriber_price( $product, (int) $id ) ) ), ENT_QUOTES, 'UTF-8' );
+			$name  = '' !== $plan->name ? $plan->name . ' (' . $plan->period_label() . ')' : $plan->period_label();
+			$now   = (int) $sub->plan_id === (int) $id ? ' ' . __( '(current)', 'tasg-abo' ) : '';
+
+			$html .= '<p><label><input type="radio" name="plan" value="' . esc_attr( (string) $id ) . '"' . checked( (int) $sub->plan_id === (int) $id, true, false ) . '> ' . esc_html( $name . ': ' . $price . $now ) . '</label></p>';
+		}
+
+		$html .= '<button type="submit" class="button">' . esc_html__( 'Save plan', 'tasg-abo' ) . '</button></form>';
+
+		$this->page( __( 'Choose a new plan', 'tasg-abo' ), $html );
+	}
+
+	/**
+	 * Lets the logged in customer choose which saved Stripe payment method is used.
+	 * Cards are added in the normal WooCommerce account area, this plugin never sees card data.
+	 */
+	private function payment_form( object $sub, bool $post ): void {
+		if ( ! is_user_logged_in() || get_current_user_id() !== (int) $sub->user_id ) {
+			wp_safe_redirect( wp_login_url( Links::url( $sub, 'payment' ) ) );
+			exit;
+		}
+
+		if ( 0 !== strpos( (string) $sub->gateway, 'stripe' ) || ! in_array( $sub->status, array( 'active', 'paused' ), true ) ) {
+			$this->page( __( 'Nothing changed', 'tasg-abo' ), '<p>' . esc_html__( 'The payment method of this subscription cannot be changed here.', 'tasg-abo' ) . '</p>' );
+		}
+
+		$tokens = array();
+		foreach ( \WC_Payment_Tokens::get_customer_tokens( (int) $sub->user_id ) as $token ) {
+			if ( 0 === strpos( (string) $token->get_gateway_id(), 'stripe' ) ) {
+				$tokens[ $token->get_id() ] = $token;
+			}
+		}
+
+		if ( $post ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$chosen = isset( $_POST['token'] ) ? absint( $_POST['token'] ) : 0;
+
+			if ( ( 0 === $chosen || isset( $tokens[ $chosen ] ) ) && ( new Actions( new Repository() ) )->set_payment_token( $sub, $chosen ) ) {
+				$this->page( __( 'Payment method saved', 'tasg-abo' ), '<p>' . esc_html__( 'This payment method will be used for your next order.', 'tasg-abo' ) . '</p>' );
+			}
+		}
+
+		$html  = '<form method="post" action="">';
+		$html .= '<input type="hidden" name="tasg_abo" value="payment"><input type="hidden" name="key" value="' . esc_attr( $sub->cancel_key ) . '">';
+		$html .= '<p><label><input type="radio" name="token" value="0"' . checked( (int) $sub->payment_token_id, 0, false ) . '> ' . esc_html__( 'The payment method of my last order', 'tasg-abo' ) . '</label></p>';
+
+		foreach ( $tokens as $id => $token ) {
+			$html .= '<p><label><input type="radio" name="token" value="' . esc_attr( (string) $id ) . '"' . checked( (int) $sub->payment_token_id === (int) $id, true, false ) . '> ' . esc_html( $token->get_display_name() ) . '</label></p>';
+		}
+
+		$html .= '<p><a href="' . esc_url( wc_get_account_endpoint_url( 'add-payment-method' ) ) . '">' . esc_html__( 'Add a new payment method', 'tasg-abo' ) . '</a></p>';
+		$html .= '<button type="submit" class="button">' . esc_html__( 'Save payment method', 'tasg-abo' ) . '</button></form>';
+
+		$this->page( __( 'Change your payment method', 'tasg-abo' ), $html );
 	}
 
 	private function confirm( object $sub, string $action ): void {
