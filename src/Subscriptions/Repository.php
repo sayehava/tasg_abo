@@ -78,6 +78,45 @@ final class Repository {
 	}
 
 	/**
+	 * Paused subscriptions whose next continue-or-cancel reminder is due.
+	 *
+	 * @return object[]
+	 */
+	public function paused_due( string $until_utc ): array {
+		global $wpdb;
+
+		return (array) $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT * FROM ' . Schema::table() . " WHERE status = 'paused' AND next_payment <= %s ORDER BY next_payment ASC",
+				$until_utc
+			)
+		);
+	}
+
+	/**
+	 * Take ownership of a due renewal by moving it to its next date in one
+	 * atomic step. Only one caller can win, so a renewal is never made twice.
+	 */
+	public function claim( int $id, string $new_next_utc ): bool {
+		global $wpdb;
+
+		$changed = $wpdb->update(
+			Schema::table(),
+			array(
+				'next_payment'  => $new_next_utc,
+				'reminder_sent' => 0,
+			),
+			array(
+				'id'            => $id,
+				'status'        => 'active',
+				'reminder_sent' => 1,
+			)
+		);
+
+		return 1 === $changed;
+	}
+
+	/**
 	 * @return object[]
 	 */
 	public function for_user( int $user_id ): array {
