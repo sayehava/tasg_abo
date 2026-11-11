@@ -22,6 +22,7 @@ final class CheckoutRules {
 		add_filter( 'pre_option_woocommerce_enable_signup_and_login_from_checkout', array( $this, 'allow_signup' ) );
 		add_filter( 'wc_stripe_force_save_payment_method', array( $this, 'force_save_card' ) );
 		add_filter( 'woocommerce_available_payment_gateways', array( $this, 'limit_gateways' ) );
+		add_filter( 'wc_stripe_payment_request_supported_types', array( $this, 'hide_express_checkout' ) );
 	}
 
 	public static function cart_has_subscription(): bool {
@@ -36,6 +37,30 @@ final class CheckoutRules {
 		}
 
 		return false;
+	}
+
+	/**
+	 * The Stripe express buttons (Apple Pay, Google Pay, Link, Amazon Pay) pay at once, without
+	 * the account step and without our subscribe box. A subscription needs an account and a saved
+	 * payment method, so the buttons are hidden for subscription carts and on the product page of a
+	 * product that offers a subscription. Everyone can still pay at the normal checkout.
+	 *
+	 * @param array $types Product types the express buttons support.
+	 */
+	public function hide_express_checkout( $types ) {
+		if ( self::cart_has_subscription() ) {
+			return array();
+		}
+
+		if ( function_exists( 'is_product' ) && is_product() ) {
+			$product = wc_get_product( get_queried_object_id() );
+
+			if ( $product && \TasgAbo\Pricing::is_enabled( $product ) ) {
+				return array();
+			}
+		}
+
+		return $types;
 	}
 
 	public function require_account( $required ) {
@@ -74,6 +99,11 @@ final class CheckoutRules {
 					break;
 				}
 			}
+			// A payment method that cannot be charged again later is no use for a subscription.
+			if ( $ok && is_object( $gateways[ $id ] ) && method_exists( $gateways[ $id ], 'is_reusable' ) && ! $gateways[ $id ]->is_reusable() ) {
+				$ok = false;
+			}
+
 			if ( ! $ok ) {
 				unset( $gateways[ $id ] );
 			}
