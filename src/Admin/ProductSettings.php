@@ -134,6 +134,60 @@ final class ProductSettings {
 		$product->update_meta_data( '_tasg_abo_plans', $plans );
 		$product->update_meta_data( '_tasg_abo_discount_type', $type );
 		$product->update_meta_data( '_tasg_abo_discount_value', $this->clean_discount( (string) $value, $type ) );
+
+		// Translations of this product get the same subscription settings, right away.
+		add_action(
+			'woocommerce_after_product_object_save',
+			function ( $saved ) use ( $product ) {
+				if ( $saved instanceof \WC_Product && $saved->get_id() === $product->get_id() ) {
+					$this->copy_to_translations( $saved );
+				}
+			}
+		);
+	}
+
+	/**
+	 * Copies the subscription settings to the WPML translations of a product, so the
+	 * subscribe box also shows on the other language versions. Does nothing without WPML.
+	 */
+	private function copy_to_translations( \WC_Product $product ): void {
+		static $running = false;
+
+		if ( $running ) {
+			return;
+		}
+
+		$trid = apply_filters( 'wpml_element_trid', null, $product->get_id(), 'post_product' );
+
+		if ( ! $trid ) {
+			return;
+		}
+
+		$running      = true;
+		$translations = (array) apply_filters( 'wpml_get_element_translations', array(), $trid, 'post_product' );
+		$keys         = array( '_tasg_abo_enabled', '_tasg_abo_plans', '_tasg_abo_default_plan', '_tasg_abo_discount_type', '_tasg_abo_discount_value' );
+
+		foreach ( $translations as $translation ) {
+			$target_id = isset( $translation->element_id ) ? (int) $translation->element_id : 0;
+
+			if ( $target_id < 1 || $target_id === $product->get_id() ) {
+				continue;
+			}
+
+			$target = wc_get_product( $target_id );
+
+			if ( ! $target ) {
+				continue;
+			}
+
+			foreach ( $keys as $key ) {
+				$target->update_meta_data( $key, $product->get_meta( $key ) );
+			}
+
+			$target->save();
+		}
+
+		$running = false;
 	}
 
 	/**
