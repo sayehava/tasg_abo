@@ -38,15 +38,35 @@ final class SingleItemRule {
 			return $passed;
 		}
 
-		if ( $adding_subscription || CheckoutRules::cart_has_subscription() ) {
-			wc_add_notice(
-				__( 'A subscription must be ordered on its own. Please finish or empty your cart first.', 'tasg-abo' ),
-				'error'
-			);
-			return false;
+		$cart_has_subscription = CheckoutRules::cart_has_subscription();
+
+		if ( ! $adding_subscription && ! $cart_has_subscription ) {
+			return $passed;
 		}
 
-		return $passed;
+		// The shop owner decides: arrange the cart automatically, or show a message.
+		if ( 'replace' === Settings::cart_conflict() ) {
+			if ( $adding_subscription ) {
+				WC()->cart->empty_cart();
+				wc_add_notice( __( 'Your cart was emptied, because a subscription is ordered on its own.', 'tasg-abo' ), 'notice' );
+			} else {
+				foreach ( WC()->cart->get_cart() as $key => $item ) {
+					if ( ! empty( $item['tasg_abo_plan'] ) ) {
+						WC()->cart->remove_cart_item( $key );
+					}
+				}
+				wc_add_notice( __( 'The subscription was removed from your cart, because a subscription is ordered on its own.', 'tasg-abo' ), 'notice' );
+			}
+
+			return $passed;
+		}
+
+		wc_add_notice(
+			__( 'A subscription must be ordered on its own. Please finish or empty your cart first.', 'tasg-abo' ),
+			'error'
+		);
+
+		return false;
 	}
 
 	/**
