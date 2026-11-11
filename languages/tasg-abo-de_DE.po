@@ -235,6 +235,10 @@ msgstr "(Testplan)"
 msgid "Discount"
 msgstr "Rabatt"
 
+#: src/Admin/ProductSettings.php
+msgid "Default for this product"
+msgstr "Standard für dieses Produkt"
+
 #: src/Admin/SettingsPage.php
 msgid "Subscription settings"
 msgstr "Abo-Einstellungen"
