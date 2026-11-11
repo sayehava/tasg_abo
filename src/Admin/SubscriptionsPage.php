@@ -116,6 +116,11 @@ final class SubscriptionsPage {
 
 		echo '<div class="wrap"><h1>' . esc_html__( 'Subscriptions', 'tasg-abo' ) . '</h1>';
 
+		$emails = WC()->mailer()->get_emails();
+		if ( isset( $emails['tasg_abo_reminder'] ) && ! $emails['tasg_abo_reminder']->is_enabled() ) {
+			echo '<div class="notice notice-error"><p>' . esc_html__( 'The reminder email is switched off. No subscription will be charged until you switch it on under WooCommerce > Settings > Emails.', 'tasg-abo' ) . '</p></div>';
+		}
+
 		echo '<h2>' . esc_html__( 'Shipping for all active subscriptions', 'tasg-abo' ) . '</h2>';
 		$this->shipping_form( 'all', 'free', '', __( 'Apply to all active', 'tasg-abo' ) );
 
