@@ -117,12 +117,23 @@ final class Plugin {
 
 		if ( is_admin() ) {
 			( new Admin\ProductSettings() )->register();
-			( new Admin\SettingsPage() )->register();
-			( new Admin\PlansPage() )->register();
-			( new Admin\SubscriptionsPage() )->register();
-			( new Admin\EmailDesigner() )->register();
-			( new Admin\DiagnosticsPage() )->register();
+
+			// The "Subscriptions" tab in WooCommerce > Settings, with these sections inside.
+			$sections = array(
+				'settings'      => new Admin\SettingsPage(),
+				'plans'         => new Admin\PlansPage(),
+				'subscriptions' => new Admin\SubscriptionsPage(),
+				'emails'        => new Admin\EmailDesigner(),
+				'diagnostics'   => new Admin\DiagnosticsPage(),
+			);
+
+			foreach ( $sections as $section ) {
+				$section->register();
+			}
+
+			( new Admin\SettingsHub( $sections ) )->register();
 		}
+
 	}
 
 	public function load_error_notice(): void {
