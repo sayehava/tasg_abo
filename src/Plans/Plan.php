@@ -19,6 +19,7 @@ final class Plan {
 	public $reminder_minutes = 2880;
 	public $test             = false;
 	public $active           = true;
+	public $default          = false;
 
 	public static function from_array( array $data ): Plan {
 		$plan                   = new self();
@@ -29,6 +30,7 @@ final class Plan {
 		$plan->reminder_minutes = max( 1, (int) ( $data['reminder_minutes'] ?? 2880 ) );
 		$plan->test             = ! empty( $data['test'] );
 		$plan->active           = ! isset( $data['active'] ) || ! empty( $data['active'] );
+		$plan->default          = ! empty( $data['default'] );
 
 		return $plan;
 	}
@@ -42,6 +44,7 @@ final class Plan {
 			'reminder_minutes' => $this->reminder_minutes,
 			'test'             => $this->test,
 			'active'           => $this->active,
+			'default'          => $this->default,
 		);
 	}
 
