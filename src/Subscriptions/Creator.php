@@ -59,6 +59,7 @@ final class Creator {
 					'user_id'          => $user_id,
 					'product_id'       => (int) $item->get_product_id(),
 					'quantity'         => (int) $item->get_quantity(),
+					'is_test'          => 'yes' === (string) $item->get_meta( '_tasg_abo_test' ) ? 1 : 0,
 					'plan_id'          => (int) ( $plan['id'] ?? 0 ),
 					'plan_name'        => (string) ( $plan['name'] ?? '' ),
 					'period_value'     => $value,
@@ -73,6 +74,10 @@ final class Creator {
 				)
 			);
 			++$made;
+
+			if ( 'yes' === (string) $item->get_meta( '_tasg_abo_test' ) ) {
+				\TasgAbo\TestMarker::apply( $order );
+			}
 			Log::info( sprintf( 'Subscription #%d created from order #%d (plan "%s", every %d %s).', $new_id, $order->get_id(), (string) ( $plan['name'] ?? '' ), $value, $unit ) );
 		}
 
