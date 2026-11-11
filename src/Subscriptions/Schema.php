@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 
 final class Schema {
 
-	private const VERSION = '3';
+	private const VERSION = '4';
 
 	public static function table(): string {
 		global $wpdb;
@@ -39,7 +39,12 @@ final class Schema {
 			user_id bigint(20) unsigned NOT NULL,
 			product_id bigint(20) unsigned NOT NULL,
 			quantity int(11) NOT NULL DEFAULT 1,
-			interval_weeks smallint(5) unsigned NOT NULL,
+			interval_weeks smallint(5) unsigned NOT NULL DEFAULT 0,
+			period_value int(11) unsigned NOT NULL DEFAULT 1,
+			period_unit varchar(10) NOT NULL DEFAULT 'week',
+			reminder_minutes int(11) unsigned NOT NULL DEFAULT 2880,
+			plan_id bigint(20) unsigned NOT NULL DEFAULT 0,
+			plan_name varchar(190) NOT NULL DEFAULT '',
 			status varchar(20) NOT NULL DEFAULT 'active',
 			next_payment datetime DEFAULT NULL,
 			origin_order_id bigint(20) unsigned NOT NULL,
