@@ -12,7 +12,6 @@ defined( 'ABSPATH' ) || exit;
 final class Settings {
 
 	public const RENEWAL_STATUS      = 'tasg_abo_renewal_status';
-	public const REMINDER_HOURS      = 'tasg_abo_reminder_hours';
 	public const PAUSE_REMINDER_DAYS = 'tasg_abo_pause_reminder_days';
 	public const PAYPAL_ENABLED      = 'tasg_abo_paypal_enabled';
 	public const ADMIN_ONLY          = 'tasg_abo_admin_only';
@@ -34,13 +33,6 @@ final class Settings {
 		);
 
 		return in_array( $status, $statuses, true ) ? $status : 'processing';
-	}
-
-	/**
-	 * Hours before a payment at which the reminder goes out. Never below 48.
-	 */
-	public static function reminder_hours(): int {
-		return max( 48, (int) get_option( self::REMINDER_HOURS, 72 ) );
 	}
 
 	/**
