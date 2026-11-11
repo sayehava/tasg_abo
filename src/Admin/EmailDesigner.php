@@ -12,6 +12,7 @@ namespace TasgAbo\Admin;
 
 use TasgAbo\Emails\EmailTexts;
 use TasgAbo\Emails\SubscriptionEmail;
+use TasgAbo\Settings;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -153,6 +154,13 @@ final class EmailDesigner {
 
 	public function render(): void {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			return;
+		}
+
+		// YayMail designs the emails: this editor stays out of the way.
+		if ( Settings::use_yaymail() ) {
+			echo '<div class="wrap"><h1>' . esc_html__( 'Subscription emails', 'tasg-abo' ) . '</h1>';
+			echo '<div class="notice notice-info inline"><p>' . esc_html__( 'The subscription emails are designed in YayMail (YayMail > Email templates, source "Tasg Abo"). To use the plugin editor instead, change "Email design" in WooCommerce > Subscription settings.', 'tasg-abo' ) . '</p></div></div>';
 			return;
 		}
 
