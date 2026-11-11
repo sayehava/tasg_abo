@@ -79,6 +79,7 @@ final class Plugin {
 		( new Subscriptions\Scheduler( new Subscriptions\Repository() ) )->register();
 		( new Subscriptions\ReminderHandler( new Subscriptions\Repository() ) )->register();
 		( new Subscriptions\PauseHandler( new Subscriptions\Repository() ) )->register();
+		( new Subscriptions\CardNoticeHandler( new Subscriptions\Repository() ) )->register();
 		( new Renewal\RenewalHandler( new Subscriptions\Repository(), new Renewal\OrderBuilder(), new Gateways\StripeCharger(), new Gateways\PayPalCharger() ) )->register();
 		( new Emails\Registry() )->register();
 		( new Checkout\CheckoutRules() )->register();
