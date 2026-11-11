@@ -9,11 +9,14 @@
  * Jobs queued (group "tasg-abo"):
  *   tasg_abo_send_reminder( subscription_id )
  *   tasg_abo_renew( subscription_id )
+ *   tasg_abo_pause_reminder( subscription_id )
  *
  * @package TasgAbo
  */
 
 namespace TasgAbo\Subscriptions;
+
+use TasgAbo\Settings;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -38,24 +41,22 @@ final class Scheduler {
 		}
 	}
 
-	/**
-	 * Hours before a payment at which the reminder goes out. Never below 48,
-	 * the hourly tick and queue delay then cannot make it late.
-	 */
-	public static function reminder_lead_hours(): int {
-		return max( 48, (int) get_option( 'tasg_abo_reminder_hours', 72 ) );
-	}
-
 	public function run_tick(): void {
 		$now = time();
 
-		$remind_until = gmdate( 'Y-m-d H:i:s', $now + self::reminder_lead_hours() * HOUR_IN_SECONDS );
+		$remind_until = gmdate( 'Y-m-d H:i:s', $now + Settings::reminder_hours() * HOUR_IN_SECONDS );
 		foreach ( $this->repository->needing_reminder( $remind_until ) as $row ) {
 			$this->queue( 'tasg_abo_send_reminder', (int) $row->id );
 		}
 
-		foreach ( $this->repository->due( gmdate( 'Y-m-d H:i:s', $now ) ) as $row ) {
+		$now_utc = gmdate( 'Y-m-d H:i:s', $now );
+
+		foreach ( $this->repository->due( $now_utc ) as $row ) {
 			$this->queue( 'tasg_abo_renew', (int) $row->id );
+		}
+
+		foreach ( $this->repository->paused_due( $now_utc ) as $row ) {
+			$this->queue( 'tasg_abo_pause_reminder', (int) $row->id );
 		}
 	}
 
