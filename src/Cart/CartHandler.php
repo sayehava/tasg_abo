@@ -92,11 +92,10 @@ final class CartHandler {
 		if ( ! empty( $cart_item['tasg_abo_plan'] ) ) {
 			$plan = $cart_item['tasg_abo_plan'];
 
+			// Short on purpose: the side cart is narrow. The plan name already says the period.
 			$item_data[] = array(
 				'key'   => __( 'Subscription', 'tasg-abo' ),
-				'value' => \TasgAbo\Plans\Period::label( (int) $plan['value'], (string) $plan['unit'] ) === $plan['name']
-					? $plan['name']
-					: $plan['name'] . ' (' . \TasgAbo\Plans\Period::label( (int) $plan['value'], (string) $plan['unit'] ) . ')',
+				'value' => '' !== (string) $plan['name'] ? (string) $plan['name'] : \TasgAbo\Plans\Period::label( (int) $plan['value'], (string) $plan['unit'] ),
 			);
 		}
 
