@@ -19,6 +19,7 @@ final class Registry {
 		$emails['tasg_abo_reminder']       = new ReminderEmail();
 		$emails['tasg_abo_pause_reminder'] = new PauseReminderEmail();
 		$emails['tasg_abo_failed']         = new FailedEmail();
+		$emails['tasg_abo_card_expiring']  = new CardExpiringEmail();
 
 		return $emails;
 	}
