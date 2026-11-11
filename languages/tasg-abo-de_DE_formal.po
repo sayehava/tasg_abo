@@ -272,6 +272,38 @@ msgid "A paused customer gets three reminders to continue or cancel. Without an 
 msgstr "Ein pausierter Kunde erhält drei Erinnerungen, fortzusetzen oder zu kündigen. Ohne Antwort wird das Abo gekündigt."
 
 #: src/Admin/SettingsPage.php
+msgid "Skip the next order"
+msgstr "Die nächste Bestellung überspringen"
+
+#: src/Admin/SettingsPage.php
+msgid "Pause for the next period"
+msgstr "Für die nächste Periode pausieren"
+
+#: src/Admin/SettingsPage.php
+msgid "Change the shipping address of the next order"
+msgstr "Die Lieferadresse der nächsten Bestellung ändern"
+
+#: src/Admin/SettingsPage.php
+msgid "Change the plan (period)"
+msgstr "Den Plan (Zeitraum) ändern"
+
+#: src/Admin/SettingsPage.php
+msgid "Change the payment method (Stripe)"
+msgstr "Die Zahlungsmethode ändern (Stripe)"
+
+#: src/Admin/SettingsPage.php
+msgid "See the past orders of the subscription"
+msgstr "Die bisherigen Bestellungen des Abos sehen"
+
+#: src/Admin/SettingsPage.php
+msgid "What customers may do"
+msgstr "Was Kunden selbst tun dürfen"
+
+#: src/Admin/SettingsPage.php
+msgid "Cancelling is always possible for customers (contracts concluded online in Germany need an easy way to cancel). Continuing after a pause is always possible too."
+msgstr "Kunden können immer kündigen (in Deutschland online geschlossene Verträge brauchen eine einfache Kündigungsmöglichkeit). Das Fortsetzen nach einer Pause ist ebenfalls immer möglich."
+
+#: src/Admin/SettingsPage.php
 msgid "PayPal (experimental)"
 msgstr "PayPal (experimentell)"
 
@@ -428,16 +460,44 @@ msgid "Your next subscription order"
 msgstr "Ihre nächste Abo-Bestellung"
 
 #: src/Emails/ReminderEmail.php
-msgid "Hello {customer_name},\n\nwe will charge you again for your next order of {product_name} on {next_date}. Amount: {amount} plus shipping.\n\nYour order will be sent to:\n{shipping_address}\n\nIf this address is not correct, please change it before {next_date}: {address_url}\n\nYou do not need to do anything else to continue.\n\nSkip this order: {skip_url}\nPause: {pause_url}\nCancel your subscription: {cancel_url}"
-msgstr "Hallo {customer_name},\n\nwir buchen Ihre nächste Bestellung von {product_name} am {next_date} erneut ab. Betrag: {amount} zuzüglich Versand.\n\nIhre Bestellung wird an diese Adresse geschickt:\n{shipping_address}\n\nWenn die Adresse nicht stimmt, ändern Sie sie bitte vor dem {next_date}: {address_url}\n\nSie müssen sonst nichts tun, Ihr Abo läuft weiter.\n\nDiese Bestellung überspringen: {skip_url}\nPausieren: {pause_url}\nAbo kündigen: {cancel_url}"
+msgid "Hello {customer_name},\n\nwe will charge you again for your next order of {product_name} on {next_date}. Amount: {amount} plus shipping.\n\nYour order will be sent to:\n{shipping_address}"
+msgstr "Hallo {customer_name},\n\nwir buchen Ihre nächste Bestellung von {product_name} am {next_date} erneut ab. Betrag: {amount} zuzüglich Versand.\n\nIhre Bestellung wird an diese Adresse geschickt:\n{shipping_address}"
+
+#: src/Emails/ReminderEmail.php
+msgid "If this address is not correct, please change it before {next_date}: {address_url}"
+msgstr "Wenn die Adresse nicht stimmt, ändern Sie sie bitte vor dem {next_date}: {address_url}"
+
+#: src/Emails/ReminderEmail.php
+msgid "You do not need to do anything else to continue."
+msgstr "Sie müssen sonst nichts tun, Ihr Abo läuft weiter."
+
+#: src/Emails/ReminderEmail.php
+msgid "Skip this order: {skip_url}"
+msgstr "Diese Bestellung überspringen: {skip_url}"
+
+#: src/Emails/ReminderEmail.php
+msgid "Pause: {pause_url}"
+msgstr "Pausieren: {pause_url}"
+
+#: src/Emails/ReminderEmail.php
+msgid "Change your plan: {plan_url}"
+msgstr "Plan ändern: {plan_url}"
+
+#: src/Emails/ReminderEmail.php
+msgid "Change your payment method: {payment_url}"
+msgstr "Zahlungsmethode ändern: {payment_url}"
+
+#: src/Emails/ReminderEmail.php
+msgid "Cancel your subscription: {cancel_url}"
+msgstr "Abo kündigen: {cancel_url}"
 
 #: src/Emails/SubscriptionEmail.php
 msgid "Email text"
 msgstr "E-Mail-Text"
 
 #: src/Emails/SubscriptionEmail.php
-msgid "Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url}"
-msgstr "Platzhalter: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url}"
+msgid "Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url}"
+msgstr "Platzhalter: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url}"
 
 #: src/Frontend/LinkHandler.php
 msgid "Link not valid"
@@ -446,6 +506,14 @@ msgstr "Link ungültig"
 #: src/Frontend/LinkHandler.php
 msgid "This link is not valid any more."
 msgstr "Dieser Link ist nicht mehr gültig."
+
+#: src/Frontend/LinkHandler.php
+msgid "Not available"
+msgstr "Nicht verfügbar"
+
+#: src/Frontend/LinkHandler.php
+msgid "The shop has switched this option off. Please contact us if you need help."
+msgstr "Der Shop hat diese Option ausgeschaltet. Bitte kontaktieren Sie uns, wenn Sie Hilfe brauchen."
 
 #: src/Frontend/LinkHandler.php
 msgid "Nothing changed"
@@ -518,6 +586,50 @@ msgstr "In dieses Land können wir nicht liefern."
 #: src/Frontend/LinkHandler.php
 msgid "The postcode is not valid for this country."
 msgstr "Die Postleitzahl ist für dieses Land nicht gültig."
+
+#: src/Frontend/LinkHandler.php
+msgid "Plan changed"
+msgstr "Plan geändert"
+
+#: src/Frontend/LinkHandler.php
+msgid "Your plan was changed. You will get a reminder before the next order, with the new date and price."
+msgstr "Ihr Plan wurde geändert. Vor der nächsten Bestellung erhalten Sie eine Erinnerung mit neuem Datum und Preis."
+
+#: src/Frontend/LinkHandler.php
+msgid "(current)"
+msgstr "(aktuell)"
+
+#: src/Frontend/LinkHandler.php
+msgid "Choose a new plan"
+msgstr "Neuen Plan wählen"
+
+#: src/Frontend/LinkHandler.php
+msgid "The payment method of this subscription cannot be changed here."
+msgstr "Die Zahlungsmethode dieses Abos kann hier nicht geändert werden."
+
+#: src/Frontend/LinkHandler.php
+msgid "Payment method saved"
+msgstr "Zahlungsmethode gespeichert"
+
+#: src/Frontend/LinkHandler.php
+msgid "This payment method will be used for your next order."
+msgstr "Diese Zahlungsmethode wird für Ihre nächste Bestellung verwendet."
+
+#: src/Frontend/LinkHandler.php
+msgid "The payment method of my last order"
+msgstr "Die Zahlungsmethode meiner letzten Bestellung"
+
+#: src/Frontend/LinkHandler.php
+msgid "Add a new payment method"
+msgstr "Neue Zahlungsmethode hinzufügen"
+
+#: src/Frontend/LinkHandler.php
+msgid "Save payment method"
+msgstr "Zahlungsmethode speichern"
+
+#: src/Frontend/LinkHandler.php
+msgid "Change your payment method"
+msgstr "Ihre Zahlungsmethode ändern"
 
 #: src/Frontend/LinkHandler.php
 msgid "Cancel your subscription?"
@@ -610,6 +722,18 @@ msgstr "Nächste überspringen"
 #: src/Frontend/MyAccount.php
 msgid "Change address"
 msgstr "Adresse ändern"
+
+#: src/Frontend/MyAccount.php
+msgid "Change plan"
+msgstr "Plan ändern"
+
+#: src/Frontend/MyAccount.php
+msgid "Payment method"
+msgstr "Zahlungsmethode"
+
+#: src/Frontend/MyAccount.php
+msgid "Orders of the subscription for %s"
+msgstr "Bestellungen des Abos für %s"
 
 #: src/Frontend/ProductToggle.php
 msgid "Subscribe and save"
