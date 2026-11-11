@@ -59,6 +59,7 @@ final class Plugin {
 		Subscriptions\Schema::maybe_install();
 		( new Subscriptions\Scheduler( new Subscriptions\Repository() ) )->register();
 		( new Subscriptions\ReminderHandler( new Subscriptions\Repository() ) )->register();
+		( new Subscriptions\PauseHandler( new Subscriptions\Repository() ) )->register();
 		( new Emails\Registry() )->register();
 		( new Checkout\CheckoutRules() )->register();
 		( new Subscriptions\Creator( new Subscriptions\Repository() ) )->register();
