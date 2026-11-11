@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 
 final class Schema {
 
-	private const VERSION = '4';
+	private const VERSION = '5';
 
 	public static function table(): string {
 		global $wpdb;
@@ -51,6 +51,7 @@ final class Schema {
 			gateway varchar(64) NOT NULL DEFAULT '',
 			last_order_id bigint(20) unsigned NOT NULL DEFAULT 0,
 			address_override longtext DEFAULT NULL,
+			payment_token_id bigint(20) unsigned NOT NULL DEFAULT 0,
 			language varchar(20) NOT NULL DEFAULT '',
 			shipping_mode varchar(20) NOT NULL DEFAULT 'copy',
 			shipping_until datetime DEFAULT NULL,
