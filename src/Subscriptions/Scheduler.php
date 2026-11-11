@@ -2,7 +2,7 @@
 /**
  * Regular check (every 5 minutes) run by WooCommerce's own Action Scheduler (no server cron).
  *
- * Every hour it finds subscriptions that need a reminder email or a renewal
+ * On every run it finds subscriptions that need a reminder email or a renewal
  * and queues one separate Action Scheduler job for each, so a failure in one
  * subscription never blocks another.
  *
@@ -41,6 +41,12 @@ final class Scheduler {
 	}
 
 	public function schedule_tick(): void {
+		// A tick scheduled with an older interval is replaced, so changes reach existing sites.
+		if ( get_option( 'tasg_abo_tick_interval' ) !== (string) self::TICK_SECONDS ) {
+			as_unschedule_all_actions( 'tasg_abo_tick', array(), self::GROUP );
+			update_option( 'tasg_abo_tick_interval', (string) self::TICK_SECONDS, false );
+		}
+
 		if ( false === as_next_scheduled_action( 'tasg_abo_tick', array(), self::GROUP ) ) {
 			as_schedule_recurring_action( time(), self::TICK_SECONDS, 'tasg_abo_tick', array(), self::GROUP );
 		}
