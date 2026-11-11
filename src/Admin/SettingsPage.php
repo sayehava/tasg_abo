@@ -46,6 +46,7 @@ final class SettingsPage {
 			register_setting( self::SLUG, $definition[0], array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 		}
 
+		register_setting( self::SLUG, Settings::EMAIL_DESIGNER, array( 'sanitize_callback' => array( $this, 'sanitize_designer' ) ) );
 		register_setting( self::SLUG, Settings::CARD_NOTICE, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 		register_setting( self::SLUG, Settings::CARD_NOTICE_DAYS, array( 'sanitize_callback' => array( $this, 'sanitize_notice_days' ) ) );
 		register_setting( self::SLUG, Settings::ADMIN_ONLY, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
@@ -54,6 +55,10 @@ final class SettingsPage {
 
 	public function sanitize_yes_no( $value ): string {
 		return 'yes' === $value ? 'yes' : 'no';
+	}
+
+	public function sanitize_designer( $value ): string {
+		return in_array( $value, array( 'auto', 'yaymail', 'plugin' ), true ) ? (string) $value : 'auto';
 	}
 
 	public function sanitize_notice_days( $value ): int {
@@ -99,6 +104,20 @@ final class SettingsPage {
 			'payment' => __( 'Change the payment method (Stripe)', 'tasg-abo' ),
 			'orders'  => __( 'See the past orders of the subscription', 'tasg-abo' ),
 		);
+
+		$designers = array(
+			'auto'    => __( 'Automatic: YayMail if it is installed, otherwise the plugin editor', 'tasg-abo' ),
+			'yaymail' => __( 'YayMail', 'tasg-abo' ),
+			'plugin'  => __( 'The plugin editor', 'tasg-abo' ),
+		);
+
+		echo '<tr><th scope="row"><label for="tasg_designer">' . esc_html__( 'Email design', 'tasg-abo' ) . '</label></th><td>';
+		echo '<select id="tasg_designer" name="' . esc_attr( Settings::EMAIL_DESIGNER ) . '">';
+		foreach ( $designers as $key => $label ) {
+			echo '<option value="' . esc_attr( $key ) . '"' . selected( Settings::email_designer(), $key, false ) . '>' . esc_html( $label ) . '</option>';
+		}
+		echo '</select><p class="description">' . esc_html( Settings::yaymail_installed() ? __( 'YayMail was found on this site.', 'tasg-abo' ) : __( 'YayMail was not found on this site, so the plugin editor is used.', 'tasg-abo' ) ) . ' ';
+		echo esc_html__( 'Design the subscription emails in YayMail (YayMail > Email templates) or in the plugin editor (WooCommerce > Subscription emails).', 'tasg-abo' ) . '</p></td></tr>';
 
 		echo '<tr><th scope="row">' . esc_html__( 'Expiring card warning', 'tasg-abo' ) . '</th><td>';
 		echo '<input type="hidden" name="' . esc_attr( Settings::CARD_NOTICE ) . '" value="no">';
