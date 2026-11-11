@@ -16,6 +16,8 @@ final class Settings {
 	public const PAYPAL_ENABLED      = 'tasg_abo_paypal_enabled';
 	public const ADMIN_ONLY          = 'tasg_abo_admin_only';
 	public const EMAIL_DESIGNER      = 'tasg_abo_email_designer';
+	public const TEST_MARKER_TEXT    = 'tasg_abo_test_marker';
+	public const TEST_MARKER_NOTE    = 'tasg_abo_test_marker_note';
 	public const CARD_NOTICE         = 'tasg_abo_card_notice';
 	public const CARD_NOTICE_DAYS    = 'tasg_abo_card_notice_days';
 
@@ -82,6 +84,20 @@ final class Settings {
 	 */
 	public static function paypal_enabled(): bool {
 		return 'yes' === get_option( self::PAYPAL_ENABLED, 'no' );
+	}
+
+	/**
+	 * Text that marks test orders, for example for the invoice.
+	 */
+	public static function test_marker_text(): string {
+		return trim( (string) get_option( self::TEST_MARKER_TEXT, 'TEST ORDER (subscription test with real data), please ignore.' ) );
+	}
+
+	/**
+	 * Also write the marker into the customer note of test orders.
+	 */
+	public static function test_marker_in_note(): bool {
+		return 'no' !== get_option( self::TEST_MARKER_NOTE, 'yes' );
 	}
 
 	/**
