@@ -8,6 +8,7 @@
 namespace TasgAbo\Frontend;
 
 use TasgAbo\Pricing;
+use TasgAbo\Settings;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -40,6 +41,10 @@ final class ProductToggle {
 			echo '<option value="' . esc_attr( (string) $weeks ) . '">' . esc_html( $label ) . '</option>';
 		}
 		echo '</select></label>';
+		if ( Settings::admin_only() ) {
+			echo '<p class="tasg-abo-note"><strong>' . esc_html__( 'Test phase: only shop managers can see this option.', 'tasg-abo' ) . '</strong></p>';
+		}
+
 		echo '<p class="tasg-abo-note">' . esc_html__( 'A subscription is for one piece. Cancel, skip or pause any time.', 'tasg-abo' ) . '</p>';
 		echo '</div>';
 	}
