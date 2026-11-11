@@ -22,6 +22,7 @@ final class EmailDesigner {
 	public function register(): void {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'admin_post_tasg_abo_save_email', array( $this, 'handle_save' ) );
+		add_action( 'admin_post_tasg_abo_test_email', array( $this, 'handle_test' ) );
 	}
 
 	public function add_menu(): void {
@@ -88,6 +89,64 @@ final class EmailDesigner {
 		exit;
 	}
 
+	/**
+	 * Send the email with sample data to the logged in admin.
+	 */
+	public function handle_test(): void {
+		check_admin_referer( 'tasg_abo_test_email' );
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( esc_html__( 'Not allowed.', 'tasg-abo' ) );
+		}
+
+		$emails = $this->emails();
+		$email  = isset( $_POST['email'] ) ? sanitize_key( wp_unslash( $_POST['email'] ) ) : '';
+		$lang   = isset( $_POST['lang'] ) ? sanitize_key( wp_unslash( $_POST['lang'] ) ) : '';
+		$user   = wp_get_current_user();
+		$sent   = false;
+
+		if ( isset( $emails[ $email ] ) && isset( EmailTexts::languages()[ $lang ] ) ) {
+			$products = wc_get_products(
+				array(
+					'limit'      => 1,
+					'return'     => 'ids',
+					'meta_key'   => '_tasg_abo_enabled', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+					'meta_value' => 'yes', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+				)
+			);
+			$products = $products ? $products : wc_get_products( array( 'limit' => 1, 'return' => 'ids' ) );
+
+			$sample = (object) array(
+				'id'               => 0,
+				'user_id'          => $user->ID,
+				'product_id'       => $products ? (int) $products[0] : 0,
+				'quantity'         => 1,
+				'interval_weeks'   => 4,
+				'status'           => 'active',
+				'next_payment'     => gmdate( 'Y-m-d H:i:s', time() + 3 * DAY_IN_SECONDS ),
+				'origin_order_id'  => 0,
+				'last_order_id'    => 0,
+				'language'         => 'default' === $lang ? '' : $lang,
+				'address_override' => wp_json_encode(
+					array(
+						'first_name' => 'Sample',
+						'last_name'  => 'Customer',
+						'address_1'  => 'Sample street 1',
+						'postcode'   => '12345',
+						'city'       => 'Sample city',
+						'country'    => (string) WC()->countries->get_base_country(),
+					)
+				),
+				'cancel_key'       => 'sample-link-does-nothing',
+			);
+
+			$sent = $emails[ $email ]->deliver( $sample, $user->user_email );
+		}
+
+		wp_safe_redirect( add_query_arg( 'test', $sent ? '1' : '0', $this->page_url( $email, $lang ) ) );
+		exit;
+	}
+
 	public function render(): void {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			return;
@@ -100,6 +159,7 @@ final class EmailDesigner {
 		$email_id = isset( $_GET['email'] ) ? sanitize_key( wp_unslash( $_GET['email'] ) ) : (string) key( $emails );
 		$lang     = isset( $_GET['lang'] ) ? sanitize_key( wp_unslash( $_GET['lang'] ) ) : (string) key( $languages );
 		$saved    = isset( $_GET['saved'] );
+		$test     = isset( $_GET['test'] ) ? sanitize_key( wp_unslash( $_GET['test'] ) ) : '';
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		if ( ! isset( $emails[ $email_id ] ) || ! isset( $languages[ $lang ] ) ) {
@@ -114,6 +174,12 @@ final class EmailDesigner {
 
 		if ( $saved ) {
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Saved.', 'tasg-abo' ) . '</p></div>';
+		}
+
+		if ( '1' === $test ) {
+			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Test email sent to your address.', 'tasg-abo' ) . '</p></div>';
+		} elseif ( '0' === $test ) {
+			echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'The test email could not be sent. Check your mail setup.', 'tasg-abo' ) . '</p></div>';
 		}
 
 		echo '<h2 class="nav-tab-wrapper">';
@@ -146,6 +212,14 @@ final class EmailDesigner {
 		echo '</td></tr></table>';
 
 		submit_button();
-		echo '</form></div>';
+		echo '</form>';
+
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+		wp_nonce_field( 'tasg_abo_test_email' );
+		echo '<input type="hidden" name="action" value="tasg_abo_test_email">';
+		echo '<input type="hidden" name="email" value="' . esc_attr( $email_id ) . '">';
+		echo '<input type="hidden" name="lang" value="' . esc_attr( $lang ) . '">';
+		echo '<p class="description">' . esc_html__( 'Sends the saved version with sample data to your own email address. Save first.', 'tasg-abo' ) . '</p>';
+		echo '<button class="button">' . esc_html__( 'Send test email to me', 'tasg-abo' ) . '</button></form></div>';
 	}
 }
