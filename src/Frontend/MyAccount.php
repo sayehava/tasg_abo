@@ -9,6 +9,7 @@
 
 namespace TasgAbo\Frontend;
 
+use TasgAbo\Subscriptions\Address;
 use TasgAbo\Subscriptions\Links;
 use TasgAbo\Subscriptions\Repository;
 
@@ -67,7 +68,7 @@ final class MyAccount {
 		}
 
 		echo '<table class="woocommerce-orders-table shop_table shop_table_responsive"><thead><tr>';
-		foreach ( array( __( 'Product', 'tasg-abo' ), __( 'Every', 'tasg-abo' ), __( 'Status', 'tasg-abo' ), __( 'Next order', 'tasg-abo' ), '' ) as $head ) {
+		foreach ( array( __( 'Product', 'tasg-abo' ), __( 'Every', 'tasg-abo' ), __( 'Status', 'tasg-abo' ), __( 'Next order', 'tasg-abo' ), __( 'Ships to', 'tasg-abo' ), '' ) as $head ) {
 			echo '<th>' . esc_html( $head ) . '</th>';
 		}
 		echo '</tr></thead><tbody>';
@@ -84,7 +85,10 @@ final class MyAccount {
 			echo '<tr><td>' . esc_html( ( $product ? $product->get_name() : '' ) . ' x ' . (int) $row->quantity ) . '</td>';
 			echo '<td>' . esc_html( \TasgAbo\Plans\Period::row_label( $row ) ) . '</td>';
 			echo '<td>' . esc_html( $names[ $row->status ] ?? $row->status ) . '</td>';
-			echo '<td>' . ( 'cancelled' === $row->status ? '' : esc_html( wp_date( get_option( 'date_format' ), strtotime( $row->next_payment . ' UTC' ) ) ) ) . '</td><td>';
+			echo '<td>' . ( 'cancelled' === $row->status ? '' : esc_html( wp_date( get_option( 'date_format' ), strtotime( $row->next_payment . ' UTC' ) ) ) ) . '</td>';
+
+			// The address the next order will use, from the last order or a correction.
+			echo '<td>' . ( 'cancelled' === $row->status ? '' : nl2br( esc_html( Address::formatted( Address::shipping( $row ) ) ) ) ) . '</td><td>';
 
 			// Buttons are built from escaped parts in link().
 			if ( 'active' === $row->status ) {
@@ -94,6 +98,7 @@ final class MyAccount {
 				echo $this->link( $row, 'continue', __( 'Continue', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 			if ( in_array( $row->status, array( 'active', 'paused' ), true ) ) {
+				echo $this->link( $row, 'address', __( 'Change address', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo $this->link( $row, 'cancel', __( 'Cancel', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 
