@@ -10,6 +10,9 @@
 
 namespace TasgAbo\Checkout;
 
+use TasgAbo\Gateways\PayPalCharger;
+use TasgAbo\Settings;
+
 defined( 'ABSPATH' ) || exit;
 
 final class CheckoutRules {
@@ -53,14 +56,15 @@ final class CheckoutRules {
 
 	/**
 	 * Only gateways that can be charged again later are offered.
-	 * PayPal joins this list once its renewal charge exists.
+	 * PayPal is added when it is switched on in the settings.
 	 */
 	public function limit_gateways( $gateways ) {
 		if ( ! is_array( $gateways ) || ! self::cart_has_subscription() ) {
 			return $gateways;
 		}
 
-		$allowed = (array) apply_filters( 'tasg_abo_supported_gateway_prefixes', array( 'stripe' ) );
+		$prefixes = Settings::paypal_enabled() ? array_merge( array( 'stripe' ), PayPalCharger::GATEWAY_IDS ) : array( 'stripe' );
+		$allowed  = (array) apply_filters( 'tasg_abo_supported_gateway_prefixes', $prefixes );
 
 		foreach ( array_keys( $gateways ) as $id ) {
 			$ok = false;
