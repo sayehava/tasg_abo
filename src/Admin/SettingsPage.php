@@ -47,6 +47,8 @@ final class SettingsPage {
 		}
 
 		register_setting( self::SLUG, Settings::EMAIL_DESIGNER, array( 'sanitize_callback' => array( $this, 'sanitize_designer' ) ) );
+		register_setting( self::SLUG, Settings::TEST_MARKER_TEXT, array( 'sanitize_callback' => 'sanitize_text_field' ) );
+		register_setting( self::SLUG, Settings::TEST_MARKER_NOTE, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 		register_setting( self::SLUG, Settings::CARD_NOTICE, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 		register_setting( self::SLUG, Settings::CARD_NOTICE_DAYS, array( 'sanitize_callback' => array( $this, 'sanitize_notice_days' ) ) );
 		register_setting( self::SLUG, Settings::ADMIN_ONLY, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
@@ -118,6 +120,12 @@ final class SettingsPage {
 		}
 		echo '</select><p class="description">' . esc_html( Settings::yaymail_installed() ? __( 'YayMail was found on this site.', 'tasg-abo' ) : __( 'YayMail was not found on this site, so the plugin editor is used.', 'tasg-abo' ) ) . ' ';
 		echo esc_html__( 'Design the subscription emails in YayMail (YayMail > Email templates) or in the plugin editor (WooCommerce > Subscription emails).', 'tasg-abo' ) . '</p></td></tr>';
+
+		echo '<tr><th scope="row"><label for="tasg_marker">' . esc_html__( 'Test order marker', 'tasg-abo' ) . '</label></th><td>';
+		echo '<input id="tasg_marker" class="large-text" name="' . esc_attr( Settings::TEST_MARKER_TEXT ) . '" value="' . esc_attr( Settings::test_marker_text() ) . '"><br>';
+		echo '<input type="hidden" name="' . esc_attr( Settings::TEST_MARKER_NOTE ) . '" value="no">';
+		echo '<label><input type="checkbox" name="' . esc_attr( Settings::TEST_MARKER_NOTE ) . '" value="yes"' . checked( Settings::test_marker_in_note(), true, false ) . '> ' . esc_html__( 'Also add this text to the customer note of test orders', 'tasg-abo' ) . '</label>';
+		echo '<p class="description">' . esc_html__( 'Orders from a subscription made during the test phase or from a test plan are marked: order meta _tasg_abo_test = yes, a private order note and, if ticked, this text in the customer note, so an invoice that prints the note shows it.', 'tasg-abo' ) . '</p></td></tr>';
 
 		echo '<tr><th scope="row">' . esc_html__( 'Expiring card warning', 'tasg-abo' ) . '</th><td>';
 		echo '<input type="hidden" name="' . esc_attr( Settings::CARD_NOTICE ) . '" value="no">';
