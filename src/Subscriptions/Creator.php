@@ -7,6 +7,8 @@
 
 namespace TasgAbo\Subscriptions;
 
+use TasgAbo\Plans\Period;
+
 defined( 'ABSPATH' ) || exit;
 
 final class Creator {
@@ -41,20 +43,28 @@ final class Creator {
 		}
 
 		foreach ( $order->get_items() as $item ) {
-			$weeks = (int) $item->get_meta( '_tasg_abo_interval' );
+			// Copy of the plan as it was when the customer ordered.
+			$plan = json_decode( (string) $item->get_meta( '_tasg_abo_plan' ), true );
 
-			if ( $weeks < 1 || $user_id < 1 ) {
+			if ( ! is_array( $plan ) || (int) ( $plan['value'] ?? 0 ) < 1 || $user_id < 1 ) {
 				continue;
 			}
+
+			$value = (int) $plan['value'];
+			$unit  = in_array( $plan['unit'] ?? '', Period::UNITS, true ) ? $plan['unit'] : 'week';
 
 			$this->repository->insert(
 				array(
 					'user_id'          => $user_id,
 					'product_id'       => (int) $item->get_product_id(),
 					'quantity'         => (int) $item->get_quantity(),
-					'interval_weeks'   => $weeks,
+					'plan_id'          => (int) ( $plan['id'] ?? 0 ),
+					'plan_name'        => (string) ( $plan['name'] ?? '' ),
+					'period_value'     => $value,
+					'period_unit'      => $unit,
+					'reminder_minutes' => max( 1, (int) ( $plan['reminder_minutes'] ?? 2880 ) ),
 					'status'           => 'active',
-					'next_payment'     => gmdate( 'Y-m-d H:i:s', time() + $weeks * WEEK_IN_SECONDS ),
+					'next_payment'     => gmdate( 'Y-m-d H:i:s', Period::add( time(), $value, $unit ) ),
 					'origin_order_id'  => $order->get_id(),
 					'gateway'          => (string) $order->get_payment_method(),
 					'last_order_id'    => $order->get_id(),
