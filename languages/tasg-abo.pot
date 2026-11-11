@@ -16,6 +16,10 @@ msgid "Not allowed."
 msgstr ""
 
 #: src/Admin/EmailDesigner.php
+msgid "The subscription emails are designed in YayMail (YayMail > Email templates, source \"Tasg Abo\"). To use the plugin editor instead, change \"Email design\" in WooCommerce > Subscription settings."
+msgstr ""
+
+#: src/Admin/EmailDesigner.php
 msgid "Saved."
 msgstr ""
 
@@ -293,6 +297,34 @@ msgstr ""
 
 #: src/Admin/SettingsPage.php
 msgid "See the past orders of the subscription"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Automatic: YayMail if it is installed, otherwise the plugin editor"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "YayMail"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "The plugin editor"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Email design"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "YayMail was found on this site."
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "YayMail was not found on this site, so the plugin editor is used."
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Design the subscription emails in YayMail (YayMail > Email templates) or in the plugin editor (WooCommerce > Subscription emails)."
 msgstr ""
 
 #: src/Admin/SettingsPage.php
