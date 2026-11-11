@@ -12,6 +12,7 @@ Subscriptions for WooCommerce simple products, charged through the saved Stripe 
 
 Customers tick "Subscribe and save" on a product page and choose an interval. The plugin then creates a standard WooCommerce order on schedule and charges the saved Stripe payment method until the customer cancels.
 
+* WPML: the subscribe settings are copied to product translations (wpml-config.xml), plan names can be translated in WPML > String Translation (context "Tasg Abo"), the customer's language is taken at checkout and emails are sent in that language, with texts per language in the email editor.
 * Plans: define periods (minutes up to months) under WooCommerce > Subscription plans, each with its own reminder time. Mark short test plans as visible to shop managers only.
 * Per product: enable, choose one or more plans, percent or fixed subscriber discount, with an optional discount per plan.
 * A reminder email goes out before every charge, as long before as the plan says. Nothing is charged without it. It contains links to skip, pause or cancel without logging in.
