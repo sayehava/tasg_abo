@@ -11,6 +11,7 @@
 
 namespace TasgAbo\Subscriptions;
 
+use TasgAbo\Log;
 use TasgAbo\Settings;
 
 defined( 'ABSPATH' ) || exit;
@@ -37,6 +38,7 @@ final class PauseHandler {
 		$sent = (int) $row->pause_reminders;
 
 		if ( $sent >= Settings::PAUSE_MAX_REMINDERS ) {
+			Log::info( sprintf( 'Subscription #%d: cancelled after %d unanswered pause reminders.', (int) $row->id, $sent ) );
 			( new Actions( $this->repository ) )->cancel( $row );
 			return;
 		}
@@ -44,7 +46,8 @@ final class PauseHandler {
 		$emails = WC()->mailer()->get_emails();
 
 		if ( isset( $emails['tasg_abo_pause_reminder'] ) ) {
-			$emails['tasg_abo_pause_reminder']->trigger( (int) $row->id );
+			$ok = $emails['tasg_abo_pause_reminder']->trigger( (int) $row->id );
+			Log::info( sprintf( 'Subscription #%d: pause reminder %d %s.', (int) $row->id, $sent + 1, $ok ? 'sent' : 'NOT sent' ) );
 		}
 
 		// Counted even if the mail failed, so a paused subscription cannot wait forever.
