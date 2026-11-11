@@ -7,6 +7,7 @@
 
 namespace TasgAbo\Admin;
 
+use TasgAbo\Gateways\StripeMethods;
 use TasgAbo\Settings;
 
 defined( 'ABSPATH' ) || exit;
@@ -42,11 +43,20 @@ final class SettingsPage {
 		register_setting( self::SLUG, Settings::CARD_NOTICE, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 		register_setting( self::SLUG, Settings::CARD_NOTICE_DAYS, array( 'sanitize_callback' => array( $this, 'sanitize_notice_days' ) ) );
 		register_setting( self::SLUG, Settings::ADMIN_ONLY, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
+		register_setting( self::SLUG, Settings::STRIPE_ENABLED, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
+		register_setting( self::SLUG, Settings::STRIPE_METHODS, array( 'sanitize_callback' => array( $this, 'sanitize_methods' ) ) );
 		register_setting( self::SLUG, Settings::PAYPAL_ENABLED, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 	}
 
 	public function sanitize_yes_no( $value ): string {
 		return 'yes' === $value ? 'yes' : 'no';
+	}
+
+	/**
+	 * @return string[] Stripe method types, without empty entries.
+	 */
+	public function sanitize_methods( $value ): array {
+		return array_values( array_filter( array_map( 'sanitize_key', (array) $value ) ) );
 	}
 
 	public function sanitize_cart_conflict( $value ): string {
@@ -151,10 +161,36 @@ final class SettingsPage {
 		}
 		echo '<p class="description">' . esc_html__( 'Cancelling is always possible for customers (contracts concluded online in Germany need an easy way to cancel). Continuing after a pause is always possible too.', 'tasg-abo' ) . '</p></td></tr>';
 
+		echo '<tr><th scope="row">' . esc_html__( 'Stripe for subscriptions', 'tasg-abo' ) . '</th><td>';
+		echo '<input type="hidden" name="' . esc_attr( Settings::STRIPE_ENABLED ) . '" value="no">';
+		echo '<label><input type="checkbox" name="' . esc_attr( Settings::STRIPE_ENABLED ) . '" value="yes"' . checked( Settings::stripe_enabled(), true, false ) . '> ' . esc_html__( 'Offer Stripe for subscriptions', 'tasg-abo' ) . '</label>';
+
+		$selectable = StripeMethods::selectable();
+
+		if ( $selectable ) {
+			$allowed = StripeMethods::allowed();
+
+			echo '<p style="margin:10px 0 4px"><strong>' . esc_html__( 'Methods offered for subscriptions', 'tasg-abo' ) . '</strong></p>';
+			echo '<input type="hidden" name="' . esc_attr( Settings::STRIPE_METHODS ) . '[]" value="">';
+			foreach ( $selectable as $id => $label ) {
+				echo '<label style="display:block"><input type="checkbox" name="' . esc_attr( Settings::STRIPE_METHODS ) . '[]" value="' . esc_attr( $id ) . '"' . checked( in_array( $id, $allowed, true ), true, false ) . '> ' . esc_html( $label ) . '</label>';
+			}
+
+			$others = StripeMethods::not_reusable();
+			if ( $others ) {
+				echo '<p class="description">' . esc_html__( 'Active in Stripe but not offered for subscriptions, because they cannot be charged again later:', 'tasg-abo' ) . ' ' . esc_html( implode( ', ', $others ) ) . '</p>';
+			}
+		} else {
+			echo '<p class="description">' . esc_html__( 'No active Stripe payment methods were found.', 'tasg-abo' ) . '</p>';
+		}
+
+		echo '<p class="description">' . esc_html__( 'Only methods that are switched on in your Stripe settings and that can be charged again later are listed. Apple Pay and Google Pay come with Card. Link cannot be switched off here. SEPA direct debit appears only if you activated it in Stripe.', 'tasg-abo' ) . '</p></td></tr>';
+
 		echo '<tr><th scope="row">' . esc_html__( 'PayPal (experimental)', 'tasg-abo' ) . '</th><td>';
 		echo '<input type="hidden" name="' . esc_attr( Settings::PAYPAL_ENABLED ) . '" value="no">';
 		echo '<label><input type="checkbox" name="' . esc_attr( Settings::PAYPAL_ENABLED ) . '" value="yes"' . checked( Settings::paypal_enabled(), true, false ) . '> ' . esc_html__( 'Offer PayPal for subscriptions', 'tasg-abo' ) . '</label>';
-		echo '<p class="description">' . esc_html__( 'Needs the WooCommerce PayPal Payments plugin with saving of PayPal payment methods enabled, and the customer must save the method at checkout. Without a saved method the subscription is not created. Try it with a test purchase first.', 'tasg-abo' ) . '</p></td></tr>';
+		echo '<p class="description">' . esc_html__( 'Needs the WooCommerce PayPal Payments plugin with saving of PayPal payment methods enabled, and the customer must save the method at checkout. Without a saved method the subscription is not created. Try it with a test purchase first.', 'tasg-abo' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'PayPal also needs the feature "Save PayPal and Venmo" on your PayPal account: WooCommerce > Settings > Payments > PayPal > Overview > Features > Sign up. Without it PayPal cannot be charged again.', 'tasg-abo' ) . '</p></td></tr>';
 
 		echo '</table>';
 		submit_button();
