@@ -1,0 +1,13 @@
+<wpml-config>
+	<!--
+		Tells WPML to copy the subscription settings of a product to its translations,
+		so the subscribe box also shows on the German, English and other versions.
+	-->
+	<custom-fields>
+		<custom-field action="copy">_tasg_abo_enabled</custom-field>
+		<custom-field action="copy">_tasg_abo_plans</custom-field>
+		<custom-field action="copy">_tasg_abo_default_plan</custom-field>
+		<custom-field action="copy">_tasg_abo_discount_type</custom-field>
+		<custom-field action="copy">_tasg_abo_discount_value</custom-field>
+	</custom-fields>
+</wpml-config>
