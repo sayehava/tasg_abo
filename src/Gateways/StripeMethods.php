@@ -23,6 +23,18 @@ final class StripeMethods {
 	private const FALLBACK_REUSABLE = array( 'card', 'link', 'klarna', 'amazon_pay', 'sepa_debit', 'bacs_debit', 'au_becs_debit', 'us_bank_account', 'acss_debit', 'cashapp', 'sofort' );
 
 	/**
+	 * Wallets are cards on a phone or in a browser. They work as part of Card, so they are
+	 * neither listed as a choice nor reported as unusable.
+	 */
+	private const WALLETS = array( 'apple_pay', 'google_pay' );
+
+	/**
+	 * Methods that are allowed for subscriptions until the owner chooses otherwise: the ones
+	 * whose renewal is confirmed by Stripe's documentation. Klarna and Amazon Pay must be ticked on purpose.
+	 */
+	private const DEFAULT_ALLOWED = array( 'card', 'link' );
+
+	/**
 	 * Types Stripe's payment form cannot exclude (the form would fail), so they cannot be limited per cart.
 	 */
 	private const FALLBACK_NON_EXCLUDABLE = array( 'apple_pay', 'google_pay', 'link', 'cartes_bancaires', 'jcb' );
@@ -103,12 +115,21 @@ final class StripeMethods {
 		$list = array();
 
 		foreach ( self::enabled() as $id ) {
-			if ( self::is_reusable( $id ) ) {
+			if ( ! in_array( $id, self::WALLETS, true ) && self::is_reusable( $id ) ) {
 				$list[ $id ] = self::label( $id );
 			}
 		}
 
 		return $list;
+	}
+
+	/**
+	 * Wallets that are active in Stripe: apple_pay, google_pay.
+	 *
+	 * @return string[]
+	 */
+	public static function wallets(): array {
+		return array_values( array_intersect( self::enabled(), self::WALLETS ) );
 	}
 
 	/**
@@ -120,7 +141,7 @@ final class StripeMethods {
 		$list = array();
 
 		foreach ( self::enabled() as $id ) {
-			if ( ! self::is_reusable( $id ) ) {
+			if ( ! in_array( $id, self::WALLETS, true ) && ! self::is_reusable( $id ) ) {
 				$list[ $id ] = self::label( $id );
 			}
 		}
@@ -129,7 +150,7 @@ final class StripeMethods {
 	}
 
 	/**
-	 * Types the owner allows for subscriptions. Never saved yet means all selectable ones.
+	 * Types the owner allows for subscriptions. Never saved yet means the confirmed ones (card, link).
 	 *
 	 * @return string[]
 	 */
@@ -138,7 +159,7 @@ final class StripeMethods {
 		$saved      = get_option( Settings::STRIPE_METHODS, null );
 
 		if ( ! is_array( $saved ) ) {
-			return $selectable;
+			return array_values( array_intersect( $selectable, self::DEFAULT_ALLOWED ) );
 		}
 
 		return array_values( array_intersect( $selectable, array_map( 'strval', $saved ) ) );
