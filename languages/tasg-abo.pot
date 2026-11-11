@@ -400,6 +400,30 @@ msgid "Cancelling is always possible for customers (contracts concluded online i
 msgstr ""
 
 #: src/Admin/SettingsPage.php
+msgid "Stripe for subscriptions"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Offer Stripe for subscriptions"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Methods offered for subscriptions"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Active in Stripe but not offered for subscriptions, because they cannot be charged again later:"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "No active Stripe payment methods were found."
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Only methods that are switched on in your Stripe settings and that can be charged again later are listed. Apple Pay and Google Pay come with Card. Link cannot be switched off here. SEPA direct debit appears only if you activated it in Stripe."
+msgstr ""
+
+#: src/Admin/SettingsPage.php
 msgid "PayPal (experimental)"
 msgstr ""
 
@@ -409,6 +433,10 @@ msgstr ""
 
 #: src/Admin/SettingsPage.php
 msgid "Needs the WooCommerce PayPal Payments plugin with saving of PayPal payment methods enabled, and the customer must save the method at checkout. Without a saved method the subscription is not created. Try it with a test purchase first."
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "PayPal also needs the feature \"Save PayPal and Venmo\" on your PayPal account: WooCommerce > Settings > Payments > PayPal > Overview > Features > Sign up. Without it PayPal cannot be charged again."
 msgstr ""
 
 #: src/Admin/SubscriptionsPage.php
