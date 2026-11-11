@@ -300,6 +300,10 @@ msgid "Free shipping until (empty = no end)"
 msgstr ""
 
 #: src/Admin/SubscriptionsPage.php
+msgid "The reminder email is switched off. No subscription will be charged until you switch it on under WooCommerce > Settings > Emails."
+msgstr ""
+
+#: src/Admin/SubscriptionsPage.php
 msgid "Shipping for all active subscriptions"
 msgstr ""
 
