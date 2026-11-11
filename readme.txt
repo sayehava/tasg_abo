@@ -12,8 +12,9 @@ Subscriptions for WooCommerce simple products, charged through the saved Stripe 
 
 Customers tick "Subscribe and save" on a product page and choose an interval. The plugin then creates a standard WooCommerce order on schedule and charges the saved Stripe payment method until the customer cancels.
 
-* Per product: enable, intervals in weeks, percent or fixed subscriber discount.
-* A reminder email goes out before every charge (at least 48 hours). It contains links to skip, pause or cancel without logging in.
+* Plans: define periods (minutes up to months) under WooCommerce > Subscription plans, each with its own reminder time. Mark short test plans as visible to shop managers only.
+* Per product: enable, choose one or more plans, percent or fixed subscriber discount, with an optional discount per plan.
+* A reminder email goes out before every charge, as long before as the plan says. Nothing is charged without it. It contains links to skip, pause or cancel without logging in.
 * Pause covers the next order. Afterwards the customer is asked up to three times to continue or cancel, then the subscription is cancelled.
 * Renewal orders are normal WooCommerce orders. The status after payment is chosen in the settings, so invoice and shipping automations keep working.
 * If a payment fails, no order is kept and the subscription is cancelled. The customer is informed.
@@ -29,7 +30,8 @@ Customers tick "Subscribe and save" on a product page and choose an interval. Th
 1. Upload the plugin folder to wp-content/plugins and activate it.
 2. Make sure WooCommerce and the WooCommerce Stripe Gateway are active and Stripe is configured. For PayPal also install WooCommerce PayPal Payments with saving of payment methods enabled, then switch PayPal on in the subscription settings.
 3. Open WooCommerce > Subscription settings and choose the renewal order status.
-4. Edit a product and enable the subscription fields on the General tab.
+4. Create your plans under WooCommerce > Subscription plans.
+5. Edit a product and enable the subscription fields on the General tab, then tick the plans it offers.
 
 == Changelog ==
 
