@@ -46,12 +46,18 @@ final class SettingsPage {
 			register_setting( self::SLUG, $definition[0], array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 		}
 
+		register_setting( self::SLUG, Settings::CARD_NOTICE, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
+		register_setting( self::SLUG, Settings::CARD_NOTICE_DAYS, array( 'sanitize_callback' => array( $this, 'sanitize_notice_days' ) ) );
 		register_setting( self::SLUG, Settings::ADMIN_ONLY, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 		register_setting( self::SLUG, Settings::PAYPAL_ENABLED, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 	}
 
 	public function sanitize_yes_no( $value ): string {
 		return 'yes' === $value ? 'yes' : 'no';
+	}
+
+	public function sanitize_notice_days( $value ): int {
+		return max( 2, (int) $value );
 	}
 
 	public function sanitize_days( $value ): int {
@@ -93,6 +99,12 @@ final class SettingsPage {
 			'payment' => __( 'Change the payment method (Stripe)', 'tasg-abo' ),
 			'orders'  => __( 'See the past orders of the subscription', 'tasg-abo' ),
 		);
+
+		echo '<tr><th scope="row">' . esc_html__( 'Expiring card warning', 'tasg-abo' ) . '</th><td>';
+		echo '<input type="hidden" name="' . esc_attr( Settings::CARD_NOTICE ) . '" value="no">';
+		echo '<label><input type="checkbox" name="' . esc_attr( Settings::CARD_NOTICE ) . '" value="yes"' . checked( Settings::card_notice(), true, false ) . '> ' . esc_html__( 'Email customers whose saved card expires before the next order', 'tasg-abo' ) . '</label><br>';
+		echo '<label>' . esc_html__( 'Check this many days before the order:', 'tasg-abo' ) . ' <input type="number" min="2" style="width:5em" name="' . esc_attr( Settings::CARD_NOTICE_DAYS ) . '" value="' . esc_attr( (string) Settings::card_notice_days() ) . '"></label>';
+		echo '<p class="description">' . esc_html__( 'Only for Stripe cards, and only while customers may change their payment method (see below), because the email links to that page.', 'tasg-abo' ) . '</p></td></tr>';
 
 		echo '<tr><th scope="row">' . esc_html__( 'What customers may do', 'tasg-abo' ) . '</th><td>';
 		foreach ( $choices as $action => $label ) {
