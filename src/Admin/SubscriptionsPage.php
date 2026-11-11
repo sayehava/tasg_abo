@@ -99,7 +99,7 @@ final class SubscriptionsPage {
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 		wp_nonce_field( 'tasg_abo_shipping' );
 		echo '<input type="hidden" name="action" value="tasg_abo_shipping"><input type="hidden" name="id" value="' . esc_attr( $id ) . '">';
-		echo '<select name="mode"><option value="copy"' . selected( $mode, 'copy', false ) . '>' . esc_html__( 'Copy from first order', 'tasg-abo' ) . '</option>';
+		echo '<select name="mode"><option value="copy"' . selected( $mode, 'copy', false ) . '>' . esc_html__( 'Copy from last order', 'tasg-abo' ) . '</option>';
 		echo '<option value="free"' . selected( $mode, 'free', false ) . '>' . esc_html__( 'Free shipping', 'tasg-abo' ) . '</option></select> ';
 		echo '<input type="date" name="until" value="' . esc_attr( $until ) . '" title="' . esc_attr__( 'Free shipping until (empty = no end)', 'tasg-abo' ) . '"> ';
 		echo '<button class="button button-small">' . esc_html( $label ) . '</button></form>';
