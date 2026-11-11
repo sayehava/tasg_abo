@@ -19,6 +19,7 @@ Customers tick "Subscribe and save" on a product page and choose an interval. Th
 * Renewal orders are normal WooCommerce orders. The status after payment is chosen in the settings, so invoice and shipping automations keep working.
 * If a payment fails, no order is kept and the subscription is cancelled. The customer is informed.
 * Address, shipping method and cost follow the last order of the subscription: the first renewal copies the first order, the second copies the first renewal, and so on. Free shipping can be granted per subscription or for all active subscriptions, with an optional end date.
+* Customers manage their subscriptions under My Account > Subscriptions: see plan, next order and address, skip, pause, continue, change the address and cancel.
 * The reminder email shows the address of the next order and a link to correct it before the order is placed.
 * A subscription must be ordered on its own, for one piece: no other product can be in the cart.
 * No card data is stored by the plugin. Payment references stay with the payment plugin on the orders.
