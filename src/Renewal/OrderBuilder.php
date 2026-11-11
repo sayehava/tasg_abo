@@ -48,7 +48,7 @@ final class OrderBuilder {
 			$product,
 			array(
 				'qty'   => $qty,
-				'price' => Pricing::subscriber_price( $product ),
+				'price' => Pricing::subscriber_price( $product, (int) $sub->plan_id ),
 			)
 		);
 
