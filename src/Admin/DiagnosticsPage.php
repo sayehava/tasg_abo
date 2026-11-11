@@ -1,6 +1,6 @@
 <?php
 /**
- * WooCommerce > Subscription diagnostics: a read-only overview for support and testing.
+ * WooCommerce > Settings > Subscriptions > Diagnostics: a read-only overview for support and testing.
  *
  * Shows versions, the plugin state, subscription counts, the next due subscriptions,
  * the state of the background jobs and the latest plugin log lines. It shows no card
@@ -23,16 +23,9 @@ defined( 'ABSPATH' ) || exit;
 
 final class DiagnosticsPage {
 
-	private const SLUG = 'tasg-abo-diagnostics';
-
 	public function register(): void {
-		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'admin_post_tasg_abo_run_check', array( $this, 'handle_run_check' ) );
 		add_action( 'admin_post_tasg_abo_download_log', array( $this, 'handle_download_log' ) );
-	}
-
-	public function add_menu(): void {
-		add_submenu_page( 'woocommerce', 'Subscription diagnostics', 'Subscription diagnostics', 'manage_woocommerce', self::SLUG, array( $this, 'render' ) );
 	}
 
 	public function handle_run_check(): void {
@@ -48,7 +41,7 @@ final class DiagnosticsPage {
 			\ActionScheduler_QueueRunner::instance()->run( 'Tasg Abo diagnostics' );
 		}
 
-		wp_safe_redirect( add_query_arg( 'ran', '1', admin_url( 'admin.php?page=' . self::SLUG ) ) );
+		wp_safe_redirect( add_query_arg( 'ran', '1', SettingsHub::url( 'diagnostics' ) ) );
 		exit;
 	}
 
@@ -73,7 +66,7 @@ final class DiagnosticsPage {
 
 		global $wpdb;
 
-		echo '<div class="wrap"><h1>Subscription diagnostics</h1>';
+		echo '<div class="tasg-abo-section">';
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_GET['ran'] ) ) {
@@ -242,7 +235,7 @@ final class DiagnosticsPage {
 	private function render_log(): void {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$problems = isset( $_GET['log'] ) && 'problems' === $_GET['log'];
-		$base     = admin_url( 'admin.php?page=' . self::SLUG );
+		$base     = SettingsHub::url( 'diagnostics' );
 		$lines    = $this->collect_log( 300, $problems );
 
 		echo '<h2>Plugin log</h2>';
