@@ -16,6 +16,10 @@ msgid "Not allowed."
 msgstr "Nicht erlaubt."
 
 #: src/Admin/EmailDesigner.php
+msgid "The subscription emails are designed in YayMail (YayMail > Email templates, source \"Tasg Abo\"). To use the plugin editor instead, change \"Email design\" in WooCommerce > Subscription settings."
+msgstr "Die Abo-E-Mails werden in YayMail gestaltet (YayMail > E-Mail-Vorlagen, Quelle \"Tasg Abo\"). Um stattdessen den Plugin-Editor zu verwenden, ändern Sie \"E-Mail-Gestaltung\" unter WooCommerce > Abo-Einstellungen."
+
+#: src/Admin/EmailDesigner.php
 msgid "Saved."
 msgstr "Gespeichert."
 
@@ -294,6 +298,34 @@ msgstr "Die Zahlungsmethode ändern (Stripe)"
 #: src/Admin/SettingsPage.php
 msgid "See the past orders of the subscription"
 msgstr "Die bisherigen Bestellungen des Abos sehen"
+
+#: src/Admin/SettingsPage.php
+msgid "Automatic: YayMail if it is installed, otherwise the plugin editor"
+msgstr "Automatisch: YayMail, falls installiert, sonst der Plugin-Editor"
+
+#: src/Admin/SettingsPage.php
+msgid "YayMail"
+msgstr "YayMail"
+
+#: src/Admin/SettingsPage.php
+msgid "The plugin editor"
+msgstr "Der Plugin-Editor"
+
+#: src/Admin/SettingsPage.php
+msgid "Email design"
+msgstr "E-Mail-Gestaltung"
+
+#: src/Admin/SettingsPage.php
+msgid "YayMail was found on this site."
+msgstr "YayMail wurde auf dieser Seite gefunden."
+
+#: src/Admin/SettingsPage.php
+msgid "YayMail was not found on this site, so the plugin editor is used."
+msgstr "YayMail wurde auf dieser Seite nicht gefunden, deshalb wird der Plugin-Editor verwendet."
+
+#: src/Admin/SettingsPage.php
+msgid "Design the subscription emails in YayMail (YayMail > Email templates) or in the plugin editor (WooCommerce > Subscription emails)."
+msgstr "Gestalten Sie die Abo-E-Mails in YayMail (YayMail > E-Mail-Vorlagen) oder im Plugin-Editor (WooCommerce > Abo-E-Mails)."
 
 #: src/Admin/SettingsPage.php
 msgid "Expiring card warning"
