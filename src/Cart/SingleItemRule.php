@@ -8,6 +8,7 @@
 namespace TasgAbo\Cart;
 
 use TasgAbo\Checkout\CheckoutRules;
+use TasgAbo\Settings;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -26,7 +27,7 @@ final class SingleItemRule {
 	 */
 	public function validate_add( $passed, $product_id, $quantity = 1 ) {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$adding_subscription = ! empty( $_POST['tasg_abo_subscribe'] );
+		$adding_subscription = ! empty( $_POST['tasg_abo_subscribe'] ) && Settings::visible_to_current_user();
 
 		if ( $passed && $adding_subscription && (int) $quantity !== 1 ) {
 			wc_add_notice( __( 'A subscription is always for one piece.', 'tasg-abo' ), 'error' );
