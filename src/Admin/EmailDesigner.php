@@ -1,6 +1,6 @@
 <?php
 /**
- * WooCommerce > Subscription emails: edit subject, heading and body of each
+ * WooCommerce > Settings > Subscriptions > Emails: edit subject, heading and body of each
  * subscription email, separately for every language. Logo, colours and footer
  * come from WooCommerce > Settings > Emails, so the look stays the same as
  * all other shop emails.
@@ -18,23 +18,9 @@ defined( 'ABSPATH' ) || exit;
 
 final class EmailDesigner {
 
-	private const SLUG = 'tasg-abo-emails';
-
 	public function register(): void {
-		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'admin_post_tasg_abo_save_email', array( $this, 'handle_save' ) );
 		add_action( 'admin_post_tasg_abo_test_email', array( $this, 'handle_test' ) );
-	}
-
-	public function add_menu(): void {
-		add_submenu_page(
-			'woocommerce',
-			__( 'Subscription emails', 'tasg-abo' ),
-			__( 'Subscription emails', 'tasg-abo' ),
-			'manage_woocommerce',
-			self::SLUG,
-			array( $this, 'render' )
-		);
 	}
 
 	/**
@@ -53,13 +39,12 @@ final class EmailDesigner {
 	}
 
 	private function page_url( string $email, string $lang ): string {
-		return add_query_arg(
+		return SettingsHub::url(
+			'emails',
 			array(
-				'page'  => self::SLUG,
 				'email' => $email,
 				'lang'  => $lang,
-			),
-			admin_url( 'admin.php' )
+			)
 		);
 	}
 
@@ -159,8 +144,8 @@ final class EmailDesigner {
 
 		// YayMail designs the emails: this editor stays out of the way.
 		if ( Settings::use_yaymail() ) {
-			echo '<div class="wrap"><h1>' . esc_html__( 'Subscription emails', 'tasg-abo' ) . '</h1>';
-			echo '<div class="notice notice-info inline"><p>' . esc_html__( 'The subscription emails are designed in YayMail (YayMail > Email templates, source "Tasg Abo"). To use the plugin editor instead, change "Email design" in WooCommerce > Subscription settings.', 'tasg-abo' ) . '</p></div></div>';
+			echo '<div class="tasg-abo-section">';
+			echo '<div class="notice notice-info inline"><p>' . esc_html__( 'The subscription emails are designed in YayMail (YayMail > Email templates, source "Tasg Abo"). To use the plugin editor instead, change "Email design" under WooCommerce > Settings > Subscriptions > Settings.', 'tasg-abo' ) . '</p></div></div>';
 			return;
 		}
 
@@ -182,7 +167,7 @@ final class EmailDesigner {
 		$texts = EmailTexts::get( $email_id, $lang );
 		$body  = '' !== $texts['body'] ? $texts['body'] : wpautop( esc_html( $email::default_body() ) );
 
-		echo '<div class="wrap"><h1>' . esc_html__( 'Subscription emails', 'tasg-abo' ) . '</h1>';
+		echo '<div class="tasg-abo-section">';
 
 		if ( $saved ) {
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Saved.', 'tasg-abo' ) . '</p></div>';
