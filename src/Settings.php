@@ -15,6 +15,8 @@ final class Settings {
 	public const PAUSE_REMINDER_DAYS = 'tasg_abo_pause_reminder_days';
 	public const PAYPAL_ENABLED      = 'tasg_abo_paypal_enabled';
 	public const ADMIN_ONLY          = 'tasg_abo_admin_only';
+	public const CARD_NOTICE         = 'tasg_abo_card_notice';
+	public const CARD_NOTICE_DAYS    = 'tasg_abo_card_notice_days';
 
 	/**
 	 * What customers may do themselves. Option name and default per action.
@@ -79,6 +81,20 @@ final class Settings {
 	 */
 	public static function paypal_enabled(): bool {
 		return 'yes' === get_option( self::PAYPAL_ENABLED, 'no' );
+	}
+
+	/**
+	 * Warn customers whose saved card expires before the next order.
+	 */
+	public static function card_notice(): bool {
+		return 'no' !== get_option( self::CARD_NOTICE, 'yes' );
+	}
+
+	/**
+	 * How many days before an order the card is checked.
+	 */
+	public static function card_notice_days(): int {
+		return max( 2, (int) get_option( self::CARD_NOTICE_DAYS, 14 ) );
 	}
 
 	public static function pause_reminder_days(): int {
