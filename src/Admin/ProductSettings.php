@@ -78,7 +78,7 @@ final class ProductSettings {
 		foreach ( $plans as $id => $plan ) {
 			// A product without a saved choice starts with the default plan ticked.
 			$checked  = isset( $offered[ $id ] ) || ( $is_new && $plan->default );
-			$override = $checked ? (string) $offered[ $id ] : '';
+			$override = isset( $offered[ $id ] ) ? (string) $offered[ $id ] : '';
 			$suffix   = $plan->test ? ' ' . __( '(test plan)', 'tasg-abo' ) : '';
 
 			echo '<p class="form-field"><label>' . esc_html( $plan->title() . $suffix ) . '</label>';
