@@ -68,6 +68,7 @@ final class Plugin {
 		( new Frontend\MyAccount() )->register();
 		( new Frontend\ProductToggle() )->register();
 		( new Cart\CartHandler() )->register();
+		( new Cart\SingleItemRule() )->register();
 
 		if ( is_admin() ) {
 			( new Admin\ProductSettings() )->register();
