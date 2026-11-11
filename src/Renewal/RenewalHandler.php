@@ -20,6 +20,7 @@ namespace TasgAbo\Renewal;
 
 use TasgAbo\Gateways\PayPalCharger;
 use TasgAbo\Gateways\StripeCharger;
+use TasgAbo\Log;
 use TasgAbo\Plans\Period;
 use TasgAbo\Settings;
 use TasgAbo\Subscriptions\Actions;
@@ -70,6 +71,8 @@ final class RenewalHandler {
 			return;
 		}
 
+		Log::info( sprintf( 'Subscription #%d: renewal started (due %s UTC, next %s UTC).', (int) $row->id, $row->next_payment, gmdate( 'Y-m-d H:i:s', $next ) ) );
+
 		$charger = null;
 		if ( $this->stripe->supports( (string) $row->gateway ) ) {
 			$charger = $this->stripe;
@@ -106,6 +109,8 @@ final class RenewalHandler {
 			$this->retry_later( $row, $order, $e->getMessage() );
 			return;
 		}
+
+		Log::info( sprintf( 'Subscription #%d: charge for order #%d returned "%s" (%s).', (int) $row->id, $order->get_id(), $result['status'], $result['id'] ) );
 
 		switch ( $result['status'] ) {
 			case 'succeeded':
@@ -182,15 +187,14 @@ final class RenewalHandler {
 				$order->update_status( $target, __( 'Status set by the subscription settings.', 'tasg-abo' ) );
 			}
 
+			Log::info( sprintf( 'Subscription #%d: order #%d completed with status "%s".', (int) $sub->id, $order->get_id(), $order->get_status() ) );
+
 			do_action( 'tasg_abo_renewal_completed', $order, $sub );
 		} catch ( \Throwable $e ) {
 			// The customer has paid. Never retry, only make the problem visible.
 			$this->link_order( $order, $sub );
 			$order->add_order_note( 'Payment taken, but a follow-up step failed: ' . $e->getMessage() );
-			wc_get_logger()->critical(
-				sprintf( 'Subscription #%d order #%d is paid but a follow-up step failed: %s', (int) $sub->id, $order->get_id(), $e->getMessage() ),
-				array( 'source' => 'tasg-abo' )
-			);
+			Log::critical( sprintf( 'Subscription #%d order #%d is paid but a follow-up step failed: %s', (int) $sub->id, $order->get_id(), $e->getMessage() ) );
 		}
 	}
 
@@ -202,6 +206,7 @@ final class RenewalHandler {
 		$order->save();
 		$this->link_order( $order, $sub );
 		$order->update_status( 'on-hold', __( 'Payment is still processing at the payment provider.', 'tasg-abo' ) );
+		Log::info( sprintf( 'Subscription #%d: order #%d is on hold, payment still processing.', (int) $sub->id, $order->get_id() ) );
 	}
 
 	/**
@@ -216,10 +221,7 @@ final class RenewalHandler {
 		$key   = 'tasg_abo_retry_' . (int) $sub->id;
 		$tries = (int) get_transient( $key ) + 1;
 
-		wc_get_logger()->warning(
-			sprintf( 'Subscription #%d renewal attempt %d failed: %s', (int) $sub->id, $tries, $message ),
-			array( 'source' => 'tasg-abo' )
-		);
+		Log::warning( sprintf( 'Subscription #%d renewal attempt %d failed: %s', (int) $sub->id, $tries, $message ) );
 
 		if ( $tries >= self::MAX_TEMPORARY_ERRORS ) {
 			$this->clear_retry( $sub );
@@ -248,10 +250,7 @@ final class RenewalHandler {
 			$order->delete( true );
 		}
 
-		wc_get_logger()->error(
-			sprintf( 'Subscription #%d could not be renewed: %s', (int) $sub->id, $message ),
-			array( 'source' => 'tasg-abo' )
-		);
+		Log::error( sprintf( 'Subscription #%d could not be renewed: %s', (int) $sub->id, $message ) );
 
 		( new Actions( $this->repository ) )->cancel( $sub );
 
