@@ -28,7 +28,15 @@ final class Actions {
 			return false;
 		}
 
-		$this->repository->update( (int) $sub->id, array( 'status' => 'cancelled' ) );
+		// A cancelled subscription keeps no corrected address and no payment method link.
+		$this->repository->update(
+			(int) $sub->id,
+			array(
+				'status'           => 'cancelled',
+				'address_override' => null,
+				'payment_token_id' => 0,
+			)
+		);
 		do_action( 'tasg_abo_subscription_cancelled', (int) $sub->id );
 
 		return true;
