@@ -1,6 +1,6 @@
 <?php
 /**
- * WooCommerce > Subscriptions: list, cancel/pause/continue and free shipping.
+ * WooCommerce > Settings > Subscriptions > Subscriptions: list, cancel/pause/continue and free shipping.
  *
  * @package TasgAbo
  */
@@ -15,27 +15,13 @@ defined( 'ABSPATH' ) || exit;
 
 final class SubscriptionsPage {
 
-	private const SLUG = 'tasg-abo-subscriptions';
-
 	public function register(): void {
-		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'admin_post_tasg_abo_change', array( $this, 'handle_change' ) );
 		add_action( 'admin_post_tasg_abo_shipping', array( $this, 'handle_shipping' ) );
 	}
 
-	public function add_menu(): void {
-		add_submenu_page(
-			'woocommerce',
-			__( 'Subscriptions', 'tasg-abo' ),
-			__( 'Subscriptions', 'tasg-abo' ),
-			'manage_woocommerce',
-			self::SLUG,
-			array( $this, 'render' )
-		);
-	}
-
 	private function back(): void {
-		wp_safe_redirect( admin_url( 'admin.php?page=' . self::SLUG ) );
+		wp_safe_redirect( SettingsHub::url( 'subscriptions' ) );
 		exit;
 	}
 
@@ -114,7 +100,7 @@ final class SubscriptionsPage {
 
 		$rows = (array) $wpdb->get_results( 'SELECT * FROM ' . Schema::table() . ' ORDER BY id DESC LIMIT 500' );
 
-		echo '<div class="wrap"><h1>' . esc_html__( 'Subscriptions', 'tasg-abo' ) . '</h1>';
+		echo '<div class="tasg-abo-section">';
 
 		$emails = WC()->mailer()->get_emails();
 		if ( isset( $emails['tasg_abo_reminder'] ) && ! $emails['tasg_abo_reminder']->is_enabled() ) {
