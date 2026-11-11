@@ -82,8 +82,7 @@ final class MyAccount {
 			$product = wc_get_product( (int) $row->product_id );
 
 			echo '<tr><td>' . esc_html( ( $product ? $product->get_name() : '' ) . ' x ' . (int) $row->quantity ) . '</td>';
-			/* translators: %d: number of weeks */
-			echo '<td>' . esc_html( sprintf( _n( '%d week', '%d weeks', (int) $row->interval_weeks, 'tasg-abo' ), (int) $row->interval_weeks ) ) . '</td>';
+			echo '<td>' . esc_html( \TasgAbo\Plans\Period::row_label( $row ) ) . '</td>';
 			echo '<td>' . esc_html( $names[ $row->status ] ?? $row->status ) . '</td>';
 			echo '<td>' . ( 'cancelled' === $row->status ? '' : esc_html( wp_date( get_option( 'date_format' ), strtotime( $row->next_payment . ' UTC' ) ) ) ) . '</td><td>';
 
