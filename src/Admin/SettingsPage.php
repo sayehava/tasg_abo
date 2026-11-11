@@ -33,14 +33,9 @@ final class SettingsPage {
 
 	public function register_settings(): void {
 		register_setting( self::SLUG, Settings::RENEWAL_STATUS, array( 'sanitize_callback' => 'sanitize_key' ) );
-		register_setting( self::SLUG, Settings::REMINDER_HOURS, array( 'sanitize_callback' => array( $this, 'sanitize_hours' ) ) );
 		register_setting( self::SLUG, Settings::PAUSE_REMINDER_DAYS, array( 'sanitize_callback' => array( $this, 'sanitize_days' ) ) );
 		register_setting( self::SLUG, Settings::ADMIN_ONLY, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 		register_setting( self::SLUG, Settings::PAYPAL_ENABLED, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
-	}
-
-	public function sanitize_hours( $value ): int {
-		return max( 48, (int) $value );
 	}
 
 	public function sanitize_yes_no( $value ): string {
@@ -73,10 +68,6 @@ final class SettingsPage {
 			echo '<option value="' . esc_attr( $slug ) . '"' . selected( Settings::renewal_status(), $slug, false ) . '>' . esc_html( $label ) . '</option>';
 		}
 		echo '</select><p class="description">' . esc_html__( 'Choose the status your invoice, delivery note and label automation reacts to.', 'tasg-abo' ) . '</p></td></tr>';
-
-		echo '<tr><th scope="row"><label for="tasg_hours">' . esc_html__( 'Reminder email, hours before the charge', 'tasg-abo' ) . '</label></th><td>';
-		echo '<input id="tasg_hours" type="number" min="48" name="' . esc_attr( Settings::REMINDER_HOURS ) . '" value="' . esc_attr( (string) Settings::reminder_hours() ) . '">';
-		echo '<p class="description">' . esc_html__( 'At least 48. Customers are never charged without this reminder.', 'tasg-abo' ) . '</p></td></tr>';
 
 		echo '<tr><th scope="row"><label for="tasg_days">' . esc_html__( 'Days between pause reminders', 'tasg-abo' ) . '</label></th><td>';
 		echo '<input id="tasg_days" type="number" min="1" name="' . esc_attr( Settings::PAUSE_REMINDER_DAYS ) . '" value="' . esc_attr( (string) Settings::pause_reminder_days() ) . '">';
