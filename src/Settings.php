@@ -16,6 +16,8 @@ final class Settings {
 	public const PAYPAL_ENABLED      = 'tasg_abo_paypal_enabled';
 	public const ADMIN_ONLY          = 'tasg_abo_admin_only';
 	public const EMAIL_DESIGNER      = 'tasg_abo_email_designer';
+	public const STRIPE_ENABLED      = 'tasg_abo_stripe_enabled';
+	public const STRIPE_METHODS      = 'tasg_abo_stripe_methods';
 	public const BOX_TEXT            = 'tasg_abo_box_text';
 	public const CART_CONFLICT       = 'tasg_abo_cart_conflict';
 	public const TEST_MARKER_TEXT    = 'tasg_abo_test_marker';
@@ -79,6 +81,13 @@ final class Settings {
 
 	public static function visible_to_current_user(): bool {
 		return ! self::admin_only() || current_user_can( 'manage_woocommerce' );
+	}
+
+	/**
+	 * Offer Stripe for subscriptions (on by default).
+	 */
+	public static function stripe_enabled(): bool {
+		return 'no' !== get_option( self::STRIPE_ENABLED, 'yes' );
 	}
 
 	/**
