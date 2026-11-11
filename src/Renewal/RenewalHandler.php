@@ -15,6 +15,7 @@
 
 namespace TasgAbo\Renewal;
 
+use TasgAbo\Gateways\PayPalCharger;
 use TasgAbo\Gateways\StripeCharger;
 use TasgAbo\Settings;
 use TasgAbo\Subscriptions\Actions;
@@ -28,12 +29,14 @@ final class RenewalHandler {
 
 	private $repository;
 	private $builder;
-	private $charger;
+	private $stripe;
+	private $paypal;
 
-	public function __construct( Repository $repository, OrderBuilder $builder, StripeCharger $charger ) {
+	public function __construct( Repository $repository, OrderBuilder $builder, StripeCharger $stripe, PayPalCharger $paypal ) {
 		$this->repository = $repository;
 		$this->builder    = $builder;
-		$this->charger    = $charger;
+		$this->stripe     = $stripe;
+		$this->paypal     = $paypal;
 	}
 
 	public function register(): void {
@@ -63,7 +66,14 @@ final class RenewalHandler {
 			return;
 		}
 
-		if ( ! $this->charger->supports( (string) $row->gateway ) ) {
+		$charger = null;
+		if ( $this->stripe->supports( (string) $row->gateway ) ) {
+			$charger = $this->stripe;
+		} elseif ( $this->paypal->supports( (string) $row->gateway ) ) {
+			$charger = $this->paypal;
+		}
+
+		if ( ! $charger ) {
 			$this->fail( $row, null, 'Payment gateway cannot be charged again: ' . $row->gateway );
 			return;
 		}
@@ -76,7 +86,7 @@ final class RenewalHandler {
 		}
 
 		$result = (float) $order->get_total() > 0
-			? $this->charger->charge( $order, $row, 'tasg-abo-' . (int) $row->id . '-' . md5( $row->next_payment ) )
+			? $charger->charge( $order, $row, 'tasg-abo-' . (int) $row->id . '-' . md5( $row->next_payment ) )
 			: array(
 				'status'  => 'succeeded',
 				'id'      => '',
@@ -105,6 +115,12 @@ final class RenewalHandler {
 
 	private function remember_payment( \WC_Order $order, object $sub, array $result ): void {
 		$order->set_transaction_id( '' !== $result['charge'] ? $result['charge'] : $result['id'] );
+
+		// The Stripe references only belong on orders paid through Stripe.
+		if ( 0 !== strpos( (string) $sub->gateway, 'stripe' ) ) {
+			return;
+		}
+
 		$order->update_meta_data( '_stripe_intent_id', $result['id'] );
 
 		// Hand the Stripe references on from the last order, so the chain continues.
@@ -139,7 +155,7 @@ final class RenewalHandler {
 	 */
 	private function hold( \WC_Order $order, object $sub, array $result ): void {
 		$this->remember_payment( $order, $sub, $result );
-		$order->update_status( 'on-hold', __( 'Payment is still processing at Stripe.', 'tasg-abo' ) );
+		$order->update_status( 'on-hold', __( 'Payment is still processing at the payment provider.', 'tasg-abo' ) );
 		$this->repository->update( (int) $sub->id, array( 'last_order_id' => $order->get_id() ) );
 	}
 
