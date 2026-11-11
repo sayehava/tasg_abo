@@ -60,7 +60,18 @@ abstract class SubscriptionEmail extends \WC_Email {
 			'{address_url}'      => '',
 			'{payment_url}'      => '',
 			'{plan_url}'         => '',
+			'{card_name}'        => '',
+			'{card_expiry}'      => '',
 		);
+	}
+
+	/**
+	 * Placeholders only one email needs. Overridden where required.
+	 *
+	 * @return array<string,string>
+	 */
+	protected function extra_placeholders( object $row ): array {
+		return array();
 	}
 
 	public function init_form_fields() {
@@ -69,7 +80,7 @@ abstract class SubscriptionEmail extends \WC_Email {
 		$this->form_fields['body'] = array(
 			'title'       => __( 'Email text', 'tasg-abo' ),
 			'type'        => 'textarea',
-			'description' => __( 'Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url}', 'tasg-abo' ),
+			'description' => __( 'Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url} {card_name} {card_expiry}', 'tasg-abo' ),
 			'default'     => static::default_body(),
 			'desc_tip'    => false,
 		);
@@ -124,6 +135,7 @@ abstract class SubscriptionEmail extends \WC_Email {
 			$this->placeholders['{address_url}']      = Links::url( $row, 'address' );
 			$this->placeholders['{payment_url}']      = Links::url( $row, 'payment' );
 			$this->placeholders['{plan_url}']         = Links::url( $row, 'plan' );
+			$this->placeholders                       = array_merge( $this->placeholders, $this->extra_placeholders( $row ) );
 
 			if ( ( '' !== $test_to || $this->is_enabled() ) && $this->get_recipient() ) {
 				$sent = (bool) $this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
