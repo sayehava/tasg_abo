@@ -200,7 +200,8 @@ final class LinkHandler {
 
 		foreach ( $plans as $id => $plan ) {
 			$price = html_entity_decode( wp_strip_all_tags( wc_price( Pricing::subscriber_price( $product, (int) $id ) ) ), ENT_QUOTES, 'UTF-8' );
-			$name  = '' !== $plan->name ? $plan->name . ' (' . $plan->period_label() . ')' : $plan->period_label();
+			$label = $plan->display_name();
+			$name  = '' !== $label ? $label . ' (' . $plan->period_label() . ')' : $plan->period_label();
 			$now   = (int) $sub->plan_id === (int) $id ? ' ' . __( '(current)', 'tasg-abo' ) : '';
 
 			$html .= '<p><label><input type="radio" name="plan" value="' . esc_attr( (string) $id ) . '"' . checked( (int) $sub->plan_id === (int) $id, true, false ) . '> ' . esc_html( $name . ': ' . $price . $now ) . '</label></p>';
