@@ -10,6 +10,7 @@
 
 namespace TasgAbo\Subscriptions;
 
+use TasgAbo\Log;
 use TasgAbo\Plans\Period;
 use TasgAbo\Plans\Plan;
 
@@ -37,6 +38,7 @@ final class Actions {
 				'payment_token_id' => 0,
 			)
 		);
+		Log::info( sprintf( 'Subscription #%d: cancelled.', (int) $sub->id ) );
 		do_action( 'tasg_abo_subscription_cancelled', (int) $sub->id );
 
 		return true;
@@ -145,6 +147,7 @@ final class Actions {
 		}
 
 		$this->repository->update( (int) $sub->id, $data );
+		Log::info( sprintf( 'Subscription #%d: plan changed to plan %d (next order %s UTC).', (int) $sub->id, $plan->id, $data['next_payment'] ?? 'unchanged' ) );
 
 		return true;
 	}
@@ -168,6 +171,7 @@ final class Actions {
 		}
 
 		$this->repository->update( (int) $sub->id, array( 'payment_token_id' => $token_id ) );
+		Log::info( sprintf( 'Subscription #%d: payment method choice changed.', (int) $sub->id ) );
 
 		return true;
 	}
@@ -177,13 +181,22 @@ final class Actions {
 			case 'cancel':
 				return $this->cancel( $sub );
 			case 'skip':
-				return $this->skip( $sub );
+				$done = $this->skip( $sub );
+				break;
 			case 'pause':
-				return $this->pause( $sub );
+				$done = $this->pause( $sub );
+				break;
 			case 'continue':
-				return $this->resume( $sub );
+				$done = $this->resume( $sub );
+				break;
+			default:
+				return false;
 		}
 
-		return false;
+		if ( $done ) {
+			Log::info( sprintf( 'Subscription #%d: action "%s" done.', (int) $sub->id, $action ) );
+		}
+
+		return $done;
 	}
 }
