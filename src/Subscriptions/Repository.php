@@ -81,6 +81,25 @@ final class Repository {
 	}
 
 	/**
+	 * Active Stripe subscriptions due within the given days that were not yet checked
+	 * for an expiring card for their current due date.
+	 *
+	 * @return object[]
+	 */
+	public function needing_card_check( string $now_utc, int $days ): array {
+		global $wpdb;
+
+		return (array) $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT * FROM ' . Schema::table() . " WHERE status = 'active' AND gateway LIKE %s AND next_payment <= DATE_ADD(%s, INTERVAL %d DAY) AND (card_notice_for IS NULL OR card_notice_for <> next_payment) ORDER BY next_payment ASC",
+				$wpdb->esc_like( 'stripe' ) . '%',
+				$now_utc,
+				$days
+			)
+		);
+	}
+
+	/**
 	 * Paused subscriptions whose next continue-or-cancel reminder is due.
 	 *
 	 * @return object[]
