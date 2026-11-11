@@ -25,22 +25,20 @@ final class ProductToggle {
 			return;
 		}
 
-		$price = wc_price( Pricing::subscriber_price( $product ) );
+		$plans = Pricing::plans( $product );
 
 		echo '<div class="tasg-abo-toggle">';
-		echo '<label><input type="checkbox" name="tasg_abo_subscribe" value="1"> ';
-		/* translators: %s: discounted price */
-		echo esc_html( sprintf( __( 'Subscribe and pay only %s', 'tasg-abo' ), wp_strip_all_tags( $price ) ) );
-		echo '</label>';
+		echo '<label><input type="checkbox" name="tasg_abo_subscribe" value="1"> ' . esc_html__( 'Subscribe and save', 'tasg-abo' ) . '</label> ';
 
-		echo '<label> ' . esc_html__( 'Deliver every', 'tasg-abo' ) . ' ';
-		echo '<select name="tasg_abo_interval">';
-		foreach ( Pricing::intervals( $product ) as $weeks ) {
-			/* translators: %d: number of weeks */
-			$label = sprintf( _n( '%d week', '%d weeks', $weeks, 'tasg-abo' ), $weeks );
-			echo '<option value="' . esc_attr( (string) $weeks ) . '">' . esc_html( $label ) . '</option>';
+		echo '<label>' . esc_html__( 'Plan', 'tasg-abo' ) . ' <select name="tasg_abo_plan">';
+		foreach ( $plans as $id => $plan ) {
+			$price = html_entity_decode( wp_strip_all_tags( wc_price( Pricing::subscriber_price( $product, (int) $id ) ) ), ENT_QUOTES, 'UTF-8' );
+			$name  = '' !== $plan->name ? $plan->name . ' (' . $plan->period_label() . ')' : $plan->period_label();
+
+			echo '<option value="' . esc_attr( (string) $id ) . '">' . esc_html( $name . ': ' . $price ) . '</option>';
 		}
 		echo '</select></label>';
+
 		if ( Settings::admin_only() ) {
 			echo '<p class="tasg-abo-note"><strong>' . esc_html__( 'Test phase: only shop managers can see this option.', 'tasg-abo' ) . '</strong></p>';
 		}
