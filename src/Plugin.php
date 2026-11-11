@@ -98,6 +98,7 @@ final class Plugin {
 	private function register_components(): void {
 		Subscriptions\Schema::maybe_install();
 		( new Plans\PlanRepository() )->seed_default();
+		add_action( 'admin_init', array( new Plans\PlanRepository(), 'register_strings' ) );
 		( new Subscriptions\Scheduler( new Subscriptions\Repository() ) )->register();
 		( new Subscriptions\ReminderHandler( new Subscriptions\Repository() ) )->register();
 		( new Subscriptions\PauseHandler( new Subscriptions\Repository() ) )->register();
