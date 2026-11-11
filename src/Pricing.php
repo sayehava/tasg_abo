@@ -12,7 +12,9 @@ defined( 'ABSPATH' ) || exit;
 final class Pricing {
 
 	public static function is_enabled( \WC_Product $product ): bool {
-		return 'yes' === $product->get_meta( '_tasg_abo_enabled' ) && ! empty( self::intervals( $product ) );
+		return Settings::visible_to_current_user()
+			&& 'yes' === $product->get_meta( '_tasg_abo_enabled' )
+			&& ! empty( self::intervals( $product ) );
 	}
 
 	/**
