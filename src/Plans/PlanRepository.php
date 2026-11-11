@@ -39,6 +39,10 @@ final class PlanRepository {
 	 * context "Tasg Abo"). Harmless without WPML. Runs in the admin, WPML ignores repeats.
 	 */
 	public function register_strings(): void {
+		if ( '' !== \TasgAbo\Settings::box_text_raw() ) {
+			do_action( 'wpml_register_single_string', self::WPML_CONTEXT, 'subscribe-box-text', \TasgAbo\Settings::box_text_raw() );
+		}
+
 		foreach ( $this->all() as $plan ) {
 			if ( '' !== $plan->name ) {
 				do_action( 'wpml_register_single_string', self::WPML_CONTEXT, 'plan-' . $plan->id . '-name', $plan->name );
