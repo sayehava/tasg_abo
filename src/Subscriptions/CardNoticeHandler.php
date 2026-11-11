@@ -9,6 +9,7 @@
 namespace TasgAbo\Subscriptions;
 
 use TasgAbo\Gateways\CardCheck;
+use TasgAbo\Log;
 use TasgAbo\Settings;
 
 defined( 'ABSPATH' ) || exit;
@@ -49,7 +50,8 @@ final class CardNoticeHandler {
 		$emails = WC()->mailer()->get_emails();
 
 		if ( isset( $emails['tasg_abo_card_expiring'] ) ) {
-			$emails['tasg_abo_card_expiring']->trigger( (int) $row->id );
+			$ok = $emails['tasg_abo_card_expiring']->trigger( (int) $row->id );
+			Log::info( sprintf( 'Subscription #%d: card expiry warning %s.', (int) $row->id, $ok ? 'sent' : 'NOT sent' ) );
 		}
 	}
 }
