@@ -44,6 +44,19 @@ final class EmailTexts {
 		return isset( $known[ $short ] ) ? $short : 'default';
 	}
 
+	/**
+	 * Locale (de_DE) of a language code. WPML knows it, a stored locale is returned as is.
+	 */
+	public static function locale_for( string $lang ): string {
+		if ( false !== strpos( $lang, '_' ) ) {
+			return $lang;
+		}
+
+		$active = apply_filters( 'wpml_active_languages', null, array( 'skip_missing' => 0 ) );
+
+		return is_array( $active ) && isset( $active[ $lang ]['default_locale'] ) ? (string) $active[ $lang ]['default_locale'] : '';
+	}
+
 	public static function save( string $email_id, string $lang, array $texts ): void {
 		$all = (array) get_option( self::OPTION, array() );
 
