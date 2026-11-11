@@ -412,6 +412,10 @@ msgid "Methods offered for subscriptions"
 msgstr "Für Abos angebotene Zahlungsarten"
 
 #: src/Admin/SettingsPage.php
+msgid "Apple Pay and Google Pay are active in Stripe and work as part of Card."
+msgstr "Apple Pay und Google Pay sind in Stripe aktiv und funktionieren als Teil von Karte."
+
+#: src/Admin/SettingsPage.php
 msgid "Active in Stripe but not offered for subscriptions, because they cannot be charged again later:"
 msgstr "In Stripe aktiv, aber nicht für Abos angeboten, weil sie später nicht erneut belastet werden können:"
 
