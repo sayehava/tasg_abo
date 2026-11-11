@@ -35,7 +35,7 @@ final class ProductToggle {
 			$price = html_entity_decode( wp_strip_all_tags( wc_price( Pricing::subscriber_price( $product, (int) $id ) ) ), ENT_QUOTES, 'UTF-8' );
 			$name  = '' !== $plan->name ? $plan->name . ' (' . $plan->period_label() . ')' : $plan->period_label();
 
-			echo '<option value="' . esc_attr( (string) $id ) . '">' . esc_html( $name . ': ' . $price ) . '</option>';
+			echo '<option value="' . esc_attr( (string) $id ) . '"' . selected( $plan->default, true, false ) . '>' . esc_html( $name . ': ' . $price ) . '</option>';
 		}
 		echo '</select></label>';
 
