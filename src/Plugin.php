@@ -65,6 +65,7 @@ final class Plugin {
 		( new Checkout\CheckoutRules() )->register();
 		( new Subscriptions\Creator( new Subscriptions\Repository() ) )->register();
 		( new Frontend\LinkHandler() )->register();
+		( new Frontend\MyAccount() )->register();
 		( new Frontend\ProductToggle() )->register();
 		( new Cart\CartHandler() )->register();
 
