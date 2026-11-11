@@ -61,9 +61,9 @@ final class RenewalHandler {
 		}
 
 		// Move the schedule on first. Only one worker can win this step.
-		$next = Period::add( $due, (int) $row->period_value, (string) $row->period_unit );
+		$next = Period::add( $due, (int) $row->period_value, (string) $row->period_unit, Period::anchor_day( $row ) );
 		if ( $next <= time() + (int) $row->reminder_minutes * MINUTE_IN_SECONDS + 15 * MINUTE_IN_SECONDS ) {
-			$next = Period::add( time(), (int) $row->period_value, (string) $row->period_unit );
+			$next = Period::add( time(), (int) $row->period_value, (string) $row->period_unit, Period::anchor_day( $row ) );
 		}
 
 		if ( ! $this->repository->claim( (int) $row->id, gmdate( 'Y-m-d H:i:s', $next ) ) ) {
