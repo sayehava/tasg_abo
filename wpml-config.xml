@@ -9,5 +9,7 @@
 		<custom-field action="copy">_tasg_abo_default_plan</custom-field>
 		<custom-field action="copy">_tasg_abo_discount_type</custom-field>
 		<custom-field action="copy">_tasg_abo_discount_value</custom-field>
+		<!-- The text under the subscribe box is written per language, so it is translated, not copied. -->
+		<custom-field action="translate">_tasg_abo_box_text</custom-field>
 	</custom-fields>
 </wpml-config>
