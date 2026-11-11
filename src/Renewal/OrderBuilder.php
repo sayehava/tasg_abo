@@ -3,8 +3,9 @@
  * Builds a standard WooCommerce renewal order for a subscription.
  *
  * It is a normal order (same hooks, stock handling, taxes and emails as any
- * other), created as "pending". Shipping is copied from the first order, or
- * set to free while the subscription has a free shipping period.
+ * other), created as "pending". The address always comes from the customer
+ * account. Shipping method and cost are copied from the last order of the
+ * subscription (never the first), or set to free during a free shipping period.
  *
  * @package TasgAbo
  */
@@ -18,7 +19,8 @@ defined( 'ABSPATH' ) || exit;
 final class OrderBuilder {
 
 	public function build( object $sub ): ?\WC_Order {
-		$origin  = wc_get_order( (int) $sub->origin_order_id );
+		// Last order of this subscription: the previous renewal, or the first order.
+		$origin  = wc_get_order( (int) $sub->last_order_id ) ?: wc_get_order( (int) $sub->origin_order_id );
 		$product = wc_get_product( (int) $sub->product_id );
 
 		if ( ! $origin || ! $product ) {
@@ -70,7 +72,7 @@ final class OrderBuilder {
 	}
 
 	/**
-	 * Current address from the customer account, the first order as fallback.
+	 * Address from the customer account. Only if the account has none, the last order is used.
 	 */
 	private function address( \WC_Order $origin, string $type, int $user_id ): array {
 		$customer = new \WC_Customer( $user_id );
