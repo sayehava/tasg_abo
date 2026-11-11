@@ -15,6 +15,7 @@
 namespace TasgAbo\Emails;
 
 use TasgAbo\Pricing;
+use TasgAbo\Subscriptions\Address;
 use TasgAbo\Subscriptions\Links;
 use TasgAbo\Subscriptions\Repository;
 
@@ -107,16 +108,9 @@ abstract class SubscriptionEmail extends \WC_Email {
 			$this->placeholders['{pause_url}']     = Links::url( $row, 'pause' );
 			$this->placeholders['{continue_url}']  = Links::url( $row, 'continue' );
 
-			// The address that will be used comes from the customer account.
-			$customer = new \WC_Customer( (int) $row->user_id );
-			$address  = $customer->get_shipping();
-			if ( empty( $address['address_1'] ) ) {
-				$address = $customer->get_billing();
-			}
-			$formatted = str_replace( array( '<br/>', '<br>', '<br />' ), "\n", WC()->countries->get_formatted_address( $address ) );
-
-			$this->placeholders['{shipping_address}'] = wp_strip_all_tags( $formatted );
-			$this->placeholders['{address_url}']      = wc_get_endpoint_url( 'edit-address', 'shipping', wc_get_page_permalink( 'myaccount' ) );
+			// The address of the next order, with a link to correct it for that order.
+			$this->placeholders['{shipping_address}'] = Address::formatted( Address::shipping( $row ) );
+			$this->placeholders['{address_url}']      = Links::url( $row, 'address' );
 
 			if ( $this->is_enabled() && $this->get_recipient() ) {
 				$sent = (bool) $this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
