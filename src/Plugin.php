@@ -74,6 +74,7 @@ final class Plugin {
 			( new Admin\ProductSettings() )->register();
 			( new Admin\SettingsPage() )->register();
 			( new Admin\SubscriptionsPage() )->register();
+			( new Admin\EmailDesigner() )->register();
 		}
 	}
 
