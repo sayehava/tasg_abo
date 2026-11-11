@@ -55,6 +55,130 @@ msgstr "Sendet die gespeicherte Version mit Beispieldaten an Ihre eigene E-Mail-
 msgid "Send test email to me"
 msgstr "Test-E-Mail an mich senden"
 
+#: src/Admin/PlansPage.php
+msgid "Subscription plans"
+msgstr "Abo-Pläne"
+
+#: src/Admin/PlansPage.php
+msgid "Plan saved."
+msgstr "Plan gespeichert."
+
+#: src/Admin/PlansPage.php
+msgid "Plan deleted. Existing subscriptions keep running with their own copy of the plan."
+msgstr "Plan gelöscht. Bestehende Abos laufen mit ihrer eigenen Kopie des Plans weiter."
+
+#: src/Admin/PlansPage.php
+msgid "A plan is a period with its own reminder time, for example \"Weekly\" or \"Every 4 months\". Assign plans to products on the product page. A product can offer several plans."
+msgstr "Ein Plan ist ein Zeitraum mit eigener Erinnerungszeit, zum Beispiel \"Wöchentlich\" oder \"Alle 4 Monate\". Ordnen Sie Pläne auf der Produktseite Produkten zu. Ein Produkt kann mehrere Pläne anbieten."
+
+#: src/Admin/PlansPage.php
+msgid "The reminder time must be shorter than the period."
+msgstr "Die Erinnerungszeit muss kürzer sein als der Zeitraum."
+
+#: src/Admin/PlansPage.php
+msgid "Please enter a period and a reminder time of at least 1."
+msgstr "Bitte geben Sie einen Zeitraum und eine Erinnerungszeit von mindestens 1 ein."
+
+#: src/Admin/PlansPage.php
+msgid "Name"
+msgstr "Name"
+
+#: src/Admin/PlansPage.php
+msgid "Period"
+msgstr "Zeitraum"
+
+#: src/Admin/PlansPage.php
+msgid "Reminder before charge"
+msgstr "Erinnerung vor der Abbuchung"
+
+#: src/Admin/PlansPage.php
+msgid "Visible to"
+msgstr "Sichtbar für"
+
+#: src/Admin/PlansPage.php
+msgid "No plans yet. Add your first plan below."
+msgstr "Noch keine Pläne. Fügen Sie unten Ihren ersten Plan hinzu."
+
+#: src/Admin/PlansPage.php
+msgid "Shop managers only (test plan)"
+msgstr "Nur Shop-Manager (Testplan)"
+
+#: src/Admin/PlansPage.php
+msgid "Everyone"
+msgstr "Alle"
+
+#: src/Admin/PlansPage.php
+msgid "Nobody (switched off)"
+msgstr "Niemand (ausgeschaltet)"
+
+#: src/Admin/PlansPage.php
+msgid "(less than 48 hours)"
+msgstr "(weniger als 48 Stunden)"
+
+#: src/Admin/PlansPage.php
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: src/Admin/PlansPage.php
+msgid "Delete"
+msgstr "Löschen"
+
+#: src/Admin/PlansPage.php
+msgid "Edit plan"
+msgstr "Plan bearbeiten"
+
+#: src/Admin/PlansPage.php
+msgid "Add plan"
+msgstr "Plan hinzufügen"
+
+#: src/Admin/PlansPage.php
+msgid "Shown to customers, for example \"Weekly\". Leave empty to show the period."
+msgstr "Wird Kunden angezeigt, zum Beispiel \"Wöchentlich\". Leer lassen, um den Zeitraum anzuzeigen."
+
+#: src/Admin/PlansPage.php
+msgid "How often a new order is made. For tests you can use minutes, hours or days."
+msgstr "Wie oft eine neue Bestellung erzeugt wird. Für Tests können Sie Minuten, Stunden oder Tage verwenden."
+
+#: src/Admin/PlansPage.php
+msgid "Reminder email before the charge"
+msgstr "Erinnerungs-E-Mail vor der Abbuchung"
+
+#: src/Admin/PlansPage.php
+msgid "Minutes"
+msgstr "Minuten"
+
+#: src/Admin/PlansPage.php
+msgid "Hours"
+msgstr "Stunden"
+
+#: src/Admin/PlansPage.php
+msgid "Days"
+msgstr "Tage"
+
+#: src/Admin/PlansPage.php
+msgid "The customer gets the reminder at least this long before being charged. We recommend 48 hours or more for plans customers use. Must be shorter than the period."
+msgstr "Der Kunde erhält die Erinnerung mindestens so lange vor der Abbuchung. Für Pläne, die Kunden nutzen, empfehlen wir 48 Stunden oder mehr. Muss kürzer sein als der Zeitraum."
+
+#: src/Admin/PlansPage.php
+msgid "Test plan"
+msgstr "Testplan"
+
+#: src/Admin/PlansPage.php
+msgid "Only shop managers can see this plan"
+msgstr "Nur Shop-Manager sehen diesen Plan"
+
+#: src/Admin/PlansPage.php
+msgid "Active"
+msgstr "Aktiv"
+
+#: src/Admin/PlansPage.php
+msgid "Offer this plan"
+msgstr "Diesen Plan anbieten"
+
+#: src/Admin/PlansPage.php
+msgid "Save plan"
+msgstr "Plan speichern"
+
 #: src/Admin/ProductSettings.php
 msgid "Subscription"
 msgstr "Abo"
@@ -62,14 +186,6 @@ msgstr "Abo"
 #: src/Admin/ProductSettings.php
 msgid "Let customers subscribe to this product."
 msgstr "Kunden dürfen dieses Produkt abonnieren."
-
-#: src/Admin/ProductSettings.php
-msgid "Intervals (weeks)"
-msgstr "Intervalle (Wochen)"
-
-#: src/Admin/ProductSettings.php
-msgid "Comma separated list the customer can choose from, for example 2,4,8."
-msgstr "Kommagetrennte Liste, aus der der Kunde wählen kann, zum Beispiel 2,4,8."
 
 #: src/Admin/ProductSettings.php
 msgid "Subscriber discount type"
@@ -88,8 +204,24 @@ msgid "Subscriber discount"
 msgstr "Abo-Rabatt"
 
 #: src/Admin/ProductSettings.php
-msgid "Taken off the price of every subscription order. Leave empty for no discount."
-msgstr "Wird vom Preis jeder Abo-Bestellung abgezogen. Leer lassen für keinen Rabatt."
+msgid "Taken off the price of every subscription order. Leave empty for no discount. A plan below can have its own discount."
+msgstr "Wird vom Preis jeder Abo-Bestellung abgezogen. Leer lassen für keinen Rabatt. Ein Plan unten kann einen eigenen Rabatt haben."
+
+#: src/Admin/ProductSettings.php
+msgid "Plans offered"
+msgstr "Angebotene Pläne"
+
+#: src/Admin/ProductSettings.php
+msgid "No plans yet. Create them under WooCommerce > Subscription plans."
+msgstr "Noch keine Pläne. Legen Sie sie unter WooCommerce > Abo-Pläne an."
+
+#: src/Admin/ProductSettings.php
+msgid "(test plan)"
+msgstr "(Testplan)"
+
+#: src/Admin/ProductSettings.php
+msgid "Discount"
+msgstr "Rabatt"
 
 #: src/Admin/SettingsPage.php
 msgid "Subscription settings"
@@ -114,14 +246,6 @@ msgstr "Status der Folgebestellungen nach der Zahlung"
 #: src/Admin/SettingsPage.php
 msgid "Choose the status your invoice, delivery note and label automation reacts to."
 msgstr "Wählen Sie den Status, auf den Ihre Automatik für Rechnung, Lieferschein und Versandetikett reagiert."
-
-#: src/Admin/SettingsPage.php
-msgid "Reminder email, hours before the charge"
-msgstr "Erinnerungs-E-Mail, Stunden vor der Abbuchung"
-
-#: src/Admin/SettingsPage.php
-msgid "At least 48. Customers are never charged without this reminder."
-msgstr "Mindestens 48. Ohne diese Erinnerung wird nie abgebucht."
 
 #: src/Admin/SettingsPage.php
 msgid "Days between pause reminders"
@@ -207,17 +331,9 @@ msgstr "Fortsetzen"
 msgid "Cancel"
 msgstr "Kündigen"
 
-#: src/Admin/SubscriptionsPage.php
-msgid "%d week"
-msgid_plural "%d weeks"
-msgstr[0] "%d Woche"
-msgstr[1] "%d Wochen"
-
 #: src/Cart/CartHandler.php
-msgid "every %d week"
-msgid_plural "every %d weeks"
-msgstr[0] "alle %d Woche"
-msgstr[1] "alle %d Wochen"
+msgid "Please choose a subscription plan."
+msgstr "Bitte wählen Sie einen Abo-Plan."
 
 #: src/Cart/SingleItemRule.php
 msgid "A subscription is always for one piece."
@@ -280,8 +396,8 @@ msgid "Subscription reminder"
 msgstr "Abo-Erinnerung"
 
 #: src/Emails/ReminderEmail.php
-msgid "Sent to the customer at least 48 hours before the next subscription order is charged."
-msgstr "Wird mindestens 48 Stunden vor der Abbuchung der nächsten Abo-Bestellung an den Kunden gesendet."
+msgid "Sent to the customer before the next subscription order is charged. How long before is set per plan."
+msgstr "Wird dem Kunden vor der Abbuchung der nächsten Abo-Bestellung gesendet. Wie lange vorher, wird pro Plan festgelegt."
 
 #: src/Emails/ReminderEmail.php
 msgid "Your next order of {product_name} on {next_date}"
@@ -456,10 +572,6 @@ msgid "Next order"
 msgstr "Nächste Bestellung"
 
 #: src/Frontend/MyAccount.php
-msgid "Active"
-msgstr "Aktiv"
-
-#: src/Frontend/MyAccount.php
 msgid "Paused"
 msgstr "Pausiert"
 
@@ -472,12 +584,12 @@ msgid "Skip next"
 msgstr "Nächste überspringen"
 
 #: src/Frontend/ProductToggle.php
-msgid "Subscribe and pay only %s"
-msgstr "Abonnieren und nur %s zahlen"
+msgid "Subscribe and save"
+msgstr "Abonnieren und sparen"
 
 #: src/Frontend/ProductToggle.php
-msgid "Deliver every"
-msgstr "Lieferung alle"
+msgid "Plan"
+msgstr "Plan"
 
 #: src/Frontend/ProductToggle.php
 msgid "Test phase: only shop managers can see this option."
@@ -486,6 +598,44 @@ msgstr "Testphase: Nur Shop-Manager sehen diese Option."
 #: src/Frontend/ProductToggle.php
 msgid "A subscription is for one piece. Cancel, skip or pause any time."
 msgstr "Ein Abo gilt für ein Stück. Jederzeit kündigen, überspringen oder pausieren."
+
+#: src/Plans/Period.php
+msgid "Weeks"
+msgstr "Wochen"
+
+#: src/Plans/Period.php
+msgid "Months"
+msgstr "Monate"
+
+#: src/Plans/Period.php
+msgid "%d minute"
+msgid_plural "%d minutes"
+msgstr[0] "%d Minute"
+msgstr[1] "%d Minuten"
+
+#: src/Plans/Period.php
+msgid "%d hour"
+msgid_plural "%d hours"
+msgstr[0] "%d Stunde"
+msgstr[1] "%d Stunden"
+
+#: src/Plans/Period.php
+msgid "%d day"
+msgid_plural "%d days"
+msgstr[0] "%d Tag"
+msgstr[1] "%d Tage"
+
+#: src/Plans/Period.php
+msgid "%d month"
+msgid_plural "%d months"
+msgstr[0] "%d Monat"
+msgstr[1] "%d Monate"
+
+#: src/Plans/Period.php
+msgid "%d week"
+msgid_plural "%d weeks"
+msgstr[0] "%d Woche"
+msgstr[1] "%d Wochen"
 
 #: src/Plugin.php
 msgid "Tasg Abo could not start: %s"
