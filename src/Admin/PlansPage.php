@@ -79,6 +79,7 @@ final class PlansPage {
 		$plan->reminder_minutes = $reminder_minutes;
 		$plan->test             = ! empty( $_POST['test'] );
 		$plan->active           = ! empty( $_POST['active'] );
+		$plan->default          = ! empty( $_POST['default'] ) && $plan->active;
 
 		( new PlanRepository() )->save( $plan );
 
@@ -149,7 +150,7 @@ final class PlansPage {
 			$visible = $plan->active ? ( $plan->test ? __( 'Shop managers only (test plan)', 'tasg-abo' ) : __( 'Everyone', 'tasg-abo' ) ) : __( 'Nobody (switched off)', 'tasg-abo' );
 			$warning = ( ! $plan->test && $plan->reminder_minutes < 2880 ) ? ' ' . __( '(less than 48 hours)', 'tasg-abo' ) : '';
 
-			echo '<tr><td>' . esc_html( $plan->title() ) . '</td>';
+			echo '<tr><td>' . esc_html( $plan->title() . ( $plan->default ? ' ' . __( '(default)', 'tasg-abo' ) : '' ) ) . '</td>';
 			echo '<td>' . esc_html( $plan->period_label() ) . '</td>';
 			echo '<td>' . esc_html( Period::minutes_label( $plan->reminder_minutes ) . $warning ) . '</td>';
 			echo '<td>' . esc_html( $visible ) . '</td><td>';
@@ -208,6 +209,8 @@ final class PlansPage {
 
 		echo '<tr><th>' . esc_html__( 'Test plan', 'tasg-abo' ) . '</th><td><label><input type="checkbox" name="test" value="1"' . checked( $plan->test, true, false ) . '> ' . esc_html__( 'Only shop managers can see this plan', 'tasg-abo' ) . '</label></td></tr>';
 		echo '<tr><th>' . esc_html__( 'Active', 'tasg-abo' ) . '</th><td><label><input type="checkbox" name="active" value="1"' . checked( $plan->active || ! $plan->id, true, false ) . '> ' . esc_html__( 'Offer this plan', 'tasg-abo' ) . '</label></td></tr>';
+
+		echo '<tr><th>' . esc_html__( 'Default plan', 'tasg-abo' ) . '</th><td><label><input type="checkbox" name="default" value="1"' . checked( $plan->default, true, false ) . '> ' . esc_html__( 'Preselected for customers, and ticked on new products', 'tasg-abo' ) . '</label></td></tr>';
 
 		echo '</table>';
 		submit_button( $plan->id ? __( 'Save plan', 'tasg-abo' ) : __( 'Add plan', 'tasg-abo' ) );
