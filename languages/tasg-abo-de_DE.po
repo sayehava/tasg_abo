@@ -96,6 +96,18 @@ msgid "Subscription settings"
 msgstr "Abo-Einstellungen"
 
 #: src/Admin/SettingsPage.php
+msgid "Test phase"
+msgstr "Testphase"
+
+#: src/Admin/SettingsPage.php
+msgid "Only shop managers can see and use subscriptions"
+msgstr "Nur Shop-Manager können Abos sehen und nutzen"
+
+#: src/Admin/SettingsPage.php
+msgid "Keep this on until you tested a full cycle yourself. Customers then see nothing. Untick it to open subscriptions to everyone."
+msgstr "Lassen Sie dies eingeschaltet, bis Sie einen kompletten Ablauf selbst getestet haben. Kunden sehen dann nichts. Entfernen Sie den Haken, um Abos für alle zu öffnen."
+
+#: src/Admin/SettingsPage.php
 msgid "Status of renewal orders after payment"
 msgstr "Status der Folgebestellungen nach der Zahlung"
 
@@ -468,8 +480,16 @@ msgid "Deliver every"
 msgstr "Lieferung alle"
 
 #: src/Frontend/ProductToggle.php
+msgid "Test phase: only shop managers can see this option."
+msgstr "Testphase: Nur Shop-Manager sehen diese Option."
+
+#: src/Frontend/ProductToggle.php
 msgid "A subscription is for one piece. Cancel, skip or pause any time."
 msgstr "Ein Abo gilt für ein Stück. Jederzeit kündigen, überspringen oder pausieren."
+
+#: src/Plugin.php
+msgid "Tasg Abo could not start: %s"
+msgstr "Tasg Abo konnte nicht starten: %s"
 
 #: src/Plugin.php
 msgid "Tasg Abo needs WooCommerce to be installed and active."
