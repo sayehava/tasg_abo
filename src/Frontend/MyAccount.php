@@ -9,6 +9,8 @@
 
 namespace TasgAbo\Frontend;
 
+use TasgAbo\Pricing;
+use TasgAbo\Settings;
 use TasgAbo\Subscriptions\Address;
 use TasgAbo\Subscriptions\Links;
 use TasgAbo\Subscriptions\Repository;
@@ -90,15 +92,28 @@ final class MyAccount {
 			// The address the next order will use, from the last order or a correction.
 			echo '<td>' . ( 'cancelled' === $row->status ? '' : nl2br( esc_html( Address::formatted( Address::shipping( $row ) ) ) ) ) . '</td><td>';
 
-			// Buttons are built from escaped parts in link().
-			if ( 'active' === $row->status ) {
-				echo $this->link( $row, 'skip', __( 'Skip next', 'tasg-abo' ) ) . $this->link( $row, 'pause', __( 'Pause', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			// Buttons are built from escaped parts in link(). Each one follows the shop settings.
+			$open = in_array( $row->status, array( 'active', 'paused' ), true );
+
+			if ( 'active' === $row->status && Settings::customer_may( 'skip' ) ) {
+				echo $this->link( $row, 'skip', __( 'Skip next', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			}
+			if ( 'active' === $row->status && Settings::customer_may( 'pause' ) ) {
+				echo $this->link( $row, 'pause', __( 'Pause', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 			if ( 'paused' === $row->status ) {
 				echo $this->link( $row, 'continue', __( 'Continue', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
-			if ( in_array( $row->status, array( 'active', 'paused' ), true ) ) {
+			if ( $open && Settings::customer_may( 'address' ) ) {
 				echo $this->link( $row, 'address', __( 'Change address', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			}
+			if ( $open && Settings::customer_may( 'plan' ) && $product && count( Pricing::plans( $product ) ) > 1 ) {
+				echo $this->link( $row, 'plan', __( 'Change plan', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			}
+			if ( $open && Settings::customer_may( 'payment' ) && 0 === strpos( (string) $row->gateway, 'stripe' ) ) {
+				echo $this->link( $row, 'payment', __( 'Payment method', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			}
+			if ( $open ) {
 				echo $this->link( $row, 'cancel', __( 'Cancel', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 
@@ -106,5 +121,53 @@ final class MyAccount {
 		}
 
 		echo '</tbody></table>';
+
+		if ( Settings::customer_may( 'orders' ) ) {
+			$this->render_orders( $rows );
+		}
+	}
+
+	/**
+	 * The first order and the renewal orders of each subscription, newest first.
+	 *
+	 * @param object[] $rows Subscriptions of the customer.
+	 */
+	private function render_orders( array $rows ): void {
+		foreach ( $rows as $row ) {
+			$orders = wc_get_orders(
+				array(
+					'customer_id' => get_current_user_id(),
+					'limit'       => 10,
+					'orderby'     => 'date',
+					'order'       => 'DESC',
+					'meta_query'  => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+						array(
+							'key'   => '_tasg_abo_renewal_of',
+							'value' => (int) $row->id,
+						),
+					),
+				)
+			);
+
+			$first = wc_get_order( (int) $row->origin_order_id );
+			if ( $first ) {
+				$orders[] = $first;
+			}
+
+			if ( ! $orders ) {
+				continue;
+			}
+
+			$product = wc_get_product( (int) $row->product_id );
+
+			/* translators: %s: product name */
+			echo '<h3>' . esc_html( sprintf( __( 'Orders of the subscription for %s', 'tasg-abo' ), $product ? $product->get_name() : '' ) ) . '</h3><ul>';
+			foreach ( $orders as $order ) {
+				echo '<li><a href="' . esc_url( $order->get_view_order_url() ) . '">#' . esc_html( $order->get_order_number() ) . '</a> '
+					. esc_html( wc_format_datetime( $order->get_date_created() ) . ', ' . wp_strip_all_tags( $order->get_formatted_order_total() ) . ', ' . wc_get_order_status_name( $order->get_status() ) )
+					. '</li>';
+			}
+			echo '</ul>';
+		}
 	}
 }
