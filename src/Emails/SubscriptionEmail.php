@@ -79,11 +79,20 @@ abstract class SubscriptionEmail extends \WC_Email {
 	 * @return bool True when the email was handed to the mailer.
 	 */
 	public function trigger( int $subscription_id ): bool {
-		$row     = ( new Repository() )->find( $subscription_id );
-		$user    = $row ? get_userdata( (int) $row->user_id ) : false;
-		$product = $row ? wc_get_product( (int) $row->product_id ) : false;
+		$row = ( new Repository() )->find( $subscription_id );
 
-		if ( ! $row || ! $user || ! $product ) {
+		return $row ? $this->deliver( $row ) : false;
+	}
+
+	/**
+	 * Send the email for a subscription row. With $test_to the row may be a made
+	 * up sample, and the mail goes to that address even if the email is switched off.
+	 */
+	public function deliver( object $row, string $test_to = '' ): bool {
+		$user    = get_userdata( (int) $row->user_id );
+		$product = wc_get_product( (int) $row->product_id );
+
+		if ( ! $user || ! $product ) {
 			return false;
 		}
 
@@ -94,7 +103,7 @@ abstract class SubscriptionEmail extends \WC_Email {
 
 		try {
 			$this->object    = $row;
-			$this->recipient = $user->user_email;
+			$this->recipient = '' !== $test_to ? $test_to : $user->user_email;
 			$this->texts     = EmailTexts::get( $this->id, '' !== (string) $row->language ? (string) $row->language : 'default' );
 
 			$amount = (float) Pricing::subscriber_price( $product ) * (int) $row->quantity;
@@ -112,7 +121,7 @@ abstract class SubscriptionEmail extends \WC_Email {
 			$this->placeholders['{shipping_address}'] = Address::formatted( Address::shipping( $row ) );
 			$this->placeholders['{address_url}']      = Links::url( $row, 'address' );
 
-			if ( $this->is_enabled() && $this->get_recipient() ) {
+			if ( ( '' !== $test_to || $this->is_enabled() ) && $this->get_recipient() ) {
 				$sent = (bool) $this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
 			}
 		} finally {
