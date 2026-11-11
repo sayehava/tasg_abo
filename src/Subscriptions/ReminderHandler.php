@@ -7,6 +7,7 @@
 
 namespace TasgAbo\Subscriptions;
 
+use TasgAbo\Log;
 use TasgAbo\Plans\Period;
 
 defined( 'ABSPATH' ) || exit;
@@ -42,6 +43,7 @@ final class ReminderHandler {
 					'reminder_sent' => 0,
 				)
 			);
+			Log::info( sprintf( 'Subscription #%d: skipped the order due %s UTC as the customer asked.', (int) $row->id, $row->next_payment ) );
 			return;
 		}
 
@@ -56,6 +58,7 @@ final class ReminderHandler {
 
 		if ( isset( $emails['tasg_abo_reminder'] ) && $emails['tasg_abo_reminder']->trigger( (int) $row->id ) ) {
 			$this->repository->update( (int) $row->id, array( 'reminder_sent' => 1 ) );
+			Log::info( sprintf( 'Subscription #%d: reminder email sent for %s UTC.', (int) $row->id, $row->next_payment ) );
 			return;
 		}
 
@@ -69,10 +72,7 @@ final class ReminderHandler {
 		$key = 'tasg_abo_reminder_log_' . (int) $row->id;
 		if ( ! get_transient( $key ) ) {
 			set_transient( $key, 1, DAY_IN_SECONDS );
-			wc_get_logger()->error(
-				sprintf( 'Reminder email for subscription #%d was not sent, so it will not be charged. Is the email switched on?', (int) $row->id ),
-				array( 'source' => 'tasg-abo' )
-			);
+			Log::error( sprintf( 'Reminder email for subscription #%d was not sent, so it will not be charged. Is the email switched on?', (int) $row->id ) );
 		}
 	}
 }
