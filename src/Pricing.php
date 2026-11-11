@@ -1,39 +1,69 @@
 <?php
 /**
- * Subscription configuration and price maths for a product.
+ * Subscription configuration of a product and the subscriber price.
+ *
+ * Product meta:
+ *   _tasg_abo_enabled         yes|no
+ *   _tasg_abo_plans           array: plan id => discount override ('' = use the product discount)
+ *   _tasg_abo_discount_type   percent|fixed
+ *   _tasg_abo_discount_value  default discount of the product
  *
  * @package TasgAbo
  */
 
 namespace TasgAbo;
 
+use TasgAbo\Plans\Plan;
+use TasgAbo\Plans\PlanRepository;
+
 defined( 'ABSPATH' ) || exit;
 
 final class Pricing {
 
+	/**
+	 * Plans a product offers: plan id => discount override.
+	 *
+	 * @return array<int,string>
+	 */
+	public static function product_plans( \WC_Product $product ): array {
+		$stored = $product->get_meta( '_tasg_abo_plans' );
+
+		return is_array( $stored ) ? $stored : array();
+	}
+
+	/**
+	 * Plans the current visitor can choose for this product.
+	 *
+	 * @return Plan[] keyed by plan id
+	 */
+	public static function plans( \WC_Product $product ): array {
+		$offered = self::product_plans( $product );
+		$plans   = array();
+
+		foreach ( ( new PlanRepository() )->all() as $id => $plan ) {
+			if ( isset( $offered[ $id ] ) && $plan->visible_to_current_user() ) {
+				$plans[ $id ] = $plan;
+			}
+		}
+
+		return $plans;
+	}
+
 	public static function is_enabled( \WC_Product $product ): bool {
 		return Settings::visible_to_current_user()
 			&& 'yes' === $product->get_meta( '_tasg_abo_enabled' )
-			&& ! empty( self::intervals( $product ) );
+			&& ! empty( self::plans( $product ) );
 	}
 
 	/**
-	 * Allowed intervals in weeks.
-	 *
-	 * @return int[]
+	 * Price a subscriber pays for a plan, never below zero.
+	 * The plan's own discount wins over the product's default discount.
 	 */
-	public static function intervals( \WC_Product $product ): array {
-		$raw = (string) $product->get_meta( '_tasg_abo_intervals' );
-
-		return array_values( array_filter( array_map( 'intval', explode( ',', $raw ) ) ) );
-	}
-
-	/**
-	 * Price a subscriber pays, never below zero.
-	 */
-	public static function subscriber_price( \WC_Product $product ): float {
-		$price = (float) $product->get_price();
-		$value = (float) $product->get_meta( '_tasg_abo_discount_value' );
+	public static function subscriber_price( \WC_Product $product, int $plan_id = 0 ): float {
+		$price    = (float) $product->get_price();
+		$offered  = self::product_plans( $product );
+		$override = $plan_id && isset( $offered[ $plan_id ] ) ? (string) $offered[ $plan_id ] : '';
+		$value    = '' !== $override ? (float) $override : (float) $product->get_meta( '_tasg_abo_discount_value' );
 
 		if ( $value <= 0 ) {
 			return $price;
