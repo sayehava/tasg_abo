@@ -70,7 +70,7 @@ final class ProductSettings {
 		$plans = ( new PlanRepository() )->all();
 
 		if ( ! $plans ) {
-			echo esc_html__( 'No plans yet. Create them under WooCommerce > Subscription plans.', 'tasg-abo' );
+			echo esc_html__( 'No plans yet. Create them under WooCommerce > Settings > Subscriptions > Plans.', 'tasg-abo' );
 		}
 
 		echo '</span></p>';
