@@ -328,6 +328,18 @@ msgid "Design the subscription emails in YayMail (YayMail > Email templates) or 
 msgstr "Gestalten Sie die Abo-E-Mails in YayMail (YayMail > E-Mail-Vorlagen) oder im Plugin-Editor (WooCommerce > Abo-E-Mails)."
 
 #: src/Admin/SettingsPage.php
+msgid "Test order marker"
+msgstr "Markierung für Testbestellungen"
+
+#: src/Admin/SettingsPage.php
+msgid "Also add this text to the customer note of test orders"
+msgstr "Diesen Text auch in die Kundennotiz von Testbestellungen schreiben"
+
+#: src/Admin/SettingsPage.php
+msgid "Orders from a subscription made during the test phase or from a test plan are marked: order meta _tasg_abo_test = yes, a private order note and, if ticked, this text in the customer note, so an invoice that prints the note shows it."
+msgstr "Bestellungen eines Abos, das in der Testphase oder mit einem Testplan abgeschlossen wurde, werden markiert: Bestell-Meta _tasg_abo_test = yes, eine private Bestellnotiz und, wenn angehakt, dieser Text in der Kundennotiz, damit eine Rechnung, die die Notiz druckt, ihn zeigt."
+
+#: src/Admin/SettingsPage.php
 msgid "Expiring card warning"
 msgstr "Warnung bei ablaufender Karte"
 
@@ -922,4 +934,8 @@ msgid "%d subscription created."
 msgid_plural "%d subscriptions created."
 msgstr[0] "%d Abo angelegt."
 msgstr[1] "%d Abos angelegt."
+
+#: src/TestMarker.php
+msgid "Test order (subscription test): the order is real, but made to test the subscription and the automation."
+msgstr "Testbestellung (Abo-Test): Die Bestellung ist echt, dient aber dazu, das Abo und die Automatik zu testen."
 
