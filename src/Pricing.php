@@ -5,6 +5,7 @@
  * Product meta:
  *   _tasg_abo_enabled         yes|no
  *   _tasg_abo_plans           array: plan id => discount override ('' = use the product discount)
+ *   _tasg_abo_default_plan    plan id preselected for this product (optional)
  *   _tasg_abo_discount_type   percent|fixed
  *   _tasg_abo_discount_value  default discount of the product
  *
@@ -47,6 +48,28 @@ final class Pricing {
 		}
 
 		return $plans;
+	}
+
+	/**
+	 * Plan preselected for customers: the product's own choice, else the global
+	 * default plan, else the first plan.
+	 *
+	 * @param Plan[] $plans Plans the visitor can choose, keyed by id.
+	 */
+	public static function default_plan_id( array $plans, \WC_Product $product ): int {
+		$chosen = (int) $product->get_meta( '_tasg_abo_default_plan' );
+
+		if ( isset( $plans[ $chosen ] ) ) {
+			return $chosen;
+		}
+
+		foreach ( $plans as $id => $plan ) {
+			if ( $plan->default ) {
+				return (int) $id;
+			}
+		}
+
+		return $plans ? (int) array_key_first( $plans ) : 0;
 	}
 
 	public static function is_enabled( \WC_Product $product ): bool {
