@@ -856,12 +856,12 @@ msgid "Orders of the subscription for %s"
 msgstr "Bestellungen des Abos für %s"
 
 #: src/Frontend/ProductToggle.php
-msgid "You save {saving} ({saving_percent}) on every order. A subscription is for one piece and ordered on its own: only this product will be in your cart."
-msgstr "Sie sparen bei jeder Bestellung {saving} ({saving_percent}). Ein Abo gilt für ein Stück und wird einzeln bestellt: In Ihrem Warenkorb ist nur dieses Produkt."
+msgid "You save {saving} ({saving_percent}) per order. Only this product stays in your cart."
+msgstr "Sie sparen {saving} ({saving_percent}) pro Bestellung. Nur dieses Produkt bleibt im Warenkorb."
 
 #: src/Frontend/ProductToggle.php
-msgid "A subscription is for one piece and ordered on its own: only this product will be in your cart."
-msgstr "Ein Abo gilt für ein Stück und wird einzeln bestellt: In Ihrem Warenkorb ist nur dieses Produkt."
+msgid "Only this product stays in your cart."
+msgstr "Nur dieses Produkt bleibt im Warenkorb."
 
 #: src/Frontend/ProductToggle.php
 msgid "Subscribe and save"
