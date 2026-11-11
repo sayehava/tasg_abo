@@ -116,6 +116,10 @@ msgid "(less than 48 hours)"
 msgstr ""
 
 #: src/Admin/PlansPage.php
+msgid "(default)"
+msgstr ""
+
+#: src/Admin/PlansPage.php
 msgid "Edit"
 msgstr ""
 
@@ -173,6 +177,14 @@ msgstr ""
 
 #: src/Admin/PlansPage.php
 msgid "Offer this plan"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Default plan"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Preselected for customers, and ticked on new products"
 msgstr ""
 
 #: src/Admin/PlansPage.php
@@ -636,6 +648,10 @@ msgid "%d week"
 msgid_plural "%d weeks"
 msgstr[0] ""
 msgstr[1] ""
+
+#: src/Plans/PlanRepository.php
+msgid "Monthly"
+msgstr ""
 
 #: src/Plugin.php
 msgid "Tasg Abo could not start: %s"
