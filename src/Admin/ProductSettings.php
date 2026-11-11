@@ -5,6 +5,7 @@
  * Meta keys:
  *   _tasg_abo_enabled         yes|no
  *   _tasg_abo_plans           plan id => discount override ('' = product discount)
+ *   _tasg_abo_default_plan    plan id preselected for this product, 0 = use the global default
  *   _tasg_abo_discount_type   percent|fixed
  *   _tasg_abo_discount_value  default discount, 0 or empty means none
  *
@@ -30,6 +31,7 @@ final class ProductSettings {
 		$product = $post ? wc_get_product( $post->ID ) : null;
 		$offered = $product ? $product->get_meta( '_tasg_abo_plans' ) : '';
 		$is_new  = ! is_array( $offered );
+		$chosen  = $product ? (int) $product->get_meta( '_tasg_abo_default_plan' ) : 0;
 		$offered = is_array( $offered ) ? $offered : array();
 
 		echo '<div class="options_group show_if_simple">';
@@ -82,7 +84,11 @@ final class ProductSettings {
 			echo '<p class="form-field"><label>' . esc_html( $plan->title() . $suffix ) . '</label>';
 			echo '<input type="checkbox" class="checkbox" name="_tasg_abo_plan[' . esc_attr( (string) $id ) . ']" value="1"' . checked( $checked, true, false ) . '> ';
 			echo '<span class="description" style="margin-left:0">' . esc_html( $plan->period_label() ) . '</span> ';
-			echo '<input type="text" class="short wc_input_price" style="width:90px" name="_tasg_abo_plan_discount[' . esc_attr( (string) $id ) . ']" value="' . esc_attr( $override ) . '" placeholder="' . esc_attr__( 'Discount', 'tasg-abo' ) . '">';
+			echo '<input type="text" class="short wc_input_price" style="width:90px" name="_tasg_abo_plan_discount[' . esc_attr( (string) $id ) . ']" value="' . esc_attr( $override ) . '" placeholder="' . esc_attr__( 'Discount', 'tasg-abo' ) . '"> ';
+
+			// The product's own default wins. Without one the global default plan is shown as selected.
+			$is_default = $chosen ? $chosen === $id : ( $is_new && $plan->default );
+			echo '<label><input type="radio" name="_tasg_abo_default_plan" value="' . esc_attr( (string) $id ) . '"' . checked( $is_default, true, false ) . '> ' . esc_html__( 'Default for this product', 'tasg-abo' ) . '</label>';
 			echo '</p>';
 		}
 
@@ -119,7 +125,12 @@ final class ProductSettings {
 			$plans[ $id ] = isset( $overrides[ $id ] ) ? $this->clean_discount( (string) $overrides[ $id ], $type ) : '';
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$default = isset( $_POST['_tasg_abo_default_plan'] ) ? absint( $_POST['_tasg_abo_default_plan'] ) : 0;
+		$default = isset( $plans[ $default ] ) ? $default : 0;
+
 		$product->update_meta_data( '_tasg_abo_enabled', $enabled );
+		$product->update_meta_data( '_tasg_abo_default_plan', $default );
 		$product->update_meta_data( '_tasg_abo_plans', $plans );
 		$product->update_meta_data( '_tasg_abo_discount_type', $type );
 		$product->update_meta_data( '_tasg_abo_discount_value', $this->clean_discount( (string) $value, $type ) );
