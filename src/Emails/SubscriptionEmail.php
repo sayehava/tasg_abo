@@ -23,6 +23,17 @@ defined( 'ABSPATH' ) || exit;
 abstract class SubscriptionEmail extends \WC_Email {
 
 	/**
+	 * Texts from the plugin's own email editor for the language being sent.
+	 *
+	 * @var array
+	 */
+	private $texts = array(
+		'subject' => '',
+		'heading' => '',
+		'body'    => '',
+	);
+
+	/**
 	 * Default email text with placeholders, already translated.
 	 */
 	abstract public static function default_body(): string;
@@ -83,6 +94,7 @@ abstract class SubscriptionEmail extends \WC_Email {
 		try {
 			$this->object    = $row;
 			$this->recipient = $user->user_email;
+			$this->texts     = EmailTexts::get( $this->id, '' !== (string) $row->language ? (string) $row->language : 'default' );
 
 			$amount = (float) Pricing::subscriber_price( $product ) * (int) $row->quantity;
 
@@ -118,11 +130,19 @@ abstract class SubscriptionEmail extends \WC_Email {
 		return $sent;
 	}
 
+	public function get_subject() {
+		return '' !== $this->texts['subject'] ? $this->format_string( $this->texts['subject'] ) : parent::get_subject();
+	}
+
+	public function get_heading() {
+		return '' !== $this->texts['heading'] ? $this->format_string( $this->texts['heading'] ) : parent::get_heading();
+	}
+
 	private function template_args( bool $plain ): array {
 		return array(
 			'email_heading'      => $this->get_heading(),
 			'additional_content' => $this->get_additional_content(),
-			'body'               => $this->format_string( $this->get_option( 'body', static::default_body() ) ),
+			'body'               => $this->format_string( '' !== $this->texts['body'] ? $this->texts['body'] : $this->get_option( 'body', static::default_body() ) ),
 			'sent_to_admin'      => false,
 			'plain_text'         => $plain,
 			'email'              => $this,
