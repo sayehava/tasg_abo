@@ -1,0 +1,499 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Tasg Abo 0.1.0\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/Admin/EmailDesigner.php
+msgid "Subscription emails"
+msgstr ""
+
+#: src/Admin/EmailDesigner.php
+msgid "Not allowed."
+msgstr ""
+
+#: src/Admin/EmailDesigner.php
+msgid "Saved."
+msgstr ""
+
+#: src/Admin/EmailDesigner.php
+msgid "Test email sent to your address."
+msgstr ""
+
+#: src/Admin/EmailDesigner.php
+msgid "The test email could not be sent. Check your mail setup."
+msgstr ""
+
+#: src/Admin/EmailDesigner.php
+msgid "Placeholders:"
+msgstr ""
+
+#: src/Admin/EmailDesigner.php
+msgid "Leave subject or heading empty to use the default. Logo, colours and footer are set in WooCommerce > Settings > Emails."
+msgstr ""
+
+#: src/Admin/EmailDesigner.php
+msgid "Subject"
+msgstr ""
+
+#: src/Admin/EmailDesigner.php
+msgid "Heading"
+msgstr ""
+
+#: src/Admin/EmailDesigner.php
+msgid "Text"
+msgstr ""
+
+#: src/Admin/EmailDesigner.php
+msgid "Sends the saved version with sample data to your own email address. Save first."
+msgstr ""
+
+#: src/Admin/EmailDesigner.php
+msgid "Send test email to me"
+msgstr ""
+
+#: src/Admin/ProductSettings.php
+msgid "Subscription"
+msgstr ""
+
+#: src/Admin/ProductSettings.php
+msgid "Let customers subscribe to this product."
+msgstr ""
+
+#: src/Admin/ProductSettings.php
+msgid "Intervals (weeks)"
+msgstr ""
+
+#: src/Admin/ProductSettings.php
+msgid "Comma separated list the customer can choose from, for example 2,4,8."
+msgstr ""
+
+#: src/Admin/ProductSettings.php
+msgid "Subscriber discount type"
+msgstr ""
+
+#: src/Admin/ProductSettings.php
+msgid "Percent"
+msgstr ""
+
+#: src/Admin/ProductSettings.php
+msgid "Fixed amount"
+msgstr ""
+
+#: src/Admin/ProductSettings.php
+msgid "Subscriber discount"
+msgstr ""
+
+#: src/Admin/ProductSettings.php
+msgid "Taken off the price of every subscription order. Leave empty for no discount."
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Subscription settings"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Status of renewal orders after payment"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Choose the status your invoice, delivery note and label automation reacts to."
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Reminder email, hours before the charge"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "At least 48. Customers are never charged without this reminder."
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Days between pause reminders"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "A paused customer gets three reminders to continue or cancel. Without an answer the subscription is cancelled."
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "PayPal (experimental)"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Offer PayPal for subscriptions"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Needs the WooCommerce PayPal Payments plugin with saving of PayPal payment methods enabled, and the customer must save the method at checkout. Without a saved method the subscription is not created. Try it with a test purchase first."
+msgstr ""
+
+#: src/Admin/SubscriptionsPage.php
+msgid "Subscriptions"
+msgstr ""
+
+#: src/Admin/SubscriptionsPage.php
+msgid "Copy from last order"
+msgstr ""
+
+#: src/Admin/SubscriptionsPage.php
+msgid "Free shipping"
+msgstr ""
+
+#: src/Admin/SubscriptionsPage.php
+msgid "Free shipping until (empty = no end)"
+msgstr ""
+
+#: src/Admin/SubscriptionsPage.php
+msgid "Shipping for all active subscriptions"
+msgstr ""
+
+#: src/Admin/SubscriptionsPage.php
+msgid "Apply to all active"
+msgstr ""
+
+#: src/Admin/SubscriptionsPage.php
+msgid "Customer"
+msgstr ""
+
+#: src/Admin/SubscriptionsPage.php
+msgid "Product"
+msgstr ""
+
+#: src/Admin/SubscriptionsPage.php
+msgid "Every"
+msgstr ""
+
+#: src/Admin/SubscriptionsPage.php
+msgid "Status"
+msgstr ""
+
+#: src/Admin/SubscriptionsPage.php
+msgid "Next payment (UTC)"
+msgstr ""
+
+#: src/Admin/SubscriptionsPage.php
+msgid "Shipping"
+msgstr ""
+
+#: src/Admin/SubscriptionsPage.php
+msgid "Save"
+msgstr ""
+
+#: src/Admin/SubscriptionsPage.php
+msgid "Pause"
+msgstr ""
+
+#: src/Admin/SubscriptionsPage.php
+msgid "Continue"
+msgstr ""
+
+#: src/Admin/SubscriptionsPage.php
+msgid "Cancel"
+msgstr ""
+
+#: src/Admin/SubscriptionsPage.php
+msgid "%d week"
+msgid_plural "%d weeks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Cart/CartHandler.php
+msgid "every %d week"
+msgid_plural "every %d weeks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Cart/SingleItemRule.php
+msgid "A subscription is always for one piece."
+msgstr ""
+
+#: src/Cart/SingleItemRule.php
+msgid "A subscription must be ordered on its own. Please finish or empty your cart first."
+msgstr ""
+
+#: src/Cart/SingleItemRule.php
+msgid "A subscription must be ordered on its own. Please remove the other products from your cart."
+msgstr ""
+
+#: src/Emails/EmailTexts.php
+msgid "All languages"
+msgstr ""
+
+#: src/Emails/FailedEmail.php
+msgid "Subscription payment failed"
+msgstr ""
+
+#: src/Emails/FailedEmail.php
+msgid "Sent when a renewal could not be charged. No order is created and the subscription is cancelled."
+msgstr ""
+
+#: src/Emails/FailedEmail.php
+msgid "We could not charge your subscription for {product_name}"
+msgstr ""
+
+#: src/Emails/FailedEmail.php
+msgid "Your subscription was cancelled"
+msgstr ""
+
+#: src/Emails/FailedEmail.php
+msgid "Hello {customer_name},\n\nwe could not charge your payment method for your subscription of {product_name}. No order was created and the subscription is cancelled.\n\nYou are welcome to subscribe again in our shop at any time."
+msgstr ""
+
+#: src/Emails/PauseReminderEmail.php
+msgid "Subscription pause reminder"
+msgstr ""
+
+#: src/Emails/PauseReminderEmail.php
+msgid "Sent to a customer whose pause is over, asking them to continue or cancel. After the third reminder without an answer the subscription is cancelled."
+msgstr ""
+
+#: src/Emails/PauseReminderEmail.php
+msgid "Do you want to continue your subscription for {product_name}?"
+msgstr ""
+
+#: src/Emails/PauseReminderEmail.php
+msgid "Your subscription is paused"
+msgstr ""
+
+#: src/Emails/PauseReminderEmail.php
+msgid "Hello {customer_name},\n\nyour subscription for {product_name} is paused. Please tell us what you want to do. If we do not hear from you, the subscription will be cancelled after a few more reminders.\n\nContinue: {continue_url}\nCancel: {cancel_url}"
+msgstr ""
+
+#: src/Emails/ReminderEmail.php
+msgid "Subscription reminder"
+msgstr ""
+
+#: src/Emails/ReminderEmail.php
+msgid "Sent to the customer at least 48 hours before the next subscription order is charged."
+msgstr ""
+
+#: src/Emails/ReminderEmail.php
+msgid "Your next order of {product_name} on {next_date}"
+msgstr ""
+
+#: src/Emails/ReminderEmail.php
+msgid "Your next subscription order"
+msgstr ""
+
+#: src/Emails/ReminderEmail.php
+msgid "Hello {customer_name},\n\nwe will charge you again for your next order of {product_name} on {next_date}. Amount: {amount} plus shipping.\n\nYour order will be sent to:\n{shipping_address}\n\nIf this address is not correct, please change it before {next_date}: {address_url}\n\nYou do not need to do anything else to continue.\n\nSkip this order: {skip_url}\nPause: {pause_url}\nCancel your subscription: {cancel_url}"
+msgstr ""
+
+#: src/Emails/SubscriptionEmail.php
+msgid "Email text"
+msgstr ""
+
+#: src/Emails/SubscriptionEmail.php
+msgid "Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url}"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Link not valid"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "This link is not valid any more."
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Nothing changed"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "This subscription cannot be changed this way right now."
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Address saved"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Your next order will be sent to this address:"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "First name"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Last name"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Company (optional)"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Street and number"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Address line 2 (optional)"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Postcode"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "City"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "State or region (optional)"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Country"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Save address"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Check your shipping address"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Please fill in all fields that are not marked optional."
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "We cannot ship to this country."
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "The postcode is not valid for this country."
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Cancel your subscription?"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Yes, cancel"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Skip your next order?"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Yes, skip"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Pause your subscription?"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Yes, pause"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Continue your subscription?"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Yes, continue"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Subscription cancelled"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Order skipped"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Subscription paused"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Subscription continued"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Your subscription is cancelled. You will not be charged again."
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "We will skip one order and carry on after that."
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Your subscription is paused. We will ask you before the pause ends whether to continue or cancel."
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Thank you. Your subscription continues and we will send you a reminder before the next order."
+msgstr ""
+
+#: src/Frontend/MyAccount.php
+msgid "You have no subscriptions yet."
+msgstr ""
+
+#: src/Frontend/MyAccount.php
+msgid "Next order"
+msgstr ""
+
+#: src/Frontend/MyAccount.php
+msgid "Active"
+msgstr ""
+
+#: src/Frontend/MyAccount.php
+msgid "Paused"
+msgstr ""
+
+#: src/Frontend/MyAccount.php
+msgid "Cancelled"
+msgstr ""
+
+#: src/Frontend/MyAccount.php
+msgid "Skip next"
+msgstr ""
+
+#: src/Frontend/ProductToggle.php
+msgid "Subscribe and pay only %s"
+msgstr ""
+
+#: src/Frontend/ProductToggle.php
+msgid "Deliver every"
+msgstr ""
+
+#: src/Frontend/ProductToggle.php
+msgid "A subscription is for one piece. Cancel, skip or pause any time."
+msgstr ""
+
+#: src/Plugin.php
+msgid "Tasg Abo needs WooCommerce to be installed and active."
+msgstr ""
+
+#: src/Renewal/OrderBuilder.php
+msgid "Renewal of subscription #%d."
+msgstr ""
+
+#: src/Renewal/RenewalHandler.php
+msgid "Status set by the subscription settings."
+msgstr ""
+
+#: src/Renewal/RenewalHandler.php
+msgid "Payment is still processing at the payment provider."
+msgstr ""
+
+#: src/Subscriptions/Creator.php
+msgid "No subscription created: the customer did not save the PayPal payment method."
+msgstr ""
+
+#: src/Subscriptions/Creator.php
+msgid "%d subscription created."
+msgid_plural "%d subscriptions created."
+msgstr[0] ""
+msgstr[1] ""
+
