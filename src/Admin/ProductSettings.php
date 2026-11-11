@@ -65,6 +65,16 @@ final class ProductSettings {
 			)
 		);
 
+		woocommerce_wp_textarea_input(
+			array(
+				'id'          => '_tasg_abo_box_text',
+				'label'       => __( 'Text under the subscribe box', 'tasg-abo' ),
+				'description' => __( 'Optional. Replaces the text from the subscription settings for this product. Placeholders: {price} {regular_price} {saving} {saving_percent} {plan} {period}.', 'tasg-abo' ),
+				'desc_tip'    => true,
+				'rows'        => 2,
+			)
+		);
+
 		echo '<p class="form-field"><label>' . esc_html__( 'Plans offered', 'tasg-abo' ) . '</label><span class="description" style="margin-left:0">';
 
 		$plans = ( new PlanRepository() )->all();
@@ -129,6 +139,10 @@ final class ProductSettings {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$default = isset( $_POST['_tasg_abo_default_plan'] ) ? absint( $_POST['_tasg_abo_default_plan'] ) : 0;
 		$default = isset( $plans[ $default ] ) ? $default : 0;
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$box_text = isset( $_POST['_tasg_abo_box_text'] ) ? wp_kses_post( wp_unslash( $_POST['_tasg_abo_box_text'] ) ) : '';
+		$product->update_meta_data( '_tasg_abo_box_text', trim( $box_text ) );
 
 		$product->update_meta_data( '_tasg_abo_enabled', $enabled );
 		$product->update_meta_data( '_tasg_abo_default_plan', $default );
