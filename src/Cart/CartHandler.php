@@ -108,6 +108,11 @@ final class CartHandler {
 	public function save_order_item_meta( \WC_Order_Item_Product $item, string $cart_item_key, array $values ): void {
 		if ( ! empty( $values['tasg_abo_plan'] ) ) {
 			$item->add_meta_data( '_tasg_abo_plan', wp_json_encode( $values['tasg_abo_plan'] ), true );
+
+			// Language of the customer right now (WPML code), so later emails use it even
+			// when the order is processed in a webhook or background job.
+			$lang = apply_filters( 'wpml_current_language', null );
+			$item->add_meta_data( '_tasg_abo_lang', is_string( $lang ) && '' !== $lang ? $lang : determine_locale(), true );
 		}
 	}
 }
