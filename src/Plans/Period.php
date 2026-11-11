@@ -27,8 +27,14 @@ final class Period {
 			case 'day':
 				return $timestamp + $value * DAY_IN_SECONDS;
 			case 'month':
-				$date = new \DateTimeImmutable( '@' . $timestamp );
-				return $date->modify( '+' . $value . ' months' )->getTimestamp();
+				// Calendar months in the shop time zone. A day that does not exist in the
+				// target month (31st to February) becomes the last day of that month.
+				$date   = ( new \DateTimeImmutable( '@' . $timestamp ) )->setTimezone( wp_timezone() );
+				$day    = (int) $date->format( 'j' );
+				$first  = $date->modify( 'first day of this month' )->modify( '+' . $value . ' months' );
+				$target = $first->setDate( (int) $first->format( 'Y' ), (int) $first->format( 'n' ), min( $day, (int) $first->format( 't' ) ) );
+
+				return $target->getTimestamp();
 		}
 
 		return $timestamp + $value * WEEK_IN_SECONDS;
