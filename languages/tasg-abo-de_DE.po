@@ -592,6 +592,10 @@ msgid "Next order"
 msgstr "Nächste Bestellung"
 
 #: src/Frontend/MyAccount.php
+msgid "Ships to"
+msgstr "Lieferadresse"
+
+#: src/Frontend/MyAccount.php
 msgid "Paused"
 msgstr "Pausiert"
 
@@ -602,6 +606,10 @@ msgstr "Gekündigt"
 #: src/Frontend/MyAccount.php
 msgid "Skip next"
 msgstr "Nächste überspringen"
+
+#: src/Frontend/MyAccount.php
+msgid "Change address"
+msgstr "Adresse ändern"
 
 #: src/Frontend/ProductToggle.php
 msgid "Subscribe and save"
