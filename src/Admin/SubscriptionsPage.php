@@ -139,7 +139,7 @@ final class SubscriptionsPage {
 			echo '<td>' . esc_html( $user ? $user->user_email : '' ) . '</td>';
 			echo '<td>' . esc_html( ( $product ? $product->get_name() : '' ) . ' x ' . (int) $row->quantity ) . '</td>';
 			echo '<td>' . esc_html( \TasgAbo\Plans\Period::row_label( $row ) ) . '</td>';
-			echo '<td>' . esc_html( $row->status ) . '</td>';
+			echo '<td>' . esc_html( $row->status . ( ! empty( $row->is_test ) ? ' (test)' : '' ) ) . '</td>';
 			echo '<td>' . esc_html( (string) $row->next_payment ) . '</td><td>';
 			$this->shipping_form( (string) (int) $row->id, (string) $row->shipping_mode, $until, __( 'Save', 'tasg-abo' ) );
 			echo '</td><td>';
