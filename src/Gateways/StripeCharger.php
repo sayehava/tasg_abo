@@ -53,8 +53,22 @@ final class StripeCharger {
 		$customer = '';
 		$method   = '';
 
+		// A payment method the customer picked for this subscription wins.
+		if ( (int) $sub->payment_token_id > 0 ) {
+			$token = \WC_Payment_Tokens::get( (int) $sub->payment_token_id );
+
+			if ( $token && (int) $token->get_user_id() === (int) $sub->user_id ) {
+				$customer = (string) get_user_option( '_stripe_customer_id', (int) $sub->user_id );
+				$method   = (string) $token->get_token();
+			}
+		}
+
 		// The last order first, the first order if the last one no longer exists.
 		foreach ( array( (int) $sub->last_order_id, (int) $sub->origin_order_id ) as $order_id ) {
+			if ( '' !== $customer && '' !== $method ) {
+				break;
+			}
+
 			$source = $order_id ? wc_get_order( $order_id ) : false;
 
 			if ( $source && '' !== (string) $source->get_meta( '_stripe_customer_id' ) && '' !== (string) $source->get_meta( '_stripe_source_id' ) ) {
