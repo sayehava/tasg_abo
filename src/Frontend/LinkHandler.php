@@ -97,6 +97,7 @@ final class LinkHandler {
 			if ( ! $errors ) {
 				$saved = array_intersect_key( $values, array_flip( Address::FIELDS ) );
 				( new Repository() )->update( (int) $sub->id, array( 'address_override' => wp_json_encode( $saved ) ) );
+				\TasgAbo\Log::info( sprintf( 'Subscription #%d: shipping address for the next order corrected.', (int) $sub->id ) );
 
 				$this->page(
 					__( 'Address saved', 'tasg-abo' ),
