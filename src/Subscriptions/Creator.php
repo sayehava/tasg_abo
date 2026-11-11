@@ -50,8 +50,7 @@ final class Creator {
 					'next_payment'     => gmdate( 'Y-m-d H:i:s', time() + $weeks * WEEK_IN_SECONDS ),
 					'origin_order_id'  => $order->get_id(),
 					'gateway'          => (string) $order->get_payment_method(),
-					'gateway_customer' => (string) $order->get_meta( '_stripe_customer_id' ),
-					'gateway_method'   => (string) $order->get_meta( '_stripe_source_id' ),
+					'last_order_id'    => $order->get_id(),
 					'language'         => $this->order_language( $order ),
 				)
 			);
