@@ -13,6 +13,7 @@
 
 namespace TasgAbo\Admin;
 
+use TasgAbo\Log;
 use TasgAbo\Plans\Period;
 use TasgAbo\Plans\PlanRepository;
 use TasgAbo\Settings;
@@ -27,6 +28,7 @@ final class DiagnosticsPage {
 	public function register(): void {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'admin_post_tasg_abo_run_check', array( $this, 'handle_run_check' ) );
+		add_action( 'admin_post_tasg_abo_download_log', array( $this, 'handle_download_log' ) );
 	}
 
 	public function add_menu(): void {
@@ -193,10 +195,12 @@ final class DiagnosticsPage {
 	}
 
 	/**
-	 * Last lines of the plugin log (WooCommerce log source "tasg-abo"), from the log
-	 * file, or from the log table when WooCommerce stores logs in the database.
+	 * Lines of the plugin log (WooCommerce log source "tasg-abo"), oldest first,
+	 * from the log files, or from the log table when WooCommerce keeps logs in the database.
+	 *
+	 * @return string[]
 	 */
-	private function render_log(): void {
+	private function collect_log( int $max_lines, bool $problems_only ): array {
 		global $wpdb;
 
 		$lines = array();
@@ -206,25 +210,58 @@ final class DiagnosticsPage {
 			usort(
 				$files,
 				static function ( $a, $b ) {
-					return filemtime( $b ) <=> filemtime( $a );
+					return filemtime( $a ) <=> filemtime( $b );
 				}
 			);
 
-			foreach ( array_slice( $files, 0, 2 ) as $file ) {
-				$lines = array_merge( $lines, $this->tail( $file, 100 ) );
+			foreach ( array_slice( $files, -3 ) as $file ) {
+				$lines = array_merge( $lines, $this->tail( $file, 2000 ) );
 			}
 		}
 
 		$log_table = $wpdb->prefix . 'woocommerce_log';
 		if ( ! $lines && $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $log_table ) ) === $log_table ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$rows = (array) $wpdb->get_results( $wpdb->prepare( "SELECT timestamp, level, message FROM {$log_table} WHERE source = %s ORDER BY log_id DESC LIMIT 100", 'tasg-abo' ) ); // phpcs:ignore WordPress.DB
+			$rows = (array) $wpdb->get_results( $wpdb->prepare( "SELECT timestamp, level, message FROM {$log_table} WHERE source = %s ORDER BY log_id DESC LIMIT 2000", Log::SOURCE ) ); // phpcs:ignore WordPress.DB
 			foreach ( array_reverse( $rows ) as $row ) {
-				$lines[] = $row->timestamp . ' ' . $row->level . ' ' . $row->message;
+				$lines[] = $row->timestamp . ' ' . strtoupper( $row->level ) . ' ' . $row->message;
 			}
 		}
 
-		echo '<h2>Plugin log (latest lines)</h2>';
-		echo '<pre style="max-width:900px;max-height:360px;overflow:auto;background:#fff;border:1px solid #ccd0d4;padding:8px">' . esc_html( $lines ? implode( "\n", $lines ) : 'No log lines yet. Nothing has gone wrong, or nothing has run. Logs also appear under WooCommerce > Status > Logs, source tasg-abo.' ) . '</pre>';
+		if ( $problems_only ) {
+			$lines = array_values( array_filter( $lines, static function ( $line ) {
+				return (bool) preg_match( '/\b(WARNING|ERROR|CRITICAL|ALERT|EMERGENCY)\b/', $line );
+			} ) );
+		}
+
+		return array_slice( $lines, -$max_lines );
+	}
+
+	private function render_log(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$problems = isset( $_GET['log'] ) && 'problems' === $_GET['log'];
+		$base     = admin_url( 'admin.php?page=' . self::SLUG );
+		$lines    = $this->collect_log( 300, $problems );
+
+		echo '<h2>Plugin log</h2>';
+		echo '<p>Everything the plugin does is logged here (subscription and order numbers and results, no card, address or email data). '
+			. '<a href="' . esc_url( $base ) . '">All</a> | <a href="' . esc_url( add_query_arg( 'log', 'problems', $base ) ) . '">Warnings and errors only</a> | '
+			. '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=tasg_abo_download_log' ), 'tasg_abo_download_log' ) ) . '">Download</a></p>';
+		echo '<pre style="max-width:1100px;max-height:420px;overflow:auto;background:#fff;border:1px solid #ccd0d4;padding:8px;white-space:pre-wrap">' . esc_html( $lines ? implode( "\n", $lines ) : 'No log lines yet. Either nothing has run, or nothing has gone wrong. The same log is under WooCommerce > Status > Logs, source tasg-abo.' ) . '</pre>';
+	}
+
+	public function handle_download_log(): void {
+		check_admin_referer( 'tasg_abo_download_log' );
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( 'Not allowed.' );
+		}
+
+		nocache_headers();
+		header( 'Content-Type: text/plain; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename="tasg-abo-log-' . gmdate( 'Y-m-d-His' ) . '.txt"' );
+
+		echo esc_html( implode( "\n", $this->collect_log( 5000, false ) ) );
+		exit;
 	}
 
 	/**
