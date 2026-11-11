@@ -23,6 +23,8 @@ final class CheckoutRules {
 		add_filter( 'wc_stripe_force_save_payment_method', array( $this, 'force_save_card' ) );
 		add_filter( 'woocommerce_available_payment_gateways', array( $this, 'limit_gateways' ) );
 		add_filter( 'wc_stripe_payment_request_supported_types', array( $this, 'hide_express_checkout' ) );
+		add_filter( 'wc_stripe_upe_params', array( $this, 'flag_subscription_cart' ) );
+		add_filter( 'wc_stripe_params', array( $this, 'flag_subscription_cart' ) );
 	}
 
 	public static function cart_has_subscription(): bool {
@@ -61,6 +63,24 @@ final class CheckoutRules {
 		}
 
 		return $types;
+	}
+
+	/**
+	 * Tells the Stripe checkout script that this cart holds a subscription. The script then
+	 * asks Stripe to save the payment method for off session use ("setup future usage"), which
+	 * makes Stripe's payment form offer only methods that can be charged again, and it shows
+	 * the terms for future charges. The Stripe plugin sets this flag only for WooCommerce
+	 * Subscriptions, so for our subscriptions it has to be set here.
+	 *
+	 * @param array $params Parameters handed to the Stripe checkout script.
+	 */
+	public function flag_subscription_cart( $params ) {
+		if ( is_array( $params ) && self::cart_has_subscription() ) {
+			$params['cartContainsSubscription']          = true;
+			$params['subscriptionRequiresManualRenewal'] = false;
+		}
+
+		return $params;
 	}
 
 	public function require_account( $required ) {
