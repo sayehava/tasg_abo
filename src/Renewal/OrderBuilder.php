@@ -60,6 +60,11 @@ final class OrderBuilder {
 		$order->set_payment_method_title( $origin->get_payment_method_title() );
 
 		$order->update_meta_data( '_tasg_abo_renewal_of', (int) $sub->id );
+
+		// A renewal of a test subscription is a test order too: real order, marked.
+		if ( ! empty( $sub->is_test ) ) {
+			\TasgAbo\TestMarker::apply( $order );
+		}
 		$order->update_meta_data( 'wpml_language', $sub->language );
 		$order->add_order_note(
 			/* translators: %d: subscription id */
