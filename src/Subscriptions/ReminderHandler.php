@@ -7,12 +7,11 @@
 
 namespace TasgAbo\Subscriptions;
 
+use TasgAbo\Plans\Period;
+
 defined( 'ABSPATH' ) || exit;
 
 final class ReminderHandler {
-
-	/** Customers always get at least this much notice. One hour of safety is added. */
-	private const MIN_NOTICE = 49 * HOUR_IN_SECONDS;
 
 	private $repository;
 
@@ -38,7 +37,7 @@ final class ReminderHandler {
 			$this->repository->update(
 				(int) $row->id,
 				array(
-					'next_payment'  => gmdate( 'Y-m-d H:i:s', $due + (int) $row->interval_weeks * WEEK_IN_SECONDS ),
+					'next_payment'  => gmdate( 'Y-m-d H:i:s', Period::add( $due, (int) $row->period_value, (string) $row->period_unit ) ),
 					'skip_next'     => 0,
 					'reminder_sent' => 0,
 				)
@@ -46,8 +45,8 @@ final class ReminderHandler {
 			return;
 		}
 
-		// Never let the notice be shorter than promised.
-		$earliest = time() + self::MIN_NOTICE;
+		// Never let the notice be shorter than the plan promises (five minutes of safety added).
+		$earliest = time() + (int) $row->reminder_minutes * MINUTE_IN_SECONDS + 5 * MINUTE_IN_SECONDS;
 		if ( $due < $earliest ) {
 			$this->repository->update( (int) $row->id, array( 'next_payment' => gmdate( 'Y-m-d H:i:s', $earliest ) ) );
 		}
