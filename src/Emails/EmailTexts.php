@@ -27,6 +27,23 @@ final class EmailTexts {
 		);
 	}
 
+	/**
+	 * The language key texts are stored under. An order language that has no texts
+	 * of its own (a locale like de_DE next to WPML codes like de, or no WPML at all)
+	 * falls back to the two letter code, then to "default".
+	 */
+	public static function resolve_key( string $lang ): string {
+		$known = self::languages();
+
+		if ( isset( $known[ $lang ] ) ) {
+			return $lang;
+		}
+
+		$short = strtolower( substr( $lang, 0, 2 ) );
+
+		return isset( $known[ $short ] ) ? $short : 'default';
+	}
+
 	public static function save( string $email_id, string $lang, array $texts ): void {
 		$all = (array) get_option( self::OPTION, array() );
 
