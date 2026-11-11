@@ -70,6 +70,8 @@ final class Plugin {
 
 		if ( is_admin() ) {
 			( new Admin\ProductSettings() )->register();
+			( new Admin\SettingsPage() )->register();
+			( new Admin\SubscriptionsPage() )->register();
 		}
 	}
 
