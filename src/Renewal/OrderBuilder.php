@@ -3,9 +3,9 @@
  * Builds a standard WooCommerce renewal order for a subscription.
  *
  * It is a normal order (same hooks, stock handling, taxes and emails as any
- * other), created as "pending". The address always comes from the customer
- * account. Shipping method and cost are copied from the last order of the
- * subscription (never the first), or set to free during a free shipping period.
+ * other), created as "pending". Address, shipping method and cost
+ * follow the last order of the subscription (not the first one every time), see
+ * Subscriptions\Address. Shipping is set to free during a free shipping period.
  *
  * @package TasgAbo
  */
@@ -13,6 +13,7 @@
 namespace TasgAbo\Renewal;
 
 use TasgAbo\Pricing;
+use TasgAbo\Subscriptions\Address;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -39,8 +40,8 @@ final class OrderBuilder {
 			return null;
 		}
 
-		$order->set_address( $this->address( $origin, 'billing', (int) $sub->user_id ), 'billing' );
-		$order->set_address( $this->address( $origin, 'shipping', (int) $sub->user_id ), 'shipping' );
+		$order->set_address( Address::billing( $sub ), 'billing' );
+		$order->set_address( Address::shipping( $sub ), 'shipping' );
 
 		$qty = max( 1, (int) $sub->quantity );
 		$net = wc_get_price_excluding_tax(
@@ -69,20 +70,6 @@ final class OrderBuilder {
 		$order->save();
 
 		return $order;
-	}
-
-	/**
-	 * Address from the customer account. Only if the account has none, the last order is used.
-	 */
-	private function address( \WC_Order $origin, string $type, int $user_id ): array {
-		$customer = new \WC_Customer( $user_id );
-		$address  = 'billing' === $type ? $customer->get_billing() : $customer->get_shipping();
-
-		if ( empty( $address['address_1'] ) ) {
-			return $origin->get_address( $type );
-		}
-
-		return $address;
 	}
 
 	private function add_shipping( \WC_Order $order, \WC_Order $origin, object $sub ): void {
