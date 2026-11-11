@@ -856,11 +856,11 @@ msgid "Orders of the subscription for %s"
 msgstr ""
 
 #: src/Frontend/ProductToggle.php
-msgid "You save {saving} ({saving_percent}) on every order. A subscription is for one piece and ordered on its own: only this product will be in your cart."
+msgid "You save {saving} ({saving_percent}) per order. Only this product stays in your cart."
 msgstr ""
 
 #: src/Frontend/ProductToggle.php
-msgid "A subscription is for one piece and ordered on its own: only this product will be in your cart."
+msgid "Only this product stays in your cart."
 msgstr ""
 
 #: src/Frontend/ProductToggle.php
