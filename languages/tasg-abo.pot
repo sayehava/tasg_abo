@@ -837,6 +837,38 @@ msgstr ""
 msgid "Tasg Abo needs WooCommerce to be installed and active."
 msgstr ""
 
+#: src/Privacy/PrivacyTools.php
+msgid "Quantity"
+msgstr ""
+
+#: src/Privacy/PrivacyTools.php
+msgid "Started"
+msgstr ""
+
+#: src/Privacy/PrivacyTools.php
+msgid "Language"
+msgstr ""
+
+#: src/Privacy/PrivacyTools.php
+msgid "Payment gateway"
+msgstr ""
+
+#: src/Privacy/PrivacyTools.php
+msgid "Corrected shipping address for the next order"
+msgstr ""
+
+#: src/Privacy/PrivacyTools.php
+msgid "Subscriptions of this customer. No card or bank data is stored by the shop."
+msgstr ""
+
+#: src/Privacy/PrivacyTools.php
+msgid "Subscriptions were cancelled and their personal data cleared. The bare subscription records are kept, because the orders and accounting that depend on them must be kept."
+msgstr ""
+
+#: src/Privacy/PrivacyTools.php
+msgid "When you subscribe to a product, we store the subscription (product, plan, dates and status), the language of your order and, if you correct it, a shipping address for your next order. We do not store card or bank details. Payments are handled by the payment provider (for example Stripe or PayPal), and we only keep references that the payment plugins already keep with your orders. Subscription records are kept as long as our accounting and legal duties require. On request we cancel your subscriptions and clear the personal data in them."
+msgstr ""
+
 #: src/Renewal/OrderBuilder.php
 msgid "Renewal of subscription #%d."
 msgstr ""
