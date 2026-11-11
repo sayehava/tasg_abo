@@ -1,6 +1,6 @@
 <?php
 /**
- * "We will charge you again" email, sent at least 48 hours before a renewal.
+ * "We will charge you again" email, sent before a renewal. The lead time is set per plan.
  *
  * @package TasgAbo
  */
@@ -15,7 +15,7 @@ final class ReminderEmail extends SubscriptionEmail {
 		$this->setup_subscription_email(
 			'tasg_abo_reminder',
 			__( 'Subscription reminder', 'tasg-abo' ),
-			__( 'Sent to the customer at least 48 hours before the next subscription order is charged.', 'tasg-abo' )
+			__( 'Sent to the customer before the next subscription order is charged. How long before is set per plan.', 'tasg-abo' )
 		);
 
 		parent::__construct();
