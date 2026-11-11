@@ -1,6 +1,6 @@
 <?php
 /**
- * Settings page: WooCommerce > Subscriptions settings.
+ * Settings section: WooCommerce > Settings > Subscriptions > Settings.
  *
  * @package TasgAbo
  */
@@ -16,7 +16,6 @@ final class SettingsPage {
 	private const SLUG = 'tasg-abo-settings';
 
 	public function register(): void {
-		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 
 		// options.php asks for manage_options by default. Shop managers may save these settings too.
@@ -25,17 +24,6 @@ final class SettingsPage {
 			static function () {
 				return 'manage_woocommerce';
 			}
-		);
-	}
-
-	public function add_menu(): void {
-		add_submenu_page(
-			'woocommerce',
-			__( 'Subscription settings', 'tasg-abo' ),
-			__( 'Subscription settings', 'tasg-abo' ),
-			'manage_woocommerce',
-			self::SLUG,
-			array( $this, 'render' )
 		);
 	}
 
@@ -76,7 +64,7 @@ final class SettingsPage {
 			return;
 		}
 
-		echo '<div class="wrap"><h1>' . esc_html__( 'Subscription settings', 'tasg-abo' ) . '</h1>';
+		echo '<div class="tasg-abo-section">';
 		echo '<form method="post" action="options.php">';
 		settings_fields( self::SLUG );
 		echo '<table class="form-table" role="presentation">';
@@ -119,7 +107,7 @@ final class SettingsPage {
 			echo '<option value="' . esc_attr( $key ) . '"' . selected( Settings::email_designer(), $key, false ) . '>' . esc_html( $label ) . '</option>';
 		}
 		echo '</select><p class="description">' . esc_html( Settings::yaymail_installed() ? __( 'YayMail was found on this site.', 'tasg-abo' ) : __( 'YayMail was not found on this site, so the plugin editor is used.', 'tasg-abo' ) ) . ' ';
-		echo esc_html__( 'Design the subscription emails in YayMail (YayMail > Email templates) or in the plugin editor (WooCommerce > Subscription emails).', 'tasg-abo' ) . '</p></td></tr>';
+		echo esc_html__( 'Design the subscription emails in YayMail (YayMail > Email templates) or in the plugin editor (WooCommerce > Settings > Subscriptions > Emails).', 'tasg-abo' ) . '</p></td></tr>';
 
 		echo '<tr><th scope="row"><label for="tasg_marker">' . esc_html__( 'Test order marker', 'tasg-abo' ) . '</label></th><td>';
 		echo '<input id="tasg_marker" class="large-text" name="' . esc_attr( Settings::TEST_MARKER_TEXT ) . '" value="' . esc_attr( Settings::test_marker_text() ) . '"><br>';
