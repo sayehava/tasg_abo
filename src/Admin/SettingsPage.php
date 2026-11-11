@@ -35,6 +35,8 @@ final class SettingsPage {
 		}
 
 		register_setting( self::SLUG, Settings::EMAIL_DESIGNER, array( 'sanitize_callback' => array( $this, 'sanitize_designer' ) ) );
+		register_setting( self::SLUG, Settings::BOX_TEXT, array( 'sanitize_callback' => 'wp_kses_post' ) );
+		register_setting( self::SLUG, Settings::CART_CONFLICT, array( 'sanitize_callback' => array( $this, 'sanitize_cart_conflict' ) ) );
 		register_setting( self::SLUG, Settings::TEST_MARKER_TEXT, array( 'sanitize_callback' => 'sanitize_text_field' ) );
 		register_setting( self::SLUG, Settings::TEST_MARKER_NOTE, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 		register_setting( self::SLUG, Settings::CARD_NOTICE, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
@@ -45,6 +47,10 @@ final class SettingsPage {
 
 	public function sanitize_yes_no( $value ): string {
 		return 'yes' === $value ? 'yes' : 'no';
+	}
+
+	public function sanitize_cart_conflict( $value ): string {
+		return 'block' === $value ? 'block' : 'replace';
 	}
 
 	public function sanitize_designer( $value ): string {
@@ -108,6 +114,22 @@ final class SettingsPage {
 		}
 		echo '</select><p class="description">' . esc_html( Settings::yaymail_installed() ? __( 'YayMail was found on this site.', 'tasg-abo' ) : __( 'YayMail was not found on this site, so the plugin editor is used.', 'tasg-abo' ) ) . ' ';
 		echo esc_html__( 'Design the subscription emails in YayMail (YayMail > Email templates) or in the plugin editor (WooCommerce > Settings > Subscriptions > Emails).', 'tasg-abo' ) . '</p></td></tr>';
+
+		echo '<tr><th scope="row"><label for="tasg_boxtext">' . esc_html__( 'Text under the subscribe box', 'tasg-abo' ) . '</label></th><td>';
+		echo '<textarea id="tasg_boxtext" class="large-text" rows="3" name="' . esc_attr( Settings::BOX_TEXT ) . '">' . esc_textarea( Settings::box_text_raw() ) . '</textarea>';
+		echo '<p class="description">' . esc_html__( 'Shown under the checkbox on the product page and follows the chosen plan. Leave empty for the default text. Placeholders, calculated from the actual price: {price} {regular_price} {saving} {saving_percent} {plan} {period}. The same values work as shortcodes: [tasg_abo_price] [tasg_abo_regular_price] [tasg_abo_saving] [tasg_abo_saving_percent] [tasg_abo_plan] [tasg_abo_period]. Each product can have its own text on its product page. With WPML, translate this text in WPML > String Translation (context Tasg Abo).', 'tasg-abo' ) . '</p></td></tr>';
+
+		$conflicts = array(
+			'replace' => __( 'Arrange the cart automatically: the newest choice wins', 'tasg-abo' ),
+			'block'   => __( 'Show a message and keep the cart as it is', 'tasg-abo' ),
+		);
+
+		echo '<tr><th scope="row"><label for="tasg_conflict">' . esc_html__( 'Subscription and other products', 'tasg-abo' ) . '</label></th><td>';
+		echo '<select id="tasg_conflict" name="' . esc_attr( Settings::CART_CONFLICT ) . '">';
+		foreach ( $conflicts as $key => $label ) {
+			echo '<option value="' . esc_attr( $key ) . '"' . selected( Settings::cart_conflict(), $key, false ) . '>' . esc_html( $label ) . '</option>';
+		}
+		echo '</select><p class="description">' . esc_html__( 'A subscription must be ordered on its own. When a customer adds a subscription, the other products leave the cart. When a customer adds another product while a subscription is in the cart, the subscription leaves the cart. The customer sees a message each time.', 'tasg-abo' ) . '</p></td></tr>';
 
 		echo '<tr><th scope="row"><label for="tasg_marker">' . esc_html__( 'Test order marker', 'tasg-abo' ) . '</label></th><td>';
 		echo '<input id="tasg_marker" class="large-text" name="' . esc_attr( Settings::TEST_MARKER_TEXT ) . '" value="' . esc_attr( Settings::test_marker_text() ) . '"><br>';
