@@ -88,8 +88,8 @@ final class ProductToggle {
 
 		if ( '' === $template ) {
 			$template = $values['_saving'] > 0
-				? __( 'You save {saving} ({saving_percent}) on every order. A subscription is for one piece and ordered on its own: only this product will be in your cart.', 'tasg-abo' )
-				: __( 'A subscription is for one piece and ordered on its own: only this product will be in your cart.', 'tasg-abo' );
+				? __( 'You save {saving} ({saving_percent}) per order. Only this product stays in your cart.', 'tasg-abo' )
+				: __( 'Only this product stays in your cart.', 'tasg-abo' );
 		}
 
 		foreach ( self::KEYS as $key ) {
@@ -114,10 +114,10 @@ final class ProductToggle {
 		$default_id = Pricing::default_plan_id( $plans, $product );
 
 		echo '<div class="tasg-abo-toggle" style="margin:6px 0 8px;font-size:14px;line-height:1.35;text-align:left">';
-		echo '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px">';
-		echo '<label style="margin:0;display:inline-flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" name="tasg_abo_subscribe" value="1" style="margin:0"> <strong>' . esc_html__( 'Subscribe and save', 'tasg-abo' ) . '</strong></label>';
+		echo '<div style="display:flex;flex-wrap:nowrap;align-items:center;gap:8px">';
+		echo '<label style="margin:0;display:inline-flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap;flex:0 0 auto"><input type="checkbox" name="tasg_abo_subscribe" value="1" style="margin:0"> <strong>' . esc_html__( 'Subscribe and save', 'tasg-abo' ) . '</strong></label>';
 
-		echo '<select name="tasg_abo_plan" aria-label="' . esc_attr__( 'Plan', 'tasg-abo' ) . '" style="width:auto;max-width:100%;min-height:0;height:auto;padding:2px 24px 2px 8px;margin:0;font-size:14px">';
+		echo '<select name="tasg_abo_plan" aria-label="' . esc_attr__( 'Plan', 'tasg-abo' ) . '" style="width:auto!important;flex:0 1 auto;max-width:60%;min-height:0!important;height:auto!important;padding:2px 22px 2px 6px!important;margin:0!important;font-size:13px!important;line-height:1.3!important">';
 		foreach ( $plans as $id => $plan ) {
 			$price = html_entity_decode( wp_strip_all_tags( wc_price( Pricing::subscriber_price( $product, (int) $id ) ) ), ENT_QUOTES, 'UTF-8' );
 			$label = $plan->display_name();
@@ -128,10 +128,10 @@ final class ProductToggle {
 		echo '</select>';
 
 		if ( Settings::admin_only() ) {
-			echo '<small style="color:#b32d2e">' . esc_html__( 'Test phase: only shop managers can see this option.', 'tasg-abo' ) . '</small>';
+			echo '</div><small style="color:#b32d2e;display:block;margin-top:2px">' . esc_html__( 'Test phase: only shop managers can see this option.', 'tasg-abo' ) . '</small>';
+		} else {
+			echo '</div>';
 		}
-
-		echo '</div>';
 
 		foreach ( $plans as $id => $plan ) {
 			echo '<div class="tasg-abo-text" data-plan="' . esc_attr( (string) $id ) . '"' . ( (int) $id === $default_id ? '' : ' hidden' ) . ' style="margin-top:3px;color:#555;font-size:13px">' . $this->text( $product, $plan ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
