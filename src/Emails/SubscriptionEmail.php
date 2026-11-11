@@ -112,6 +112,11 @@ abstract class SubscriptionEmail extends \WC_Email {
 		$previous = apply_filters( 'wpml_current_language', null );
 		do_action( 'wpml_switch_language', $row->language );
 
+		// Also switch the WordPress locale, so this plugin's own texts, dates and the
+		// default email texts come out in the customer's language, even in a background job.
+		$locale   = EmailTexts::locale_for( (string) $row->language );
+		$switched = '' !== $locale && function_exists( 'switch_to_locale' ) && switch_to_locale( $locale );
+
 		$sent = false;
 
 		try {
@@ -141,6 +146,10 @@ abstract class SubscriptionEmail extends \WC_Email {
 				$sent = (bool) $this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
 			}
 		} finally {
+			if ( $switched ) {
+				restore_previous_locale();
+			}
+
 			if ( is_string( $previous ) && '' !== $previous ) {
 				do_action( 'wpml_switch_language', $previous );
 			}
@@ -149,19 +158,56 @@ abstract class SubscriptionEmail extends \WC_Email {
 		return $sent;
 	}
 
+	/**
+	 * What the shop owner saved in WooCommerce > Settings > Emails, or empty. The form
+	 * defaults are not used, because they were built in the site language before the
+	 * language of the customer was switched on.
+	 */
+	private function saved_setting( string $key ): string {
+		$saved = get_option( 'woocommerce_' . $this->id . '_settings' );
+
+		return is_array( $saved ) && ! empty( $saved[ $key ] ) ? (string) $saved[ $key ] : '';
+	}
+
 	public function get_subject() {
-		return '' !== $this->texts['subject'] ? $this->format_string( $this->texts['subject'] ) : parent::get_subject();
+		if ( '' !== $this->texts['subject'] ) {
+			return $this->format_string( $this->texts['subject'] );
+		}
+
+		$saved = $this->saved_setting( 'subject' );
+
+		return $this->format_string( '' !== $saved ? $saved : $this->get_default_subject() );
 	}
 
 	public function get_heading() {
-		return '' !== $this->texts['heading'] ? $this->format_string( $this->texts['heading'] ) : parent::get_heading();
+		if ( '' !== $this->texts['heading'] ) {
+			return $this->format_string( $this->texts['heading'] );
+		}
+
+		$saved = $this->saved_setting( 'heading' );
+
+		return $this->format_string( '' !== $saved ? $saved : $this->get_default_heading() );
+	}
+
+	/**
+	 * Body text: the editor text of this language, else the one saved in the WooCommerce
+	 * email settings, else the built-in default in the customer's language.
+	 */
+	private function body_text(): string {
+		if ( '' !== $this->texts['body'] ) {
+			return $this->texts['body'];
+		}
+
+		$saved = $this->saved_setting( 'body' );
+
+		return '' !== $saved ? $saved : static::default_body();
 	}
 
 	private function template_args( bool $plain ): array {
 		return array(
 			'email_heading'      => $this->get_heading(),
 			'additional_content' => $this->get_additional_content(),
-			'body'               => $this->format_string( '' !== $this->texts['body'] ? $this->texts['body'] : $this->get_option( 'body', static::default_body() ) ),
+			'body'               => $this->format_string( $this->body_text() ),
 			'sent_to_admin'      => false,
 			'plain_text'         => $plain,
 			'email'              => $this,
