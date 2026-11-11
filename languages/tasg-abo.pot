@@ -8,15 +8,11 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: src/Admin/EmailDesigner.php
-msgid "Subscription emails"
-msgstr ""
-
-#: src/Admin/EmailDesigner.php
 msgid "Not allowed."
 msgstr ""
 
 #: src/Admin/EmailDesigner.php
-msgid "The subscription emails are designed in YayMail (YayMail > Email templates, source \"Tasg Abo\"). To use the plugin editor instead, change \"Email design\" in WooCommerce > Subscription settings."
+msgid "The subscription emails are designed in YayMail (YayMail > Email templates, source \"Tasg Abo\"). To use the plugin editor instead, change \"Email design\" under WooCommerce > Settings > Subscriptions > Settings."
 msgstr ""
 
 #: src/Admin/EmailDesigner.php
@@ -57,10 +53,6 @@ msgstr ""
 
 #: src/Admin/EmailDesigner.php
 msgid "Send test email to me"
-msgstr ""
-
-#: src/Admin/PlansPage.php
-msgid "Subscription plans"
 msgstr ""
 
 #: src/Admin/PlansPage.php
@@ -228,7 +220,7 @@ msgid "Plans offered"
 msgstr ""
 
 #: src/Admin/ProductSettings.php
-msgid "No plans yet. Create them under WooCommerce > Subscription plans."
+msgid "No plans yet. Create them under WooCommerce > Settings > Subscriptions > Plans."
 msgstr ""
 
 #: src/Admin/ProductSettings.php
@@ -243,8 +235,24 @@ msgstr ""
 msgid "Default for this product"
 msgstr ""
 
-#: src/Admin/SettingsPage.php
-msgid "Subscription settings"
+#: src/Admin/SettingsHub.php
+msgid "Subscriptions"
+msgstr ""
+
+#: src/Admin/SettingsHub.php
+msgid "Settings"
+msgstr ""
+
+#: src/Admin/SettingsHub.php
+msgid "Plans"
+msgstr ""
+
+#: src/Admin/SettingsHub.php
+msgid "Emails"
+msgstr ""
+
+#: src/Admin/SettingsHub.php
+msgid "Diagnostics"
 msgstr ""
 
 #: src/Admin/SettingsPage.php
@@ -324,7 +332,7 @@ msgid "YayMail was not found on this site, so the plugin editor is used."
 msgstr ""
 
 #: src/Admin/SettingsPage.php
-msgid "Design the subscription emails in YayMail (YayMail > Email templates) or in the plugin editor (WooCommerce > Subscription emails)."
+msgid "Design the subscription emails in YayMail (YayMail > Email templates) or in the plugin editor (WooCommerce > Settings > Subscriptions > Emails)."
 msgstr ""
 
 #: src/Admin/SettingsPage.php
@@ -373,10 +381,6 @@ msgstr ""
 
 #: src/Admin/SettingsPage.php
 msgid "Needs the WooCommerce PayPal Payments plugin with saving of PayPal payment methods enabled, and the customer must save the method at checkout. Without a saved method the subscription is not created. Try it with a test purchase first."
-msgstr ""
-
-#: src/Admin/SubscriptionsPage.php
-msgid "Subscriptions"
 msgstr ""
 
 #: src/Admin/SubscriptionsPage.php
