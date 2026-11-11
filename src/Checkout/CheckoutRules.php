@@ -30,7 +30,7 @@ final class CheckoutRules {
 		}
 
 		foreach ( WC()->cart->get_cart() as $item ) {
-			if ( ! empty( $item['tasg_abo_interval'] ) ) {
+			if ( ! empty( $item['tasg_abo_plan'] ) ) {
 				return true;
 			}
 		}
