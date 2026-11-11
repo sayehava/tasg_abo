@@ -60,6 +60,7 @@ final class Plugin {
 		( new Subscriptions\Scheduler( new Subscriptions\Repository() ) )->register();
 		( new Subscriptions\ReminderHandler( new Subscriptions\Repository() ) )->register();
 		( new Subscriptions\PauseHandler( new Subscriptions\Repository() ) )->register();
+		( new Renewal\RenewalHandler( new Subscriptions\Repository(), new Renewal\OrderBuilder(), new Gateways\StripeCharger() ) )->register();
 		( new Emails\Registry() )->register();
 		( new Checkout\CheckoutRules() )->register();
 		( new Subscriptions\Creator( new Subscriptions\Repository() ) )->register();
