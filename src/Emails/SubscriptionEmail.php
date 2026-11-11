@@ -106,7 +106,7 @@ abstract class SubscriptionEmail extends \WC_Email {
 			$this->recipient = '' !== $test_to ? $test_to : $user->user_email;
 			$this->texts     = EmailTexts::get( $this->id, '' !== (string) $row->language ? (string) $row->language : 'default' );
 
-			$amount = (float) Pricing::subscriber_price( $product ) * (int) $row->quantity;
+			$amount = (float) Pricing::subscriber_price( $product, (int) $row->plan_id ) * (int) $row->quantity;
 
 			$this->placeholders['{customer_name}'] = $user->display_name;
 			$this->placeholders['{product_name}']  = $product->get_name();
