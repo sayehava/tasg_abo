@@ -18,6 +18,14 @@ final class SettingsPage {
 	public function register(): void {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
+
+		// options.php asks for manage_options by default. Shop managers may save these settings too.
+		add_filter(
+			'option_page_capability_' . self::SLUG,
+			static function () {
+				return 'manage_woocommerce';
+			}
+		);
 	}
 
 	public function add_menu(): void {
