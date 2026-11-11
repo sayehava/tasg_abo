@@ -42,6 +42,10 @@ final class SettingsPage {
 	public function register_settings(): void {
 		register_setting( self::SLUG, Settings::RENEWAL_STATUS, array( 'sanitize_callback' => 'sanitize_key' ) );
 		register_setting( self::SLUG, Settings::PAUSE_REMINDER_DAYS, array( 'sanitize_callback' => array( $this, 'sanitize_days' ) ) );
+		foreach ( Settings::CUSTOMER_OPTIONS as $definition ) {
+			register_setting( self::SLUG, $definition[0], array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
+		}
+
 		register_setting( self::SLUG, Settings::ADMIN_ONLY, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 		register_setting( self::SLUG, Settings::PAYPAL_ENABLED, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 	}
@@ -80,6 +84,23 @@ final class SettingsPage {
 		echo '<tr><th scope="row"><label for="tasg_days">' . esc_html__( 'Days between pause reminders', 'tasg-abo' ) . '</label></th><td>';
 		echo '<input id="tasg_days" type="number" min="1" name="' . esc_attr( Settings::PAUSE_REMINDER_DAYS ) . '" value="' . esc_attr( (string) Settings::pause_reminder_days() ) . '">';
 		echo '<p class="description">' . esc_html__( 'A paused customer gets three reminders to continue or cancel. Without an answer the subscription is cancelled.', 'tasg-abo' ) . '</p></td></tr>';
+
+		$choices = array(
+			'skip'    => __( 'Skip the next order', 'tasg-abo' ),
+			'pause'   => __( 'Pause for the next period', 'tasg-abo' ),
+			'address' => __( 'Change the shipping address of the next order', 'tasg-abo' ),
+			'plan'    => __( 'Change the plan (period)', 'tasg-abo' ),
+			'payment' => __( 'Change the payment method (Stripe)', 'tasg-abo' ),
+			'orders'  => __( 'See the past orders of the subscription', 'tasg-abo' ),
+		);
+
+		echo '<tr><th scope="row">' . esc_html__( 'What customers may do', 'tasg-abo' ) . '</th><td>';
+		foreach ( $choices as $action => $label ) {
+			$option = Settings::CUSTOMER_OPTIONS[ $action ][0];
+			echo '<input type="hidden" name="' . esc_attr( $option ) . '" value="no">';
+			echo '<label style="display:block"><input type="checkbox" name="' . esc_attr( $option ) . '" value="yes"' . checked( Settings::customer_may( $action ), true, false ) . '> ' . esc_html( $label ) . '</label>';
+		}
+		echo '<p class="description">' . esc_html__( 'Cancelling is always possible for customers (contracts concluded online in Germany need an easy way to cancel). Continuing after a pause is always possible too.', 'tasg-abo' ) . '</p></td></tr>';
 
 		echo '<tr><th scope="row">' . esc_html__( 'PayPal (experimental)', 'tasg-abo' ) . '</th><td>';
 		echo '<input type="hidden" name="' . esc_attr( Settings::PAYPAL_ENABLED ) . '" value="no">';
