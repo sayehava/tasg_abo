@@ -11,6 +11,8 @@ defined( 'ABSPATH' ) || exit;
 
 final class PlanRepository {
 
+	public const WPML_CONTEXT = 'Tasg Abo';
+
 	private const OPTION  = 'tasg_abo_plans';
 	private const NEXT_ID = 'tasg_abo_plan_next_id';
 
@@ -30,6 +32,18 @@ final class PlanRepository {
 		ksort( $plans );
 
 		return $plans;
+	}
+
+	/**
+	 * Offers every plan name to WPML String Translation (WPML > String Translation,
+	 * context "Tasg Abo"). Harmless without WPML. Runs in the admin, WPML ignores repeats.
+	 */
+	public function register_strings(): void {
+		foreach ( $this->all() as $plan ) {
+			if ( '' !== $plan->name ) {
+				do_action( 'wpml_register_single_string', self::WPML_CONTEXT, 'plan-' . $plan->id . '-name', $plan->name );
+			}
+		}
 	}
 
 	public function find( int $id ): ?Plan {
