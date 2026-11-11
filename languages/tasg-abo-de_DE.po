@@ -837,6 +837,38 @@ msgstr "Tasg Abo konnte nicht starten: %s"
 msgid "Tasg Abo needs WooCommerce to be installed and active."
 msgstr "Tasg Abo benötigt WooCommerce. Bitte installieren und aktivieren Sie es."
 
+#: src/Privacy/PrivacyTools.php
+msgid "Quantity"
+msgstr "Menge"
+
+#: src/Privacy/PrivacyTools.php
+msgid "Started"
+msgstr "Gestartet"
+
+#: src/Privacy/PrivacyTools.php
+msgid "Language"
+msgstr "Sprache"
+
+#: src/Privacy/PrivacyTools.php
+msgid "Payment gateway"
+msgstr "Zahlungsart"
+
+#: src/Privacy/PrivacyTools.php
+msgid "Corrected shipping address for the next order"
+msgstr "Korrigierte Lieferadresse für die nächste Bestellung"
+
+#: src/Privacy/PrivacyTools.php
+msgid "Subscriptions of this customer. No card or bank data is stored by the shop."
+msgstr "Abos dieses Kunden. Der Shop speichert keine Karten- oder Bankdaten."
+
+#: src/Privacy/PrivacyTools.php
+msgid "Subscriptions were cancelled and their personal data cleared. The bare subscription records are kept, because the orders and accounting that depend on them must be kept."
+msgstr "Abos wurden gekündigt und ihre personenbezogenen Daten gelöscht. Die reinen Abo-Datensätze bleiben erhalten, weil die davon abhängigen Bestellungen und die Buchhaltung aufbewahrt werden müssen."
+
+#: src/Privacy/PrivacyTools.php
+msgid "When you subscribe to a product, we store the subscription (product, plan, dates and status), the language of your order and, if you correct it, a shipping address for your next order. We do not store card or bank details. Payments are handled by the payment provider (for example Stripe or PayPal), and we only keep references that the payment plugins already keep with your orders. Subscription records are kept as long as our accounting and legal duties require. On request we cancel your subscriptions and clear the personal data in them."
+msgstr "Wenn Sie ein Produkt abonnieren, speichern wir das Abo (Produkt, Plan, Termine und Status), die Sprache Ihrer Bestellung und, falls Sie sie korrigieren, eine Lieferadresse für Ihre nächste Bestellung. Wir speichern keine Karten- oder Bankdaten. Zahlungen werden vom Zahlungsanbieter abgewickelt (zum Beispiel Stripe oder PayPal), und wir behalten nur Verweise, die die Zahlungs-Plugins ohnehin bei Ihren Bestellungen speichern. Abo-Datensätze werden so lange aufbewahrt, wie unsere Buchhaltungs- und gesetzlichen Pflichten es verlangen. Auf Wunsch kündigen wir Ihre Abos und löschen die darin enthaltenen personenbezogenen Daten."
+
 #: src/Renewal/OrderBuilder.php
 msgid "Renewal of subscription #%d."
 msgstr "Verlängerung von Abo Nr. %d."
