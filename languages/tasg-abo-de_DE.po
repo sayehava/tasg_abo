@@ -216,6 +216,14 @@ msgid "Taken off the price of every subscription order. Leave empty for no disco
 msgstr "Wird vom Preis jeder Abo-Bestellung abgezogen. Leer lassen für keinen Rabatt. Ein Plan unten kann einen eigenen Rabatt haben."
 
 #: src/Admin/ProductSettings.php
+msgid "Text under the subscribe box"
+msgstr "Text unter der Abo-Auswahl"
+
+#: src/Admin/ProductSettings.php
+msgid "Optional. Replaces the text from the subscription settings for this product. Placeholders: {price} {regular_price} {saving} {saving_percent} {plan} {period}."
+msgstr "Optional. Ersetzt für dieses Produkt den Text aus den Abo-Einstellungen. Platzhalter: {price} {regular_price} {saving} {saving_percent} {plan} {period}."
+
+#: src/Admin/ProductSettings.php
 msgid "Plans offered"
 msgstr "Angebotene Pläne"
 
@@ -336,6 +344,26 @@ msgid "Design the subscription emails in YayMail (YayMail > Email templates) or 
 msgstr "Gestalten Sie die Abo-E-Mails in YayMail (YayMail > E-Mail-Vorlagen) oder im Plugin-Editor (WooCommerce > Einstellungen > Abos > E-Mails)."
 
 #: src/Admin/SettingsPage.php
+msgid "Shown under the checkbox on the product page and follows the chosen plan. Leave empty for the default text. Placeholders, calculated from the actual price: {price} {regular_price} {saving} {saving_percent} {plan} {period}. The same values work as shortcodes: [tasg_abo_price] [tasg_abo_regular_price] [tasg_abo_saving] [tasg_abo_saving_percent] [tasg_abo_plan] [tasg_abo_period]. Each product can have its own text on its product page. With WPML, translate this text in WPML > String Translation (context Tasg Abo)."
+msgstr "Wird unter dem Kontrollkästchen auf der Produktseite angezeigt und folgt dem gewählten Plan. Leer lassen für den Standardtext. Platzhalter, berechnet aus dem aktuellen Preis: {price} {regular_price} {saving} {saving_percent} {plan} {period}. Dieselben Werte funktionieren als Shortcodes: [tasg_abo_price] [tasg_abo_regular_price] [tasg_abo_saving] [tasg_abo_saving_percent] [tasg_abo_plan] [tasg_abo_period]. Jedes Produkt kann auf seiner Produktseite einen eigenen Text haben. Mit WPML übersetzen Sie diesen Text unter WPML > String-Übersetzung (Kontext Tasg Abo)."
+
+#: src/Admin/SettingsPage.php
+msgid "Arrange the cart automatically: the newest choice wins"
+msgstr "Warenkorb automatisch anpassen: Die neueste Auswahl gilt"
+
+#: src/Admin/SettingsPage.php
+msgid "Show a message and keep the cart as it is"
+msgstr "Hinweis anzeigen und den Warenkorb unverändert lassen"
+
+#: src/Admin/SettingsPage.php
+msgid "Subscription and other products"
+msgstr "Abo und andere Produkte"
+
+#: src/Admin/SettingsPage.php
+msgid "A subscription must be ordered on its own. When a customer adds a subscription, the other products leave the cart. When a customer adds another product while a subscription is in the cart, the subscription leaves the cart. The customer sees a message each time."
+msgstr "Ein Abo muss einzeln bestellt werden. Wenn ein Kunde ein Abo hinzufügt, verlassen die anderen Produkte den Warenkorb. Wenn ein Kunde ein anderes Produkt hinzufügt, während ein Abo im Warenkorb liegt, verlässt das Abo den Warenkorb. Der Kunde sieht jedes Mal einen Hinweis."
+
+#: src/Admin/SettingsPage.php
 msgid "Test order marker"
 msgstr "Markierung für Testbestellungen"
 
@@ -454,6 +482,14 @@ msgstr "Bitte wählen Sie einen Abo-Plan."
 #: src/Cart/SingleItemRule.php
 msgid "A subscription is always for one piece."
 msgstr "Ein Abo gilt immer für ein Stück."
+
+#: src/Cart/SingleItemRule.php
+msgid "Your cart was emptied, because a subscription is ordered on its own."
+msgstr "Ihr Warenkorb wurde geleert, weil ein Abo einzeln bestellt wird."
+
+#: src/Cart/SingleItemRule.php
+msgid "The subscription was removed from your cart, because a subscription is ordered on its own."
+msgstr "Das Abo wurde aus Ihrem Warenkorb entfernt, weil ein Abo einzeln bestellt wird."
 
 #: src/Cart/SingleItemRule.php
 msgid "A subscription must be ordered on its own. Please finish or empty your cart first."
@@ -820,6 +856,14 @@ msgid "Orders of the subscription for %s"
 msgstr "Bestellungen des Abos für %s"
 
 #: src/Frontend/ProductToggle.php
+msgid "You save {saving} ({saving_percent}) on every order. A subscription is for one piece and ordered on its own: only this product will be in your cart."
+msgstr "Sie sparen bei jeder Bestellung {saving} ({saving_percent}). Ein Abo gilt für ein Stück und wird einzeln bestellt: In Ihrem Warenkorb ist nur dieses Produkt."
+
+#: src/Frontend/ProductToggle.php
+msgid "A subscription is for one piece and ordered on its own: only this product will be in your cart."
+msgstr "Ein Abo gilt für ein Stück und wird einzeln bestellt: In Ihrem Warenkorb ist nur dieses Produkt."
+
+#: src/Frontend/ProductToggle.php
 msgid "Subscribe and save"
 msgstr "Abonnieren und sparen"
 
@@ -830,10 +874,6 @@ msgstr "Plan"
 #: src/Frontend/ProductToggle.php
 msgid "Test phase: only shop managers can see this option."
 msgstr "Testphase: Nur Shop-Manager sehen diese Option."
-
-#: src/Frontend/ProductToggle.php
-msgid "A subscription is for one piece. Cancel, skip or pause any time."
-msgstr "Ein Abo gilt für ein Stück. Jederzeit kündigen, überspringen oder pausieren."
 
 #: src/Plans/Period.php
 msgid "Weeks"
