@@ -8,16 +8,12 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: src/Admin/EmailDesigner.php
-msgid "Subscription emails"
-msgstr "Abo-E-Mails"
-
-#: src/Admin/EmailDesigner.php
 msgid "Not allowed."
 msgstr "Nicht erlaubt."
 
 #: src/Admin/EmailDesigner.php
-msgid "The subscription emails are designed in YayMail (YayMail > Email templates, source \"Tasg Abo\"). To use the plugin editor instead, change \"Email design\" in WooCommerce > Subscription settings."
-msgstr "Die Abo-E-Mails werden in YayMail gestaltet (YayMail > E-Mail-Vorlagen, Quelle \"Tasg Abo\"). Um stattdessen den Plugin-Editor zu verwenden, ändern Sie \"E-Mail-Gestaltung\" unter WooCommerce > Abo-Einstellungen."
+msgid "The subscription emails are designed in YayMail (YayMail > Email templates, source \"Tasg Abo\"). To use the plugin editor instead, change \"Email design\" under WooCommerce > Settings > Subscriptions > Settings."
+msgstr "Die Abo-E-Mails werden in YayMail gestaltet (YayMail > E-Mail-Vorlagen, Quelle \"Tasg Abo\"). Um stattdessen den Plugin-Editor zu verwenden, ändern Sie \"E-Mail-Gestaltung\" unter WooCommerce > Einstellungen > Abos > Einstellungen."
 
 #: src/Admin/EmailDesigner.php
 msgid "Saved."
@@ -58,10 +54,6 @@ msgstr "Sendet die gespeicherte Version mit Beispieldaten an Ihre eigene E-Mail-
 #: src/Admin/EmailDesigner.php
 msgid "Send test email to me"
 msgstr "Test-E-Mail an mich senden"
-
-#: src/Admin/PlansPage.php
-msgid "Subscription plans"
-msgstr "Abo-Pläne"
 
 #: src/Admin/PlansPage.php
 msgid "Plan saved."
@@ -228,8 +220,8 @@ msgid "Plans offered"
 msgstr "Angebotene Pläne"
 
 #: src/Admin/ProductSettings.php
-msgid "No plans yet. Create them under WooCommerce > Subscription plans."
-msgstr "Noch keine Pläne. Legen Sie sie unter WooCommerce > Abo-Pläne an."
+msgid "No plans yet. Create them under WooCommerce > Settings > Subscriptions > Plans."
+msgstr "Noch keine Pläne. Legen Sie sie unter WooCommerce > Einstellungen > Abos > Pläne an."
 
 #: src/Admin/ProductSettings.php
 msgid "(test plan)"
@@ -243,9 +235,25 @@ msgstr "Rabatt"
 msgid "Default for this product"
 msgstr "Standard für dieses Produkt"
 
-#: src/Admin/SettingsPage.php
-msgid "Subscription settings"
-msgstr "Abo-Einstellungen"
+#: src/Admin/SettingsHub.php
+msgid "Subscriptions"
+msgstr "Abos"
+
+#: src/Admin/SettingsHub.php
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: src/Admin/SettingsHub.php
+msgid "Plans"
+msgstr "Pläne"
+
+#: src/Admin/SettingsHub.php
+msgid "Emails"
+msgstr "E-Mails"
+
+#: src/Admin/SettingsHub.php
+msgid "Diagnostics"
+msgstr "Diagnose"
 
 #: src/Admin/SettingsPage.php
 msgid "Test phase"
@@ -324,8 +332,8 @@ msgid "YayMail was not found on this site, so the plugin editor is used."
 msgstr "YayMail wurde auf dieser Seite nicht gefunden, deshalb wird der Plugin-Editor verwendet."
 
 #: src/Admin/SettingsPage.php
-msgid "Design the subscription emails in YayMail (YayMail > Email templates) or in the plugin editor (WooCommerce > Subscription emails)."
-msgstr "Gestalten Sie die Abo-E-Mails in YayMail (YayMail > E-Mail-Vorlagen) oder im Plugin-Editor (WooCommerce > Abo-E-Mails)."
+msgid "Design the subscription emails in YayMail (YayMail > Email templates) or in the plugin editor (WooCommerce > Settings > Subscriptions > Emails)."
+msgstr "Gestalten Sie die Abo-E-Mails in YayMail (YayMail > E-Mail-Vorlagen) oder im Plugin-Editor (WooCommerce > Einstellungen > Abos > E-Mails)."
 
 #: src/Admin/SettingsPage.php
 msgid "Test order marker"
@@ -374,10 +382,6 @@ msgstr "PayPal für Abos anbieten"
 #: src/Admin/SettingsPage.php
 msgid "Needs the WooCommerce PayPal Payments plugin with saving of PayPal payment methods enabled, and the customer must save the method at checkout. Without a saved method the subscription is not created. Try it with a test purchase first."
 msgstr "Benötigt das Plugin WooCommerce PayPal Payments mit aktiviertem Speichern von PayPal-Zahlungsarten, und der Kunde muss die Zahlungsart an der Kasse speichern. Ohne gespeicherte Zahlungsart wird das Abo nicht angelegt. Testen Sie es zuerst mit einer Testbestellung."
-
-#: src/Admin/SubscriptionsPage.php
-msgid "Subscriptions"
-msgstr "Abos"
 
 #: src/Admin/SubscriptionsPage.php
 msgid "Copy from last order"
