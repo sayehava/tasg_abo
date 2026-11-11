@@ -55,20 +55,136 @@ msgstr ""
 msgid "Send test email to me"
 msgstr ""
 
+#: src/Admin/PlansPage.php
+msgid "Subscription plans"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Plan saved."
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Plan deleted. Existing subscriptions keep running with their own copy of the plan."
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "A plan is a period with its own reminder time, for example \"Weekly\" or \"Every 4 months\". Assign plans to products on the product page. A product can offer several plans."
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "The reminder time must be shorter than the period."
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Please enter a period and a reminder time of at least 1."
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Name"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Period"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Reminder before charge"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Visible to"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "No plans yet. Add your first plan below."
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Shop managers only (test plan)"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Everyone"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Nobody (switched off)"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "(less than 48 hours)"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Edit"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Delete"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Edit plan"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Add plan"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Shown to customers, for example \"Weekly\". Leave empty to show the period."
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "How often a new order is made. For tests you can use minutes, hours or days."
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Reminder email before the charge"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Minutes"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Hours"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Days"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "The customer gets the reminder at least this long before being charged. We recommend 48 hours or more for plans customers use. Must be shorter than the period."
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Test plan"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Only shop managers can see this plan"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Active"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Offer this plan"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Save plan"
+msgstr ""
+
 #: src/Admin/ProductSettings.php
 msgid "Subscription"
 msgstr ""
 
 #: src/Admin/ProductSettings.php
 msgid "Let customers subscribe to this product."
-msgstr ""
-
-#: src/Admin/ProductSettings.php
-msgid "Intervals (weeks)"
-msgstr ""
-
-#: src/Admin/ProductSettings.php
-msgid "Comma separated list the customer can choose from, for example 2,4,8."
 msgstr ""
 
 #: src/Admin/ProductSettings.php
@@ -88,7 +204,23 @@ msgid "Subscriber discount"
 msgstr ""
 
 #: src/Admin/ProductSettings.php
-msgid "Taken off the price of every subscription order. Leave empty for no discount."
+msgid "Taken off the price of every subscription order. Leave empty for no discount. A plan below can have its own discount."
+msgstr ""
+
+#: src/Admin/ProductSettings.php
+msgid "Plans offered"
+msgstr ""
+
+#: src/Admin/ProductSettings.php
+msgid "No plans yet. Create them under WooCommerce > Subscription plans."
+msgstr ""
+
+#: src/Admin/ProductSettings.php
+msgid "(test plan)"
+msgstr ""
+
+#: src/Admin/ProductSettings.php
+msgid "Discount"
 msgstr ""
 
 #: src/Admin/SettingsPage.php
@@ -113,14 +245,6 @@ msgstr ""
 
 #: src/Admin/SettingsPage.php
 msgid "Choose the status your invoice, delivery note and label automation reacts to."
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Reminder email, hours before the charge"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "At least 48. Customers are never charged without this reminder."
 msgstr ""
 
 #: src/Admin/SettingsPage.php
@@ -207,17 +331,9 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: src/Admin/SubscriptionsPage.php
-msgid "%d week"
-msgid_plural "%d weeks"
-msgstr[0] ""
-msgstr[1] ""
-
 #: src/Cart/CartHandler.php
-msgid "every %d week"
-msgid_plural "every %d weeks"
-msgstr[0] ""
-msgstr[1] ""
+msgid "Please choose a subscription plan."
+msgstr ""
 
 #: src/Cart/SingleItemRule.php
 msgid "A subscription is always for one piece."
@@ -280,7 +396,7 @@ msgid "Subscription reminder"
 msgstr ""
 
 #: src/Emails/ReminderEmail.php
-msgid "Sent to the customer at least 48 hours before the next subscription order is charged."
+msgid "Sent to the customer before the next subscription order is charged. How long before is set per plan."
 msgstr ""
 
 #: src/Emails/ReminderEmail.php
@@ -456,10 +572,6 @@ msgid "Next order"
 msgstr ""
 
 #: src/Frontend/MyAccount.php
-msgid "Active"
-msgstr ""
-
-#: src/Frontend/MyAccount.php
 msgid "Paused"
 msgstr ""
 
@@ -472,11 +584,11 @@ msgid "Skip next"
 msgstr ""
 
 #: src/Frontend/ProductToggle.php
-msgid "Subscribe and pay only %s"
+msgid "Subscribe and save"
 msgstr ""
 
 #: src/Frontend/ProductToggle.php
-msgid "Deliver every"
+msgid "Plan"
 msgstr ""
 
 #: src/Frontend/ProductToggle.php
@@ -486,6 +598,44 @@ msgstr ""
 #: src/Frontend/ProductToggle.php
 msgid "A subscription is for one piece. Cancel, skip or pause any time."
 msgstr ""
+
+#: src/Plans/Period.php
+msgid "Weeks"
+msgstr ""
+
+#: src/Plans/Period.php
+msgid "Months"
+msgstr ""
+
+#: src/Plans/Period.php
+msgid "%d minute"
+msgid_plural "%d minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Plans/Period.php
+msgid "%d hour"
+msgid_plural "%d hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Plans/Period.php
+msgid "%d day"
+msgid_plural "%d days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Plans/Period.php
+msgid "%d month"
+msgid_plural "%d months"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Plans/Period.php
+msgid "%d week"
+msgid_plural "%d weeks"
+msgstr[0] ""
+msgstr[1] ""
 
 #: src/Plugin.php
 msgid "Tasg Abo could not start: %s"
