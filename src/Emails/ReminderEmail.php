@@ -7,6 +7,8 @@
 
 namespace TasgAbo\Emails;
 
+use TasgAbo\Settings;
+
 defined( 'ABSPATH' ) || exit;
 
 final class ReminderEmail extends SubscriptionEmail {
@@ -29,10 +31,38 @@ final class ReminderEmail extends SubscriptionEmail {
 		return __( 'Your next subscription order', 'tasg-abo' );
 	}
 
+	/**
+	 * The text lists only what the shop lets customers do, so no link leads to a switched off option.
+	 */
 	public static function default_body(): string {
-		return __(
-			"Hello {customer_name},\n\nwe will charge you again for your next order of {product_name} on {next_date}. Amount: {amount} plus shipping.\n\nYour order will be sent to:\n{shipping_address}\n\nIf this address is not correct, please change it before {next_date}: {address_url}\n\nYou do not need to do anything else to continue.\n\nSkip this order: {skip_url}\nPause: {pause_url}\nCancel your subscription: {cancel_url}",
+		$text = __(
+			"Hello {customer_name},\n\nwe will charge you again for your next order of {product_name} on {next_date}. Amount: {amount} plus shipping.\n\nYour order will be sent to:\n{shipping_address}",
 			'tasg-abo'
 		);
+
+		if ( Settings::customer_may( 'address' ) ) {
+			$text .= "\n\n" . __( 'If this address is not correct, please change it before {next_date}: {address_url}', 'tasg-abo' );
+		}
+
+		$text .= "\n\n" . __( 'You do not need to do anything else to continue.', 'tasg-abo' );
+
+		$lines = array();
+
+		if ( Settings::customer_may( 'skip' ) ) {
+			$lines[] = __( 'Skip this order: {skip_url}', 'tasg-abo' );
+		}
+		if ( Settings::customer_may( 'pause' ) ) {
+			$lines[] = __( 'Pause: {pause_url}', 'tasg-abo' );
+		}
+		if ( Settings::customer_may( 'plan' ) ) {
+			$lines[] = __( 'Change your plan: {plan_url}', 'tasg-abo' );
+		}
+		if ( Settings::customer_may( 'payment' ) ) {
+			$lines[] = __( 'Change your payment method: {payment_url}', 'tasg-abo' );
+		}
+
+		$lines[] = __( 'Cancel your subscription: {cancel_url}', 'tasg-abo' );
+
+		return $text . "\n\n" . implode( "\n", $lines );
 	}
 }
