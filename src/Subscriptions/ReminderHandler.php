@@ -37,7 +37,7 @@ final class ReminderHandler {
 			$this->repository->update(
 				(int) $row->id,
 				array(
-					'next_payment'  => gmdate( 'Y-m-d H:i:s', Period::add( $due, (int) $row->period_value, (string) $row->period_unit ) ),
+					'next_payment'  => gmdate( 'Y-m-d H:i:s', Period::add( $due, (int) $row->period_value, (string) $row->period_unit, Period::anchor_day( $row ) ) ),
 					'skip_next'     => 0,
 					'reminder_sent' => 0,
 				)
