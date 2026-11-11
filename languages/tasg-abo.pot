@@ -235,6 +235,10 @@ msgstr ""
 msgid "Discount"
 msgstr ""
 
+#: src/Admin/ProductSettings.php
+msgid "Default for this product"
+msgstr ""
+
 #: src/Admin/SettingsPage.php
 msgid "Subscription settings"
 msgstr ""
