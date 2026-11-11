@@ -1,6 +1,6 @@
 <?php
 /**
- * WooCommerce > Subscription plans: define periods and their reminder lead time.
+ * WooCommerce > Settings > Subscriptions > Plans: define periods and their reminder lead time.
  *
  * Products then offer one or more of these plans. Plans marked as test plans
  * are only visible to shop managers, so short periods can be tried safely.
@@ -18,27 +18,13 @@ defined( 'ABSPATH' ) || exit;
 
 final class PlansPage {
 
-	private const SLUG = 'tasg-abo-plans';
-
 	public function register(): void {
-		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'admin_post_tasg_abo_save_plan', array( $this, 'handle_save' ) );
 		add_action( 'admin_post_tasg_abo_delete_plan', array( $this, 'handle_delete' ) );
 	}
 
-	public function add_menu(): void {
-		add_submenu_page(
-			'woocommerce',
-			__( 'Subscription plans', 'tasg-abo' ),
-			__( 'Subscription plans', 'tasg-abo' ),
-			'manage_woocommerce',
-			self::SLUG,
-			array( $this, 'render' )
-		);
-	}
-
 	private function back( array $args = array() ): void {
-		wp_safe_redirect( add_query_arg( $args, admin_url( 'admin.php?page=' . self::SLUG ) ) );
+		wp_safe_redirect( add_query_arg( $args, SettingsHub::url( 'plans' ) ) );
 		exit;
 	}
 
@@ -114,7 +100,7 @@ final class PlansPage {
 		$editing = $edit_id ? $repository->find( $edit_id ) : null;
 		$plan    = $editing ? $editing : new Plan();
 
-		echo '<div class="wrap"><h1>' . esc_html__( 'Subscription plans', 'tasg-abo' ) . '</h1>';
+		echo '<div class="tasg-abo-section">';
 		echo '<p>' . esc_html__( 'A plan is a period with its own reminder time, for example "Weekly" or "Every 4 months". Assign plans to products on the product page. A product can offer several plans.', 'tasg-abo' ) . '</p>';
 
 		if ( '' !== $notice ) {
@@ -154,7 +140,7 @@ final class PlansPage {
 			echo '<td>' . esc_html( $plan->period_label() ) . '</td>';
 			echo '<td>' . esc_html( Period::minutes_label( $plan->reminder_minutes ) . $warning ) . '</td>';
 			echo '<td>' . esc_html( $visible ) . '</td><td>';
-			echo '<a class="button button-small" href="' . esc_url( add_query_arg( 'edit', $plan->id, admin_url( 'admin.php?page=' . self::SLUG ) ) ) . '">' . esc_html__( 'Edit', 'tasg-abo' ) . '</a> ';
+			echo '<a class="button button-small" href="' . esc_url( add_query_arg( 'edit', $plan->id, SettingsHub::url( 'plans' ) ) ) . '">' . esc_html__( 'Edit', 'tasg-abo' ) . '</a> ';
 			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="display:inline">';
 			wp_nonce_field( 'tasg_abo_delete_plan' );
 			echo '<input type="hidden" name="action" value="tasg_abo_delete_plan"><input type="hidden" name="id" value="' . esc_attr( (string) $plan->id ) . '">';
