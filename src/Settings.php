@@ -16,8 +16,34 @@ final class Settings {
 	public const PAYPAL_ENABLED      = 'tasg_abo_paypal_enabled';
 	public const ADMIN_ONLY          = 'tasg_abo_admin_only';
 
+	/**
+	 * What customers may do themselves. Option name and default per action.
+	 * Cancelling and continuing after a pause are always allowed.
+	 */
+	public const CUSTOMER_OPTIONS = array(
+		'skip'    => array( 'tasg_abo_allow_skip', 'yes' ),
+		'pause'   => array( 'tasg_abo_allow_pause', 'yes' ),
+		'address' => array( 'tasg_abo_allow_address', 'yes' ),
+		'plan'    => array( 'tasg_abo_allow_plan', 'no' ),
+		'payment' => array( 'tasg_abo_allow_payment', 'yes' ),
+		'orders'  => array( 'tasg_abo_show_orders', 'yes' ),
+	);
+
 	/** Maximum number of "continue or cancel" reminders before a paused subscription is cancelled. */
 	public const PAUSE_MAX_REMINDERS = 3;
+
+	/**
+	 * May a customer do this on their own? Cancel and continue always, the rest as set by the shop owner.
+	 */
+	public static function customer_may( string $action ): bool {
+		if ( ! isset( self::CUSTOMER_OPTIONS[ $action ] ) ) {
+			return in_array( $action, array( 'cancel', 'continue' ), true );
+		}
+
+		list( $option, $default ) = self::CUSTOMER_OPTIONS[ $action ];
+
+		return 'yes' === get_option( $option, $default );
+	}
 
 	/**
 	 * Status (without the wc- prefix) a renewal order gets after successful payment.
