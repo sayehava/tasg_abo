@@ -15,6 +15,7 @@
 namespace TasgAbo\Emails;
 
 use TasgAbo\Pricing;
+use TasgAbo\Settings;
 use TasgAbo\Subscriptions\Address;
 use TasgAbo\Subscriptions\Links;
 use TasgAbo\Subscriptions\Repository;
@@ -22,6 +23,20 @@ use TasgAbo\Subscriptions\Repository;
 defined( 'ABSPATH' ) || exit;
 
 abstract class SubscriptionEmail extends \WC_Email {
+
+	/**
+	 * Placeholder values of the email being sent right now. YayMail shortcodes read them.
+	 *
+	 * @var array<string,string>
+	 */
+	private static $live = array();
+
+	/**
+	 * @return array<string,string> placeholder (with braces) => value
+	 */
+	public static function live_values(): array {
+		return self::$live;
+	}
 
 	/**
 	 * Texts from the plugin's own email editor for the language being sent.
@@ -44,8 +59,10 @@ abstract class SubscriptionEmail extends \WC_Email {
 		$this->customer_email = true;
 		$this->title          = $title;
 		$this->description    = $description;
-		$this->template_html  = 'emails/tasg-abo-email.php';
-		$this->template_plain = 'emails/plain/tasg-abo-email.php';
+		// One file name per email, so that YayMail can tell the emails apart.
+		$slug                 = str_replace( '_', '-', $id );
+		$this->template_html  = 'emails/' . $slug . '.php';
+		$this->template_plain = 'emails/plain/' . $slug . '.php';
 		$this->template_base  = TASG_ABO_DIR . 'templates/';
 		$this->placeholders   = array(
 			'{customer_name}' => '',
@@ -122,7 +139,14 @@ abstract class SubscriptionEmail extends \WC_Email {
 		try {
 			$this->object    = $row;
 			$this->recipient = '' !== $test_to ? $test_to : $user->user_email;
-			$this->texts     = EmailTexts::get( $this->id, EmailTexts::resolve_key( (string) $row->language ) );
+			// With YayMail the design and text come from YayMail, not from our editor.
+			$this->texts = Settings::use_yaymail()
+				? array(
+					'subject' => '',
+					'heading' => '',
+					'body'    => '',
+				)
+				: EmailTexts::get( $this->id, EmailTexts::resolve_key( (string) $row->language ) );
 
 			$amount = (float) Pricing::subscriber_price( $product, (int) $row->plan_id ) * (int) $row->quantity;
 
@@ -141,11 +165,14 @@ abstract class SubscriptionEmail extends \WC_Email {
 			$this->placeholders['{payment_url}']      = Links::url( $row, 'payment' );
 			$this->placeholders['{plan_url}']         = Links::url( $row, 'plan' );
 			$this->placeholders                       = array_merge( $this->placeholders, $this->extra_placeholders( $row ) );
+			self::$live                               = $this->placeholders;
 
 			if ( ( '' !== $test_to || $this->is_enabled() ) && $this->get_recipient() ) {
 				$sent = (bool) $this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
 			}
 		} finally {
+			self::$live = array();
+
 			if ( $switched ) {
 				restore_previous_locale();
 			}
