@@ -272,6 +272,38 @@ msgid "A paused customer gets three reminders to continue or cancel. Without an 
 msgstr ""
 
 #: src/Admin/SettingsPage.php
+msgid "Skip the next order"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Pause for the next period"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Change the shipping address of the next order"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Change the plan (period)"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Change the payment method (Stripe)"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "See the past orders of the subscription"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "What customers may do"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Cancelling is always possible for customers (contracts concluded online in Germany need an easy way to cancel). Continuing after a pause is always possible too."
+msgstr ""
+
+#: src/Admin/SettingsPage.php
 msgid "PayPal (experimental)"
 msgstr ""
 
@@ -428,7 +460,35 @@ msgid "Your next subscription order"
 msgstr ""
 
 #: src/Emails/ReminderEmail.php
-msgid "Hello {customer_name},\n\nwe will charge you again for your next order of {product_name} on {next_date}. Amount: {amount} plus shipping.\n\nYour order will be sent to:\n{shipping_address}\n\nIf this address is not correct, please change it before {next_date}: {address_url}\n\nYou do not need to do anything else to continue.\n\nSkip this order: {skip_url}\nPause: {pause_url}\nCancel your subscription: {cancel_url}"
+msgid "Hello {customer_name},\n\nwe will charge you again for your next order of {product_name} on {next_date}. Amount: {amount} plus shipping.\n\nYour order will be sent to:\n{shipping_address}"
+msgstr ""
+
+#: src/Emails/ReminderEmail.php
+msgid "If this address is not correct, please change it before {next_date}: {address_url}"
+msgstr ""
+
+#: src/Emails/ReminderEmail.php
+msgid "You do not need to do anything else to continue."
+msgstr ""
+
+#: src/Emails/ReminderEmail.php
+msgid "Skip this order: {skip_url}"
+msgstr ""
+
+#: src/Emails/ReminderEmail.php
+msgid "Pause: {pause_url}"
+msgstr ""
+
+#: src/Emails/ReminderEmail.php
+msgid "Change your plan: {plan_url}"
+msgstr ""
+
+#: src/Emails/ReminderEmail.php
+msgid "Change your payment method: {payment_url}"
+msgstr ""
+
+#: src/Emails/ReminderEmail.php
+msgid "Cancel your subscription: {cancel_url}"
 msgstr ""
 
 #: src/Emails/SubscriptionEmail.php
@@ -436,7 +496,7 @@ msgid "Email text"
 msgstr ""
 
 #: src/Emails/SubscriptionEmail.php
-msgid "Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url}"
+msgid "Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url}"
 msgstr ""
 
 #: src/Frontend/LinkHandler.php
@@ -445,6 +505,14 @@ msgstr ""
 
 #: src/Frontend/LinkHandler.php
 msgid "This link is not valid any more."
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Not available"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "The shop has switched this option off. Please contact us if you need help."
 msgstr ""
 
 #: src/Frontend/LinkHandler.php
@@ -517,6 +585,50 @@ msgstr ""
 
 #: src/Frontend/LinkHandler.php
 msgid "The postcode is not valid for this country."
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Plan changed"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Your plan was changed. You will get a reminder before the next order, with the new date and price."
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "(current)"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Choose a new plan"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "The payment method of this subscription cannot be changed here."
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Payment method saved"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "This payment method will be used for your next order."
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "The payment method of my last order"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Add a new payment method"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Save payment method"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Change your payment method"
 msgstr ""
 
 #: src/Frontend/LinkHandler.php
@@ -609,6 +721,18 @@ msgstr ""
 
 #: src/Frontend/MyAccount.php
 msgid "Change address"
+msgstr ""
+
+#: src/Frontend/MyAccount.php
+msgid "Change plan"
+msgstr ""
+
+#: src/Frontend/MyAccount.php
+msgid "Payment method"
+msgstr ""
+
+#: src/Frontend/MyAccount.php
+msgid "Orders of the subscription for %s"
 msgstr ""
 
 #: src/Frontend/ProductToggle.php
