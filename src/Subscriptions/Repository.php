@@ -62,17 +62,20 @@ final class Repository {
 	}
 
 	/**
-	 * Active subscriptions due before the given UTC time that were not warned yet.
+	 * Active subscriptions whose reminder time has come and that were not warned yet.
+	 * Each subscription has its own reminder lead time (from its plan). The margin
+	 * makes the reminder go out a little early, so the notice is never shorter than promised.
 	 *
 	 * @return object[]
 	 */
-	public function needing_reminder( string $until_utc ): array {
+	public function needing_reminder( string $now_utc, int $margin_minutes ): array {
 		global $wpdb;
 
 		return (array) $wpdb->get_results(
 			$wpdb->prepare(
-				'SELECT * FROM ' . Schema::table() . " WHERE status = 'active' AND reminder_sent = 0 AND next_payment <= %s ORDER BY next_payment ASC",
-				$until_utc
+				'SELECT * FROM ' . Schema::table() . " WHERE status = 'active' AND reminder_sent = 0 AND next_payment <= DATE_ADD(%s, INTERVAL (reminder_minutes + %d) MINUTE) ORDER BY next_payment ASC",
+				$now_utc,
+				$margin_minutes
 			)
 		);
 	}
