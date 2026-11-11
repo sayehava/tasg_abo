@@ -176,6 +176,10 @@ final class SettingsPage {
 				echo '<label style="display:block"><input type="checkbox" name="' . esc_attr( Settings::STRIPE_METHODS ) . '[]" value="' . esc_attr( $id ) . '"' . checked( in_array( $id, $allowed, true ), true, false ) . '> ' . esc_html( $label ) . '</label>';
 			}
 
+			if ( StripeMethods::wallets() ) {
+				echo '<p class="description">' . esc_html__( 'Apple Pay and Google Pay are active in Stripe and work as part of Card.', 'tasg-abo' ) . '</p>';
+			}
+
 			$others = StripeMethods::not_reusable();
 			if ( $others ) {
 				echo '<p class="description">' . esc_html__( 'Active in Stripe but not offered for subscriptions, because they cannot be charged again later:', 'tasg-abo' ) . ' ' . esc_html( implode( ', ', $others ) ) . '</p>';
