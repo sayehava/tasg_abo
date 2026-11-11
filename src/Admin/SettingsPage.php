@@ -35,6 +35,7 @@ final class SettingsPage {
 		register_setting( self::SLUG, Settings::RENEWAL_STATUS, array( 'sanitize_callback' => 'sanitize_key' ) );
 		register_setting( self::SLUG, Settings::REMINDER_HOURS, array( 'sanitize_callback' => array( $this, 'sanitize_hours' ) ) );
 		register_setting( self::SLUG, Settings::PAUSE_REMINDER_DAYS, array( 'sanitize_callback' => array( $this, 'sanitize_days' ) ) );
+		register_setting( self::SLUG, Settings::ADMIN_ONLY, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 		register_setting( self::SLUG, Settings::PAYPAL_ENABLED, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 	}
 
@@ -59,6 +60,11 @@ final class SettingsPage {
 		echo '<form method="post" action="options.php">';
 		settings_fields( self::SLUG );
 		echo '<table class="form-table" role="presentation">';
+
+		echo '<tr><th scope="row">' . esc_html__( 'Test phase', 'tasg-abo' ) . '</th><td>';
+		echo '<input type="hidden" name="' . esc_attr( Settings::ADMIN_ONLY ) . '" value="no">';
+		echo '<label><input type="checkbox" name="' . esc_attr( Settings::ADMIN_ONLY ) . '" value="yes"' . checked( Settings::admin_only(), true, false ) . '> ' . esc_html__( 'Only shop managers can see and use subscriptions', 'tasg-abo' ) . '</label>';
+		echo '<p class="description">' . esc_html__( 'Keep this on until you tested a full cycle yourself. Customers then see nothing. Untick it to open subscriptions to everyone.', 'tasg-abo' ) . '</p></td></tr>';
 
 		echo '<tr><th scope="row"><label for="tasg_status">' . esc_html__( 'Status of renewal orders after payment', 'tasg-abo' ) . '</label></th><td>';
 		echo '<select id="tasg_status" name="' . esc_attr( Settings::RENEWAL_STATUS ) . '">';
