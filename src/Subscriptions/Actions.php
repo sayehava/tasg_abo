@@ -47,7 +47,7 @@ final class Actions {
 			$this->repository->update(
 				(int) $sub->id,
 				array(
-					'next_payment'  => gmdate( 'Y-m-d H:i:s', Period::add( $due, (int) $sub->period_value, (string) $sub->period_unit ) ),
+					'next_payment'  => gmdate( 'Y-m-d H:i:s', Period::add( $due, (int) $sub->period_value, (string) $sub->period_unit, Period::anchor_day( $sub ) ) ),
 					'reminder_sent' => 0,
 					'skip_next'     => 0,
 				)
