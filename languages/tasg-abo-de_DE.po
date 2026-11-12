@@ -1104,3 +1104,91 @@ msgstr "Ihre Kündigung ist vorgemerkt: Ihr Abo endet mit der Mindestlaufzeit am
 #: src/Emails/SubscriptionEmail.php
 msgid "Your minimum term runs until %s. Skip and pause are not possible until then."
 msgstr "Ihre Mindestlaufzeit läuft bis %s. Überspringen und Pausieren sind bis dahin nicht möglich."
+
+#: src/Settings.php
+msgid "Cancel contracts here"
+msgstr "Verträge hier kündigen"
+
+#: src/Settings.php
+msgid "Email address"
+msgstr "E-Mail-Adresse"
+
+#: src/Settings.php
+msgid "Phone"
+msgstr "Telefon"
+
+#: src/Cancellation/CancelForm.php
+msgid "This link is not valid any more. You can still cancel with your order number below."
+msgstr "Dieser Link ist nicht mehr gültig. Sie können trotzdem unten mit Ihrer Bestellnummer kündigen."
+
+#: src/Cancellation/CancelForm.php
+msgid "You have no running subscription."
+msgstr "Sie haben kein laufendes Abo."
+
+#: src/Cancellation/CancelForm.php
+msgid "Subscription no. %1$d, first order no. %2$s"
+msgstr "Abo-Nr. %1$d, erste Bestellung Nr. %2$s"
+
+#: src/Cancellation/CancelForm.php
+msgid "If you cancel now, the contract ends with the minimum term on %s. Orders continue until then."
+msgstr "Wenn Sie jetzt kündigen, endet der Vertrag mit der Mindestlaufzeit am %s. Bis dahin laufen die Bestellungen weiter."
+
+#: src/Cancellation/CancelForm.php
+msgid "If you cancel now, the contract ends today and you will not be charged again."
+msgstr "Wenn Sie jetzt kündigen, endet der Vertrag heute und es wird nichts mehr abgebucht."
+
+#: src/Cancellation/CancelForm.php
+msgid "Type of cancellation"
+msgstr "Art der Kündigung"
+
+#: src/Cancellation/CancelForm.php
+msgid "Ordinary cancellation"
+msgstr "Ordentliche Kündigung"
+
+#: src/Cancellation/CancelForm.php
+msgid "Extraordinary cancellation (please give the reason)"
+msgstr "Außerordentliche Kündigung (bitte den Grund angeben)"
+
+#: src/Cancellation/CancelForm.php
+msgid "Reason (only for an extraordinary cancellation)"
+msgstr "Grund (nur bei außerordentlicher Kündigung)"
+
+#: src/Cancellation/CancelForm.php
+msgid "Your cancellation was received. The contract ends on %s."
+msgstr "Ihre Kündigung ist eingegangen. Der Vertrag endet am %s."
+
+#: src/Cancellation/CancelForm.php
+msgid "Cancel contract now"
+msgstr "Jetzt kündigen"
+
+#: src/Cancellation/CancelForm.php
+msgid "The confirmation is sent by email to the address of the contract."
+msgstr "Die Bestätigung wird per E-Mail an die Adresse des Vertrags gesendet."
+
+#: src/Cancellation/CancelForm.php
+msgid "To cancel without logging in, enter your order number and the details below. You find the order number in your order confirmation email."
+msgstr "Um ohne Anmeldung zu kündigen, geben Sie Ihre Bestellnummer und die folgenden Angaben ein. Die Bestellnummer finden Sie in Ihrer Bestellbestätigung."
+
+#: src/Cancellation/CancelForm.php
+msgid "Order number"
+msgstr "Bestellnummer"
+
+#: src/Cancellation/CancelForm.php
+msgid "The page has expired. Please try again."
+msgstr "Die Seite ist abgelaufen. Bitte versuchen Sie es erneut."
+
+#: src/Cancellation/CancelForm.php
+msgid "Please give the reason of an extraordinary cancellation."
+msgstr "Bitte geben Sie den Grund der außerordentlichen Kündigung an."
+
+#: src/Cancellation/CancelForm.php
+msgid "Too many attempts. Please try again in a few minutes."
+msgstr "Zu viele Versuche. Bitte versuchen Sie es in einigen Minuten erneut."
+
+#: src/Cancellation/CancelForm.php
+msgid "We could not find an open subscription with these details."
+msgstr "Mit diesen Angaben haben wir kein laufendes Abo gefunden."
+
+#: src/Cancellation/CancelForm.php
+msgid "This contract was already cancelled."
+msgstr "Dieser Vertrag wurde bereits gekündigt."
