@@ -26,6 +26,7 @@ final class Settings {
 	public const CARD_NOTICE_DAYS    = 'tasg_abo_card_notice_days';
 	public const CANCEL_PAGE         = 'tasg_abo_cancel_page';
 	public const CANCEL_FIELDS       = 'tasg_abo_cancel_fields';
+	public const CANCEL_BUTTON       = 'tasg_abo_cancel_button';
 
 	/**
 	 * What customers may do themselves. Option name and default per action.
@@ -173,6 +174,24 @@ final class Settings {
 	 */
 	public static function cancel_page_id(): int {
 		return (int) get_option( self::CANCEL_PAGE, 0 );
+	}
+
+	public static function cancel_button_raw(): string {
+		return trim( (string) get_option( self::CANCEL_BUTTON, '' ) );
+	}
+
+	/**
+	 * Text of the cancel buttons and links, as the owner wrote it (translatable with WPML
+	 * String Translation, context Tasg Abo), or the default.
+	 */
+	public static function cancel_button_text(): string {
+		$text = self::cancel_button_raw();
+
+		if ( '' === $text ) {
+			return __( 'Cancel contracts here', 'tasg-abo' );
+		}
+
+		return (string) apply_filters( 'wpml_translate_single_string', $text, 'Tasg Abo', 'cancel-button-text' );
 	}
 
 	/**
