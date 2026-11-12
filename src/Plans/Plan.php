@@ -17,6 +17,8 @@ final class Plan {
 	public $value            = 1;
 	public $unit             = 'week';
 	public $reminder_minutes = 2880;
+	public $term_value       = 0;
+	public $term_unit        = 'month';
 	public $test             = false;
 	public $active           = true;
 	public $default          = false;
@@ -28,6 +30,8 @@ final class Plan {
 		$plan->value            = max( 1, (int) ( $data['value'] ?? 1 ) );
 		$plan->unit             = in_array( $data['unit'] ?? '', Period::UNITS, true ) ? $data['unit'] : 'week';
 		$plan->reminder_minutes = max( 1, (int) ( $data['reminder_minutes'] ?? 2880 ) );
+		$plan->term_value       = max( 0, (int) ( $data['term_value'] ?? 0 ) );
+		$plan->term_unit        = in_array( $data['term_unit'] ?? '', Period::TERM_UNITS, true ) ? $data['term_unit'] : 'month';
 		$plan->test             = ! empty( $data['test'] );
 		$plan->active           = ! isset( $data['active'] ) || ! empty( $data['active'] );
 		$plan->default          = ! empty( $data['default'] );
@@ -42,6 +46,8 @@ final class Plan {
 			'value'            => $this->value,
 			'unit'             => $this->unit,
 			'reminder_minutes' => $this->reminder_minutes,
+			'term_value'       => $this->term_value,
+			'term_unit'        => $this->term_unit,
 			'test'             => $this->test,
 			'active'           => $this->active,
 			'default'          => $this->default,
@@ -87,8 +93,17 @@ final class Plan {
 			'value'            => $this->value,
 			'unit'             => $this->unit,
 			'reminder_minutes' => $this->reminder_minutes,
+			'term_value'       => $this->term_value,
+			'term_unit'        => $this->term_unit,
 			'test'             => $this->test,
 		);
+	}
+
+	/**
+	 * "3 months" style text of the minimum term, empty when the plan has none.
+	 */
+	public function term_label(): string {
+		return $this->term_value > 0 ? Period::label( $this->term_value, $this->term_unit ) : '';
 	}
 
 	/**
