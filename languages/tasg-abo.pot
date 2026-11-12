@@ -1104,3 +1104,91 @@ msgstr ""
 #: src/Emails/SubscriptionEmail.php
 msgid "Your minimum term runs until %s. Skip and pause are not possible until then."
 msgstr ""
+
+#: src/Settings.php
+msgid "Cancel contracts here"
+msgstr ""
+
+#: src/Settings.php
+msgid "Email address"
+msgstr ""
+
+#: src/Settings.php
+msgid "Phone"
+msgstr ""
+
+#: src/Cancellation/CancelForm.php
+msgid "This link is not valid any more. You can still cancel with your order number below."
+msgstr ""
+
+#: src/Cancellation/CancelForm.php
+msgid "You have no running subscription."
+msgstr ""
+
+#: src/Cancellation/CancelForm.php
+msgid "Subscription no. %1$d, first order no. %2$s"
+msgstr ""
+
+#: src/Cancellation/CancelForm.php
+msgid "If you cancel now, the contract ends with the minimum term on %s. Orders continue until then."
+msgstr ""
+
+#: src/Cancellation/CancelForm.php
+msgid "If you cancel now, the contract ends today and you will not be charged again."
+msgstr ""
+
+#: src/Cancellation/CancelForm.php
+msgid "Type of cancellation"
+msgstr ""
+
+#: src/Cancellation/CancelForm.php
+msgid "Ordinary cancellation"
+msgstr ""
+
+#: src/Cancellation/CancelForm.php
+msgid "Extraordinary cancellation (please give the reason)"
+msgstr ""
+
+#: src/Cancellation/CancelForm.php
+msgid "Reason (only for an extraordinary cancellation)"
+msgstr ""
+
+#: src/Cancellation/CancelForm.php
+msgid "Your cancellation was received. The contract ends on %s."
+msgstr ""
+
+#: src/Cancellation/CancelForm.php
+msgid "Cancel contract now"
+msgstr ""
+
+#: src/Cancellation/CancelForm.php
+msgid "The confirmation is sent by email to the address of the contract."
+msgstr ""
+
+#: src/Cancellation/CancelForm.php
+msgid "To cancel without logging in, enter your order number and the details below. You find the order number in your order confirmation email."
+msgstr ""
+
+#: src/Cancellation/CancelForm.php
+msgid "Order number"
+msgstr ""
+
+#: src/Cancellation/CancelForm.php
+msgid "The page has expired. Please try again."
+msgstr ""
+
+#: src/Cancellation/CancelForm.php
+msgid "Please give the reason of an extraordinary cancellation."
+msgstr ""
+
+#: src/Cancellation/CancelForm.php
+msgid "Too many attempts. Please try again in a few minutes."
+msgstr ""
+
+#: src/Cancellation/CancelForm.php
+msgid "We could not find an open subscription with these details."
+msgstr ""
+
+#: src/Cancellation/CancelForm.php
+msgid "This contract was already cancelled."
+msgstr ""
