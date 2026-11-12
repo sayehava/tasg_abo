@@ -162,6 +162,22 @@ final class Repository {
 	}
 
 	/**
+	 * Does the customer already have a running (active or paused) subscription for this product?
+	 * One that only waits for its minimum term to end still counts.
+	 */
+	public function has_open( int $user_id, int $product_id ): bool {
+		global $wpdb;
+
+		return (bool) $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT id FROM ' . Schema::table() . " WHERE user_id = %d AND product_id = %d AND status IN ('active','paused') LIMIT 1",
+				$user_id,
+				$product_id
+			)
+		);
+	}
+
+	/**
 	 * @return object[]
 	 */
 	public function for_user( int $user_id ): array {
