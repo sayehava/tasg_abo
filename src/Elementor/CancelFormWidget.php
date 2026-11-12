@@ -94,4 +94,14 @@ final class CancelFormWidget extends Widget_Base {
 			);
 		}
 	}
+
+	private function section( string $id, string $label ): void {
+		$this->start_controls_section(
+			$id,
+			array(
+				'label' => $label,
+				'tab'   => Controls_Manager::TAB_STYLE,
+			)
+		);
+	}
 }
