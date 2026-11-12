@@ -2,7 +2,7 @@
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 0.3.0
+Stable tag: 0.3.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -44,6 +44,9 @@ Customers tick "Subscribe and save" on a product page and choose an interval. Th
 5. Edit a product and enable the subscription fields on the General tab, then tick the plans it offers.
 
 == Changelog ==
+
+= 0.3.1 =
+* WPML: the cancel page gets a language, so it is no longer redirected to the home page. Other languages use the translated page.
 
 = 0.3.0 =
 * One cancel page for everyone: My Account button, reminder email link, the shortcode [tasg_abo_cancel_button] and the short link /?tasg-abo-cancel=1 all lead to it. Logged in customers see their subscriptions, others enter the order number and questions chosen in the settings.
