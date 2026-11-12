@@ -24,6 +24,53 @@ final class Actions {
 		$this->repository = $repository;
 	}
 
+	/**
+	 * True while the minimum term of the subscription is still running.
+	 */
+	public function in_term( object $sub ): bool {
+		return ! empty( $sub->term_ends ) && strtotime( $sub->term_ends . ' UTC' ) > time();
+	}
+
+	/**
+	 * A cancellation by the customer. Inside the minimum term it is only noted and
+	 * takes effect when the term is over: orders continue until then. Outside the
+	 * term the subscription ends at once.
+	 */
+	public function request_cancel( object $sub ): bool {
+		if ( ! in_array( $sub->status, array( 'active', 'paused' ), true ) ) {
+			return false;
+		}
+
+		if ( ! $this->in_term( $sub ) ) {
+			return $this->cancel( $sub );
+		}
+
+		if ( empty( $sub->cancel_after ) ) {
+			$this->repository->update( (int) $sub->id, array( 'cancel_after' => $sub->term_ends ) );
+			Log::info( sprintf( 'Subscription #%d: cancellation noted, ends with the minimum term (%s UTC).', (int) $sub->id, $sub->term_ends ) );
+			do_action( 'tasg_abo_subscription_cancel_requested', (int) $sub->id );
+		}
+
+		return true;
+	}
+
+	/**
+	 * Take back a cancellation that was noted inside the minimum term.
+	 */
+	public function keep( object $sub ): bool {
+		if ( 'active' !== $sub->status || empty( $sub->cancel_after ) ) {
+			return false;
+		}
+
+		$this->repository->update( (int) $sub->id, array( 'cancel_after' => null ) );
+
+		return true;
+	}
+
+	/**
+	 * Ends the subscription at once, whatever the term. Used for failed payments,
+	 * erasure requests, pauses nobody answered and by the shop owner.
+	 */
 	public function cancel( object $sub ): bool {
 		if ( ! in_array( $sub->status, array( 'active', 'paused' ), true ) ) {
 			return false;
@@ -34,6 +81,7 @@ final class Actions {
 			(int) $sub->id,
 			array(
 				'status'           => 'cancelled',
+				'cancel_after'     => null,
 				'address_override' => null,
 				'payment_token_id' => 0,
 			)
@@ -48,7 +96,7 @@ final class Actions {
 	 * Skip one order, then carry on as before.
 	 */
 	public function skip( object $sub ): bool {
-		if ( 'active' !== $sub->status ) {
+		if ( 'active' !== $sub->status || $this->in_term( $sub ) ) {
 			return false;
 		}
 
@@ -76,7 +124,7 @@ final class Actions {
 	 * due date on, the customer is asked to continue or cancel.
 	 */
 	public function pause( object $sub ): bool {
-		if ( 'active' !== $sub->status ) {
+		if ( 'active' !== $sub->status || $this->in_term( $sub ) ) {
 			return false;
 		}
 
@@ -179,7 +227,14 @@ final class Actions {
 	public function run( object $sub, string $action ): bool {
 		switch ( $action ) {
 			case 'cancel':
-				return $this->cancel( $sub );
+				$done = $this->request_cancel( $sub );
+				break;
+			case 'cancel_now':
+				$done = $this->cancel( $sub );
+				break;
+			case 'keep':
+				$done = $this->keep( $sub );
+				break;
 			case 'skip':
 				$done = $this->skip( $sub );
 				break;
