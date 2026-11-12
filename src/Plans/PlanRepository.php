@@ -43,6 +43,10 @@ final class PlanRepository {
 			do_action( 'wpml_register_single_string', self::WPML_CONTEXT, 'subscribe-box-text', \TasgAbo\Settings::box_text_raw() );
 		}
 
+		if ( '' !== \TasgAbo\Settings::cancel_button_raw() ) {
+			do_action( 'wpml_register_single_string', self::WPML_CONTEXT, 'cancel-button-text', \TasgAbo\Settings::cancel_button_raw() );
+		}
+
 		foreach ( $this->all() as $plan ) {
 			if ( '' !== $plan->name ) {
 				do_action( 'wpml_register_single_string', self::WPML_CONTEXT, 'plan-' . $plan->id . '-name', $plan->name );
