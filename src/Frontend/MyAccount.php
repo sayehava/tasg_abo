@@ -129,7 +129,7 @@ final class MyAccount {
 			if ( $open && ! empty( $row->cancel_after ) ) {
 				echo $this->link( $row, 'keep', __( 'Keep subscription', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			} elseif ( $open ) {
-				echo $this->link( $row, 'cancel', __( 'Cancel', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo $this->link( $row, 'cancel', \TasgAbo\Settings::cancel_button_text() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 
 			echo '</td></tr>';
