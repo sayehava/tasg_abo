@@ -2,7 +2,7 @@
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 0.2.0
+Stable tag: 0.2.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -44,6 +44,10 @@ Customers tick "Subscribe and save" on a product page and choose an interval. Th
 5. Edit a product and enable the subscription fields on the General tab, then tick the plans it offers.
 
 == Changelog ==
+
+= 0.2.1 =
+* The one subscription per product rule is also checked at checkout, by the account behind the billing email.
+* Reminder emails with an older custom text get the minimum term note added at the end.
 
 = 0.2.0 =
 * Minimum term per plan. A cancellation inside the term ends with the term, skip and pause are not possible during it.
