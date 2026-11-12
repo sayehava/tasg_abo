@@ -42,10 +42,43 @@ final class SettingsPage {
 		register_setting( self::SLUG, Settings::TEST_MARKER_NOTE, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 		register_setting( self::SLUG, Settings::CARD_NOTICE, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 		register_setting( self::SLUG, Settings::CARD_NOTICE_DAYS, array( 'sanitize_callback' => array( $this, 'sanitize_notice_days' ) ) );
+		register_setting( self::SLUG, Settings::CANCEL_BUTTON, array( 'sanitize_callback' => 'sanitize_text_field' ) );
+		register_setting( self::SLUG, Settings::CANCEL_PAGE, array( 'sanitize_callback' => 'absint' ) );
+		register_setting( self::SLUG, Settings::CANCEL_FIELDS, array( 'sanitize_callback' => array( $this, 'sanitize_methods' ) ) );
 		register_setting( self::SLUG, Settings::ADMIN_ONLY, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 		register_setting( self::SLUG, Settings::STRIPE_ENABLED, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 		register_setting( self::SLUG, Settings::STRIPE_METHODS, array( 'sanitize_callback' => array( $this, 'sanitize_methods' ) ) );
 		register_setting( self::SLUG, Settings::PAYPAL_ENABLED, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
+	}
+
+	/**
+	 * The cancel page: its button text, the page itself, the links to it and the questions.
+	 */
+	private function render_cancel_rows(): void {
+		echo '<tr><th scope="row"><label for="tasg_cancel_button">' . esc_html__( 'Cancel button text', 'tasg-abo' ) . '</label></th><td>';
+		echo '<input id="tasg_cancel_button" class="regular-text" name="' . esc_attr( Settings::CANCEL_BUTTON ) . '" value="' . esc_attr( Settings::cancel_button_raw() ) . '" placeholder="' . esc_attr__( 'Cancel contracts here', 'tasg-abo' ) . '">';
+		echo '<p class="description">' . esc_html__( 'Text of the cancel button in My Account and of the button shortcode. German law asks for "Verträge hier kündigen" or an equally clear wording. Leave empty for the default. With WPML, translate it in WPML > String Translation (context Tasg Abo).', 'tasg-abo' ) . '</p></td></tr>';
+
+		echo '<tr><th scope="row"><label for="tasg_cancel_page">' . esc_html__( 'Cancel page', 'tasg-abo' ) . '</label></th><td>';
+		wp_dropdown_pages(
+			array(
+				'name'              => Settings::CANCEL_PAGE,
+				'id'                => 'tasg_cancel_page',
+				'selected'          => Settings::cancel_page_id(),
+				'show_option_none'  => __( '(none)', 'tasg-abo' ),
+				'option_none_value' => '0',
+			)
+		);
+		echo '<p class="description">' . esc_html__( 'The page with the shortcode [tasg_abo_cancel]. It was created for you. My Account, the reminder email and every cancel link lead here.', 'tasg-abo' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Use this link anywhere, for example in the footer or a menu, without a shortcode:', 'tasg-abo' ) . ' <code>' . esc_html( \TasgAbo\Cancellation\CancelPage::short_url() ) . '</code><br>';
+		echo esc_html__( 'Or a button with the shortcode:', 'tasg-abo' ) . ' <code>[tasg_abo_cancel_button]</code> <code>[tasg_abo_cancel_button label="Cancel here"]</code></p></td></tr>';
+
+		echo '<tr><th scope="row">' . esc_html__( 'Questions without login', 'tasg-abo' ) . '</th><td>';
+		echo '<input type="hidden" name="' . esc_attr( Settings::CANCEL_FIELDS ) . '[]" value="">';
+		foreach ( Settings::cancel_field_choices() as $key => $label ) {
+			echo '<label style="display:block"><input type="checkbox" name="' . esc_attr( Settings::CANCEL_FIELDS ) . '[]" value="' . esc_attr( $key ) . '"' . checked( in_array( $key, Settings::cancel_fields(), true ), true, false ) . '> ' . esc_html( $label ) . '</label>';
+		}
+		echo '<p class="description">' . esc_html__( 'A customer who is not logged in enters the order number and answers these questions. The answers must match the billing data of that order. Ask for at least one, otherwise the order number alone is enough to cancel.', 'tasg-abo' ) . '</p></td></tr>';
 	}
 
 	public function sanitize_yes_no( $value ): string {
@@ -160,6 +193,8 @@ final class SettingsPage {
 			echo '<label style="display:block"><input type="checkbox" name="' . esc_attr( $option ) . '" value="yes"' . checked( Settings::customer_may( $action ), true, false ) . '> ' . esc_html( $label ) . '</label>';
 		}
 		echo '<p class="description">' . esc_html__( 'Cancelling is always possible for customers (contracts concluded online in Germany need an easy way to cancel). Continuing after a pause is always possible too.', 'tasg-abo' ) . '</p></td></tr>';
+
+		$this->render_cancel_rows();
 
 		echo '<tr><th scope="row">' . esc_html__( 'Stripe for subscriptions', 'tasg-abo' ) . '</th><td>';
 		echo '<input type="hidden" name="' . esc_attr( Settings::STRIPE_ENABLED ) . '" value="no">';
