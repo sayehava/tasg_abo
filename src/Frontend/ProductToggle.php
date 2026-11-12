@@ -103,6 +103,18 @@ final class ProductToggle {
 		return wp_kses_post( $output );
 	}
 
+	/**
+	 * Always shown for a plan with a minimum term, it is not part of the editable text.
+	 */
+	private function term_note( Plan $plan ): string {
+		if ( '' === $plan->term_label() ) {
+			return '';
+		}
+
+		/* translators: %s: length of the minimum term, for example "3 months" */
+		return '<br><strong>' . esc_html( sprintf( __( 'Minimum term: %s.', 'tasg-abo' ), $plan->term_label() ) ) . '</strong>';
+	}
+
 	public function render(): void {
 		global $product;
 
@@ -134,7 +146,7 @@ final class ProductToggle {
 		}
 
 		foreach ( $plans as $id => $plan ) {
-			echo '<div class="tasg-abo-text" data-plan="' . esc_attr( (string) $id ) . '"' . ( (int) $id === $default_id ? '' : ' hidden' ) . ' style="margin-top:3px;color:#555;font-size:13px">' . $this->text( $product, $plan ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<div class="tasg-abo-text" data-plan="' . esc_attr( (string) $id ) . '"' . ( (int) $id === $default_id ? '' : ' hidden' ) . ' style="margin-top:3px;color:#555;font-size:13px">' . $this->text( $product, $plan ) . $this->term_note( $plan ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		echo '</div>';
