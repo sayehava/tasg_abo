@@ -58,6 +58,13 @@ final class CartHandler {
 			return false;
 		}
 
+		// One running subscription per product and customer. Without this, a customer could
+		// cancel and subscribe again (or run two at once) to collect the discount over and over.
+		if ( $passed && $ticked && is_user_logged_in() && ( new \TasgAbo\Subscriptions\Repository() )->has_open( get_current_user_id(), (int) $product_id ) ) {
+			wc_add_notice( __( 'You already have a subscription for this product. You can manage it under My Account.', 'tasg-abo' ), 'error' );
+			return false;
+		}
+
 		return $passed;
 	}
 
@@ -97,6 +104,14 @@ final class CartHandler {
 				'key'   => __( 'Subscription', 'tasg-abo' ),
 				'value' => '' !== (string) $plan['name'] ? (string) $plan['name'] : \TasgAbo\Plans\Period::label( (int) $plan['value'], (string) $plan['unit'] ),
 			);
+
+			// A minimum term is shown wherever the customer sees the cart line.
+			if ( ! empty( $plan['term_value'] ) ) {
+				$item_data[] = array(
+					'key'   => __( 'Minimum term', 'tasg-abo' ),
+					'value' => \TasgAbo\Plans\Period::label( (int) $plan['term_value'], (string) ( $plan['term_unit'] ?? 'month' ) ),
+				);
+			}
 		}
 
 		return $item_data;
@@ -136,6 +151,11 @@ final class CartHandler {
 	public function save_order_item_meta( \WC_Order_Item_Product $item, string $cart_item_key, array $values ): void {
 		if ( ! empty( $values['tasg_abo_plan'] ) ) {
 			$item->add_meta_data( '_tasg_abo_plan', wp_json_encode( $values['tasg_abo_plan'] ), true );
+
+			// Visible on the order, the confirmation email and the invoice.
+			if ( ! empty( $values['tasg_abo_plan']['term_value'] ) ) {
+				$item->add_meta_data( __( 'Minimum term', 'tasg-abo' ), \TasgAbo\Plans\Period::label( (int) $values['tasg_abo_plan']['term_value'], (string) ( $values['tasg_abo_plan']['term_unit'] ?? 'month' ) ), true );
+			}
 
 			// Language of the customer right now (WPML code), so later emails use it even
 			// when the order is processed in a webhook or background job.
