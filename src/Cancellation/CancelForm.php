@@ -26,12 +26,59 @@ final class CancelForm {
 
 	private $repository;
 
+	/** Own text for the cancel button, empty for the default. */
+	private $submit_label = '';
+
 	public function __construct( Repository $repository ) {
 		$this->repository = $repository;
 	}
 
+	/**
+	 * Use another text on the cancel button (the Elementor widget has a field for it).
+	 */
+	public function with_submit_label( string $label ): self {
+		$this->submit_label = $label;
+
+		return $this;
+	}
+
+	private function submit_text(): string {
+		return '' !== $this->submit_label ? $this->submit_label : __( 'Cancel contract now', 'tasg-abo' );
+	}
+
+	/**
+	 * Basic look. :where() keeps it at zero weight, so any theme or Elementor style wins.
+	 */
+	private function default_css(): void {
+		static $printed = false;
+
+		if ( $printed ) {
+			return;
+		}
+
+		$printed = true;
+		echo '<style>:where(.tasg-abo-cancel-wrap) .tasg-abo-contract{margin:1em 0;padding:1em;border:1px solid #ddd}:where(.tasg-abo-cancel-wrap) .tasg-abo-input{width:100%;box-sizing:border-box}</style>';
+	}
+
+	/**
+	 * What the form looks like with sample data, for the Elementor editor.
+	 */
+	public function preview(): string {
+		ob_start();
+		$this->default_css();
+		echo '<div class="tasg-abo-cancel-wrap">';
+		$this->guest_form();
+		$this->notice( __( 'We could not find an open subscription with these details.', 'tasg-abo' ) );
+		echo '<div class="tasg-abo-contract"><p><strong>' . esc_html__( 'Product', 'tasg-abo' ) . ' (' . esc_html__( 'Monthly', 'tasg-abo' ) . ')</strong><br>' . esc_html__( 'Subscription no. 12, first order no. 1234', 'tasg-abo' ) . '</p><p>' . esc_html__( 'If you cancel now, the contract ends today and you will not be charged again.', 'tasg-abo' ) . '</p>';
+		echo '<button type="button" class="button tasg-abo-submit">' . esc_html( $this->submit_text() ) . '</button></div></div>';
+
+		return (string) ob_get_clean();
+	}
+
 	public function render(): string {
 		ob_start();
+		$this->default_css();
+		echo '<div class="tasg-abo-cancel-wrap">';
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['tasg_abo_cancel_go'] ) ) {
@@ -39,6 +86,8 @@ final class CancelForm {
 		} else {
 			$this->show_form();
 		}
+
+		echo '</div>';
 
 		return (string) ob_get_clean();
 	}
@@ -48,7 +97,7 @@ final class CancelForm {
 	}
 
 	private function notice( string $text, bool $error = true ): void {
-		echo '<div class="' . ( $error ? 'woocommerce-error' : 'woocommerce-info' ) . '" role="alert">' . esc_html( $text ) . '</div>';
+		echo '<div class="tasg-abo-notice ' . ( $error ? 'tasg-abo-notice--error woocommerce-error' : 'tasg-abo-notice--info woocommerce-info' ) . '" role="alert">' . esc_html( $text ) . '</div>';
 	}
 
 	/**
@@ -123,11 +172,11 @@ final class CancelForm {
 	private function type_fields(): void {
 		$type = 'extraordinary' === $this->posted( 'cancel_type' ) ? 'extraordinary' : 'ordinary';
 
-		echo '<p><strong>' . esc_html__( 'Type of cancellation', 'tasg-abo' ) . '</strong><br>';
+		echo '<p><strong class="tasg-abo-label">' . esc_html__( 'Type of cancellation', 'tasg-abo' ) . '</strong><br>';
 		echo '<label><input type="radio" name="cancel_type" value="ordinary"' . checked( $type, 'ordinary', false ) . '> ' . esc_html__( 'Ordinary cancellation', 'tasg-abo' ) . '</label><br>';
 		echo '<label><input type="radio" name="cancel_type" value="extraordinary"' . checked( $type, 'extraordinary', false ) . '> ' . esc_html__( 'Extraordinary cancellation (please give the reason)', 'tasg-abo' ) . '</label></p>';
-		echo '<p><label>' . esc_html__( 'Reason (only for an extraordinary cancellation)', 'tasg-abo' ) . '<br>';
-		echo '<textarea name="cancel_reason" rows="3" class="input-text" style="width:100%">' . esc_textarea( $this->posted( 'cancel_reason' ) ) . '</textarea></label></p>';
+		echo '<p><label class="tasg-abo-label">' . esc_html__( 'Reason (only for an extraordinary cancellation)', 'tasg-abo' ) . '<br>';
+		echo '<textarea name="cancel_reason" rows="3" class="input-text tasg-abo-input">' . esc_textarea( $this->posted( 'cancel_reason' ) ) . '</textarea></label></p>';
 	}
 
 	/**
@@ -143,14 +192,14 @@ final class CancelForm {
 		$this->type_fields();
 
 		foreach ( $subs as $sub ) {
-			echo '<div style="margin:1em 0;padding:1em;border:1px solid #ddd"><p><strong>' . esc_html( $this->title( $sub ) ) . '</strong><br>' . esc_html( $this->contract_line( $sub ) ) . '</p>';
+			echo '<div class="tasg-abo-contract"><p><strong>' . esc_html( $this->title( $sub ) ) . '</strong><br>' . esc_html( $this->contract_line( $sub ) ) . '</p>';
 
 			if ( ! empty( $sub->cancel_after ) ) {
 				/* translators: %s: date the contract ends */
 				echo '<p>' . esc_html( sprintf( __( 'Your cancellation was received. The contract ends on %s.', 'tasg-abo' ), $this->date( $sub->cancel_after ) ) ) . '</p>';
 			} else {
 				echo '<p>' . esc_html( $this->effect_text( $sub ) ) . '</p>';
-				echo '<button type="submit" class="button" name="tasg_abo_cancel_go" value="' . (int) $sub->id . '">' . esc_html__( 'Cancel contract now', 'tasg-abo' ) . '</button>';
+				echo '<button type="submit" class="button tasg-abo-submit" name="tasg_abo_cancel_go" value="' . (int) $sub->id . '">' . esc_html( $this->submit_text() ) . '</button>';
 			}
 
 			echo '</div>';
@@ -169,16 +218,16 @@ final class CancelForm {
 		echo '<form method="post" action="" class="tasg-abo-cancel">';
 		wp_nonce_field( 'tasg_abo_cancel', 'tasg_abo_nonce' );
 		echo '<p>' . esc_html__( 'To cancel without logging in, enter your order number and the details below. You find the order number in your order confirmation email.', 'tasg-abo' ) . '</p>';
-		echo '<p><label>' . esc_html__( 'Order number', 'tasg-abo' ) . '<br><input type="text" name="order_no" class="input-text" required value="' . esc_attr( $this->posted( 'order_no' ) ) . '"></label></p>';
+		echo '<p><label class="tasg-abo-label">' . esc_html__( 'Order number', 'tasg-abo' ) . '<br><input type="text" name="order_no" class="input-text tasg-abo-input" required value="' . esc_attr( $this->posted( 'order_no' ) ) . '"></label></p>';
 
 		foreach ( Settings::cancel_fields() as $field ) {
 			$label = Settings::cancel_field_choices()[ $field ];
 			$type  = 'email' === $field ? 'email' : 'text';
-			echo '<p><label>' . esc_html( $label ) . '<br><input type="' . esc_attr( $type ) . '" name="cancel_answer[' . esc_attr( $field ) . ']" class="input-text" required autocomplete="off" value="' . esc_attr( $answers[ $field ] ?? '' ) . '"></label></p>';
+			echo '<p><label class="tasg-abo-label">' . esc_html( $label ) . '<br><input type="' . esc_attr( $type ) . '" name="cancel_answer[' . esc_attr( $field ) . ']" class="input-text tasg-abo-input" required autocomplete="off" value="' . esc_attr( $answers[ $field ] ?? '' ) . '"></label></p>';
 		}
 
 		$this->type_fields();
-		echo '<p><button type="submit" class="button" name="tasg_abo_cancel_go" value="guest">' . esc_html__( 'Cancel contract now', 'tasg-abo' ) . '</button></p>';
+		echo '<p><button type="submit" class="button tasg-abo-submit" name="tasg_abo_cancel_go" value="guest">' . esc_html( $this->submit_text() ) . '</button></p>';
 		echo '<p>' . esc_html__( 'The confirmation is sent by email to the address of the contract.', 'tasg-abo' ) . '</p></form>';
 	}
 
