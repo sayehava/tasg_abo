@@ -32,6 +32,14 @@ final class Actions {
 	}
 
 	/**
+	 * When the contract ends after a cancellation: with the minimum term if the cancellation
+	 * was only noted, otherwise now.
+	 */
+	public static function end_timestamp( object $sub ): int {
+		return ! empty( $sub->cancel_after ) ? (int) strtotime( $sub->cancel_after . ' UTC' ) : time();
+	}
+
+	/**
 	 * A cancellation by the customer. Inside the minimum term it is only noted and
 	 * takes effect when the term is over: orders continue until then. Outside the
 	 * term the subscription ends at once.
