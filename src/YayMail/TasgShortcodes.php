@@ -57,6 +57,7 @@ final class TasgShortcodes extends \YayMail\Abstracts\BaseShortcode {
 			'continue_url'     => array( 'Link: continue after a pause', home_url( '/' ) ),
 			'cancel_url'       => array( 'Link: cancel the subscription', home_url( '/' ) ),
 			'plan_url'         => array( 'Link: change the plan', home_url( '/' ) ),
+			'term_note'        => array( 'Note about the minimum term (empty without one)', 'Your minimum term runs until 1 January. Skip and pause are not possible until then.' ),
 			'payment_url'      => array( 'Link: change the payment method', home_url( '/' ) ),
 			'card_name'        => array( 'Card (expiring card email)', 'Visa **** 4242' ),
 			'card_expiry'      => array( 'Card expiry (expiring card email)', '12/2030' ),
