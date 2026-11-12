@@ -70,6 +70,9 @@ final class SettingsPage {
 			)
 		);
 		echo '<p class="description">' . esc_html__( 'The page with the shortcode [tasg_abo_cancel]. It was created for you. My Account, the reminder email and every cancel link lead here.', 'tasg-abo' ) . '</p>';
+		if ( did_action( 'elementor/loaded' ) ) {
+			echo '<p class="description">' . esc_html__( 'Designing the page with Elementor? Add the widgets "Cancellation form" and "Cancel contracts button" (category Tasg Abo) to a page, then select that page here.', 'tasg-abo' ) . '</p>';
+		}
 		echo '<p class="description">' . esc_html__( 'Use this link anywhere, for example in the footer or a menu, without a shortcode:', 'tasg-abo' ) . ' <code>' . esc_html( \TasgAbo\Cancellation\CancelPage::short_url() ) . '</code><br>';
 		echo esc_html__( 'Or a button with the shortcode:', 'tasg-abo' ) . ' <code>[tasg_abo_cancel_button]</code> <code>[tasg_abo_cancel_button label="Cancel here"]</code></p></td></tr>';
 
