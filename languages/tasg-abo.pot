@@ -1348,3 +1348,67 @@ msgstr ""
 #: src/Elementor/CancelFormWidget.php
 msgid "Cancellation form"
 msgstr ""
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Form"
+msgstr ""
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Button text"
+msgstr ""
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Leave empty for the standard text. German law asks for \"jetzt kündigen\" or an equally clear wording."
+msgstr ""
+
+#: src/Elementor/CancelFormWidget.php
+msgid "The form shows the questions chosen in WooCommerce > Settings > Subscriptions > Settings. Select this page there as the cancel page, so every cancel link leads here. The preview below shows sample data."
+msgstr ""
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Labels"
+msgstr ""
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Colour"
+msgstr ""
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Fields"
+msgstr ""
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Contract box"
+msgstr ""
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Text colour on hover"
+msgstr ""
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Background on hover"
+msgstr ""
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Messages"
+msgstr ""
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Error text colour"
+msgstr ""
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Error background"
+msgstr ""
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Notice text colour"
+msgstr ""
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Notice background"
+msgstr ""
+
+#: src/Elementor/Integration.php
+msgid "Tasg Abo"
+msgstr ""
