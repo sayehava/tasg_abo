@@ -19,6 +19,7 @@ defined( 'ABSPATH' ) || exit;
 final class CheckoutRules {
 
 	public function register(): void {
+		add_action( 'woocommerce_after_checkout_validation', array( $this, 'block_second_subscription' ), 10, 2 );
 		add_filter( 'woocommerce_checkout_registration_required', array( $this, 'require_account' ) );
 		add_filter( 'pre_option_woocommerce_enable_signup_and_login_from_checkout', array( $this, 'allow_signup' ) );
 		add_filter( 'wc_stripe_force_save_payment_method', array( $this, 'force_save_card' ) );
@@ -27,6 +28,39 @@ final class CheckoutRules {
 		add_filter( 'wc_stripe_upe_params', array( $this, 'flag_subscription_cart' ) );
 		add_filter( 'wc_stripe_params', array( $this, 'flag_subscription_cart' ) );
 		add_filter( 'wc_stripe_generate_create_intent_request', array( $this, 'exclude_on_payment_request' ), 20, 2 );
+	}
+
+	/**
+	 * One running subscription per product and customer. The add to cart check only knows
+	 * logged in customers, so the account behind the billing email is checked here as well.
+	 * Without it, a customer could register again with the same email and take the discount twice.
+	 *
+	 * @param array     $data   Posted checkout data.
+	 * @param \WP_Error $errors Validation errors, an added error stops the order.
+	 */
+	public function block_second_subscription( $data, $errors ): void {
+		if ( ! self::cart_has_subscription() ) {
+			return;
+		}
+
+		$user_id = get_current_user_id();
+
+		if ( $user_id < 1 && ! empty( $data['billing_email'] ) ) {
+			$user_id = (int) email_exists( sanitize_email( $data['billing_email'] ) );
+		}
+
+		if ( $user_id < 1 ) {
+			return;
+		}
+
+		$repository = new \TasgAbo\Subscriptions\Repository();
+
+		foreach ( WC()->cart->get_cart() as $item ) {
+			if ( ! empty( $item['tasg_abo_plan'] ) && $repository->has_open( $user_id, (int) $item['product_id'] ) ) {
+				$errors->add( 'tasg_abo_duplicate', __( 'You already have a subscription for this product. You can manage it under My Account.', 'tasg-abo' ) );
+				return;
+			}
+		}
 	}
 
 	public static function cart_has_subscription(): bool {
