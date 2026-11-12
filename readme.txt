@@ -2,7 +2,7 @@
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 0.3.1
+Stable tag: 0.4.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -44,6 +44,9 @@ Customers tick "Subscribe and save" on a product page and choose an interval. Th
 5. Edit a product and enable the subscription fields on the General tab, then tick the plans it offers.
 
 == Changelog ==
+
+= 0.4.0 =
+* Elementor widgets "Cancellation form" and "Cancel contracts button" with style controls, to build the cancel page in the site's own design.
 
 = 0.3.1 =
 * WPML: the cancel page gets a language, so it is no longer redirected to the home page. Other languages use the translated page.
