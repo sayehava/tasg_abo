@@ -86,7 +86,17 @@ final class MyAccount {
 
 			echo '<tr><td>' . esc_html( ( $product ? $product->get_name() : '' ) . ' x ' . (int) $row->quantity ) . '</td>';
 			echo '<td>' . esc_html( \TasgAbo\Plans\Period::row_label( $row ) ) . '</td>';
-			echo '<td>' . esc_html( $names[ $row->status ] ?? $row->status ) . '</td>';
+			$status = $names[ $row->status ] ?? $row->status;
+
+			if ( 'active' === $row->status && ! empty( $row->cancel_after ) ) {
+				/* translators: %s: date the minimum term ends */
+				$status = sprintf( __( 'Ends %s', 'tasg-abo' ), wp_date( get_option( 'date_format' ), strtotime( $row->cancel_after . ' UTC' ) ) );
+			} elseif ( ! empty( $row->term_ends ) && in_array( $row->status, array( 'active', 'paused' ), true ) && strtotime( $row->term_ends . ' UTC' ) > time() ) {
+				/* translators: 1: status, 2: date the minimum term ends */
+				$status = sprintf( __( '%1$s (minimum term until %2$s)', 'tasg-abo' ), $status, wp_date( get_option( 'date_format' ), strtotime( $row->term_ends . ' UTC' ) ) );
+			}
+
+			echo '<td>' . esc_html( $status ) . '</td>';
 			echo '<td>' . ( 'cancelled' === $row->status ? '' : esc_html( wp_date( get_option( 'date_format' ), strtotime( $row->next_payment . ' UTC' ) ) ) ) . '</td>';
 
 			// The address the next order will use, from the last order or a correction.
@@ -95,10 +105,13 @@ final class MyAccount {
 			// Buttons are built from escaped parts in link(). Each one follows the shop settings.
 			$open = in_array( $row->status, array( 'active', 'paused' ), true );
 
-			if ( 'active' === $row->status && Settings::customer_may( 'skip' ) ) {
+			// Inside a minimum term skip and pause are not offered.
+			$bound = ! empty( $row->term_ends ) && strtotime( $row->term_ends . ' UTC' ) > time();
+
+			if ( 'active' === $row->status && ! $bound && Settings::customer_may( 'skip' ) ) {
 				echo $this->link( $row, 'skip', __( 'Skip next', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
-			if ( 'active' === $row->status && Settings::customer_may( 'pause' ) ) {
+			if ( 'active' === $row->status && ! $bound && Settings::customer_may( 'pause' ) ) {
 				echo $this->link( $row, 'pause', __( 'Pause', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 			if ( 'paused' === $row->status ) {
@@ -113,7 +126,9 @@ final class MyAccount {
 			if ( $open && Settings::customer_may( 'payment' ) && 0 === strpos( (string) $row->gateway, 'stripe' ) ) {
 				echo $this->link( $row, 'payment', __( 'Payment method', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
-			if ( $open ) {
+			if ( $open && ! empty( $row->cancel_after ) ) {
+				echo $this->link( $row, 'keep', __( 'Keep subscription', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			} elseif ( $open ) {
 				echo $this->link( $row, 'cancel', __( 'Cancel', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 
