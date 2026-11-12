@@ -181,4 +181,106 @@ final class CancelForm {
 		echo '<p><button type="submit" class="button" name="tasg_abo_cancel_go" value="guest">' . esc_html__( 'Cancel contract now', 'tasg-abo' ) . '</button></p>';
 		echo '<p>' . esc_html__( 'The confirmation is sent by email to the address of the contract.', 'tasg-abo' ) . '</p></form>';
 	}
+
+	private function handle_post(): void {
+		$key = $this->posted( 'tasg_abo_key' );
+
+		if ( ! wp_verify_nonce( $this->posted( 'tasg_abo_nonce' ), 'tasg_abo_cancel' ) ) {
+			$this->notice( __( 'The page has expired. Please try again.', 'tasg-abo' ) );
+			$this->show_form( $key );
+			return;
+		}
+
+		$type   = 'extraordinary' === $this->posted( 'cancel_type' ) ? 'extraordinary' : 'ordinary';
+		$reason = mb_substr( $this->posted( 'cancel_reason' ), 0, 500 );
+
+		if ( 'extraordinary' === $type && '' === trim( $reason ) ) {
+			$this->notice( __( 'Please give the reason of an extraordinary cancellation.', 'tasg-abo' ) );
+			$this->show_form( $key );
+			return;
+		}
+
+		if ( 'guest' === $this->posted( 'tasg_abo_cancel_go' ) && Verifier::blocked() ) {
+			$this->notice( __( 'Too many attempts. Please try again in a few minutes.', 'tasg-abo' ) );
+			return;
+		}
+
+		$sub = $this->posted_subscription( $key );
+
+		if ( ! $sub ) {
+			$this->notice( __( 'We could not find an open subscription with these details.', 'tasg-abo' ) );
+			$this->show_form( $key );
+			return;
+		}
+
+		$this->cancel( $sub, $type, $reason );
+	}
+
+	/**
+	 * The subscription the visitor is allowed to cancel with this request, or null.
+	 */
+	private function posted_subscription( string $key ): ?object {
+		$go = $this->posted( 'tasg_abo_cancel_go' );
+
+		if ( 'guest' === $go ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$answers = isset( $_POST['cancel_answer'] ) && is_array( $_POST['cancel_answer'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['cancel_answer'] ) ) : array();
+
+			return ( new Verifier( $this->repository ) )->find( $this->posted( 'order_no' ), $answers );
+		}
+
+		$sub = $this->repository->find( (int) $go );
+
+		if ( ! $sub || ! $this->is_open( $sub ) ) {
+			return null;
+		}
+
+		if ( '' !== $key && hash_equals( (string) $sub->cancel_key, $key ) ) {
+			return $sub;
+		}
+
+		return is_user_logged_in() && (int) $sub->user_id === get_current_user_id() ? $sub : null;
+	}
+
+	private function cancel( object $sub, string $type, string $reason ): void {
+		if ( ! empty( $sub->cancel_after ) || ! ( new Actions( $this->repository ) )->request_cancel( $sub ) ) {
+			$this->notice( __( 'This contract was already cancelled.', 'tasg-abo' ), false );
+			return;
+		}
+
+		$row = $this->repository->find( (int) $sub->id );
+		$row = $row ? $row : $sub;
+		Log::info( sprintf( 'Subscription #%d: cancelled by the customer on the cancel page (%s).', (int) $row->id, $type ) );
+
+		// The owner decides about an extraordinary cancellation, so the reason goes on the order.
+		$order = wc_get_order( (int) $row->origin_order_id );
+		if ( $order ) {
+			/* translators: 1: type of cancellation, 2: reason */
+			$order->add_order_note( sprintf( __( 'Customer cancellation on the cancel page. Type: %1$s. Reason: %2$s', 'tasg-abo' ), $type, '' !== $reason ? $reason : '-' ) );
+		}
+
+		CancelConfirmationEmail::$details = array(
+			'type'   => $type,
+			'reason' => $reason,
+		);
+
+		$emails = WC()->mailer()->get_emails();
+		$sent   = isset( $emails['tasg_abo_cancel_confirmation'] ) && $emails['tasg_abo_cancel_confirmation']->trigger( (int) $row->id );
+		Log::info( sprintf( 'Subscription #%d: cancellation confirmation %s.', (int) $row->id, $sent ? 'sent' : 'NOT sent' ) );
+
+		$this->result( $row, $sent );
+	}
+
+	/**
+	 * What was cancelled and when, for the customer to keep.
+	 */
+	private function result( object $row, bool $sent ): void {
+		echo '<h3>' . esc_html__( 'Your cancellation was received', 'tasg-abo' ) . '</h3><ul>';
+		echo '<li>' . esc_html( $this->title( $row ) . ', ' . $this->contract_line( $row ) ) . '</li>';
+		/* translators: %s: date and time */
+		echo '<li>' . esc_html( sprintf( __( 'Received: %s', 'tasg-abo' ), wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) ) ) ) . '</li>';
+		/* translators: %s: date */
+		echo '<li>' . esc_html( sprintf( __( 'The contract ends: %s', 'tasg-abo' ), wp_date( get_option( 'date_format' ), Actions::end_timestamp( $row ) ) ) ) . '</li></ul>';
+		echo '<p>' . esc_html( $sent ? __( 'We sent a confirmation to your email address.', 'tasg-abo' ) : __( 'We could not send the confirmation by email. Please save or print this page as your proof.', 'tasg-abo' ) ) . '</p>';
+	}
 }
