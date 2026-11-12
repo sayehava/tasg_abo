@@ -648,8 +648,8 @@ msgid "Email text"
 msgstr "E-Mail-Text"
 
 #: src/Emails/SubscriptionEmail.php
-msgid "Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url} {card_name} {card_expiry}"
-msgstr "Platzhalter: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url} {card_name} {card_expiry}"
+msgid "Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url} {term_note} {card_name} {card_expiry}"
+msgstr "Platzhalter: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url} {term_note} {card_name} {card_expiry}"
 
 #: src/Frontend/LinkHandler.php
 msgid "Link not valid"
@@ -1096,3 +1096,11 @@ msgstr "Wie lange ein neuer Kunde an diesen Tarif gebunden ist. Bestellungen lau
 #: src/Cart/CartHandler.php
 msgid "You already have a subscription for this product. You can manage it under My Account."
 msgstr "Sie haben für dieses Produkt bereits ein Abo. Sie können es unter Mein Konto verwalten."
+
+#: src/Emails/SubscriptionEmail.php
+msgid "Your cancellation is noted: your subscription ends with the minimum term on %s."
+msgstr "Ihre Kündigung ist vorgemerkt: Ihr Abo endet mit der Mindestlaufzeit am %s."
+
+#: src/Emails/SubscriptionEmail.php
+msgid "Your minimum term runs until %s. Skip and pause are not possible until then."
+msgstr "Ihre Mindestlaufzeit läuft bis %s. Überspringen und Pausieren sind bis dahin nicht möglich."
