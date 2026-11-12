@@ -44,6 +44,7 @@ final class ReminderEmail extends SubscriptionEmail {
 			$text .= "\n\n" . __( 'If this address is not correct, please change it before {next_date}: {address_url}', 'tasg-abo' );
 		}
 
+		$text .= "\n\n{term_note}";
 		$text .= "\n\n" . __( 'You do not need to do anything else to continue.', 'tasg-abo' );
 
 		$lines = array();
