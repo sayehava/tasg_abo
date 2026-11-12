@@ -45,6 +45,12 @@ final class Repository {
 	}
 
 	/**
+	 * SQL part that leaves out subscriptions whose next order falls on or after the
+	 * date they end at (a cancellation made inside the minimum term).
+	 */
+	private const NOT_ENDING = ' AND (cancel_after IS NULL OR next_payment < cancel_after)';
+
+	/**
 	 * Active subscriptions that are due and whose reminder email already went out.
 	 * A subscription is never charged before the customer was warned.
 	 *
@@ -55,7 +61,7 @@ final class Repository {
 
 		return (array) $wpdb->get_results(
 			$wpdb->prepare(
-				'SELECT * FROM ' . Schema::table() . " WHERE status = 'active' AND reminder_sent = 1 AND next_payment <= %s ORDER BY next_payment ASC",
+				'SELECT * FROM ' . Schema::table() . " WHERE status = 'active' AND reminder_sent = 1 AND next_payment <= %s" . self::NOT_ENDING . " ORDER BY next_payment ASC",
 				$until_utc
 			)
 		);
@@ -73,7 +79,7 @@ final class Repository {
 
 		return (array) $wpdb->get_results(
 			$wpdb->prepare(
-				'SELECT * FROM ' . Schema::table() . " WHERE status = 'active' AND reminder_sent = 0 AND next_payment <= DATE_ADD(%s, INTERVAL (reminder_minutes + %d) MINUTE) ORDER BY next_payment ASC",
+				'SELECT * FROM ' . Schema::table() . " WHERE status = 'active' AND reminder_sent = 0 AND next_payment <= DATE_ADD(%s, INTERVAL (reminder_minutes + %d) MINUTE)" . self::NOT_ENDING . " ORDER BY next_payment ASC",
 				$now_utc,
 				$margin_minutes
 			)
@@ -91,10 +97,27 @@ final class Repository {
 
 		return (array) $wpdb->get_results(
 			$wpdb->prepare(
-				'SELECT * FROM ' . Schema::table() . " WHERE status = 'active' AND gateway LIKE %s AND next_payment <= DATE_ADD(%s, INTERVAL %d DAY) AND (card_notice_for IS NULL OR card_notice_for <> next_payment) ORDER BY next_payment ASC",
+				'SELECT * FROM ' . Schema::table() . " WHERE status = 'active' AND gateway LIKE %s AND next_payment <= DATE_ADD(%s, INTERVAL %d DAY) AND (card_notice_for IS NULL OR card_notice_for <> next_payment)" . self::NOT_ENDING . " ORDER BY next_payment ASC",
 				$wpdb->esc_like( 'stripe' ) . '%',
 				$now_utc,
 				$days
+			)
+		);
+	}
+
+	/**
+	 * Active subscriptions with a cancellation inside the minimum term whose last
+	 * paid period is over: no further order follows, so they can now end.
+	 *
+	 * @return object[]
+	 */
+	public function ended( string $now_utc ): array {
+		global $wpdb;
+
+		return (array) $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT * FROM ' . Schema::table() . " WHERE status = 'active' AND cancel_after IS NOT NULL AND next_payment >= cancel_after AND next_payment <= %s ORDER BY next_payment ASC",
+				$now_utc
 			)
 		);
 	}
