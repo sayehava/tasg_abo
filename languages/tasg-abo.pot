@@ -1284,3 +1284,67 @@ msgstr ""
 #: src/Admin/SettingsPage.php
 msgid "A customer who is not logged in enters the order number and answers these questions. The answers must match the billing data of that order. Ask for at least one, otherwise the order number alone is enough to cancel."
 msgstr ""
+
+#: src/Cancellation/CancelForm.php
+msgid "Subscription no. 12, first order no. 1234"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Designing the page with Elementor? Add the widgets \"Cancellation form\" and \"Cancel contracts button\" (category Tasg Abo) to a page, then select that page here."
+msgstr ""
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Cancel contracts button"
+msgstr ""
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Button"
+msgstr ""
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Leave empty to use the text from WooCommerce > Settings > Subscriptions."
+msgstr ""
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Alignment"
+msgstr ""
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Left"
+msgstr ""
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Center"
+msgstr ""
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Right"
+msgstr ""
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Normal"
+msgstr ""
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Hover"
+msgstr ""
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Text colour"
+msgstr ""
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Background"
+msgstr ""
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Corner radius"
+msgstr ""
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Padding"
+msgstr ""
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Cancellation form"
+msgstr ""
