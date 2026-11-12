@@ -36,6 +36,29 @@ final class Repository {
 		return $row ?: null;
 	}
 
+	/**
+	 * The subscription an order belongs to: its first order or one of its renewal orders.
+	 */
+	public function find_by_order( int $order_id ): ?object {
+		global $wpdb;
+
+		$order = wc_get_order( $order_id );
+
+		if ( ! $order instanceof \WC_Order ) {
+			return null;
+		}
+
+		$renewal_of = (int) $order->get_meta( '_tasg_abo_renewal_of' );
+
+		if ( $renewal_of > 0 ) {
+			return $this->find( $renewal_of );
+		}
+
+		$row = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . Schema::table() . ' WHERE origin_order_id = %d LIMIT 1', $order_id ) );
+
+		return $row ?: null;
+	}
+
 	public function find_by_key( string $key ): ?object {
 		global $wpdb;
 
