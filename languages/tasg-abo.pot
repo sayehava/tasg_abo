@@ -1019,3 +1019,80 @@ msgstr[1] ""
 msgid "Test order (subscription test): the order is real, but made to test the subscription and the automation."
 msgstr ""
 
+#: src/Frontend/LinkHandler.php
+msgid "Keep your subscription?"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Yes, keep it"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Your subscription has a minimum term until %s. If you cancel now, it ends then and you will be charged for the orders until that date."
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "This is not possible during the minimum term, which runs until %s."
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Cancellation noted"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Subscription kept"
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Your subscription ends with the minimum term on %s. Orders continue until then and you will not be charged after that."
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Thank you. Your cancellation is withdrawn and your subscription continues."
+msgstr ""
+
+#: src/Frontend/ProductToggle.php
+msgid "Minimum term: %s."
+msgstr ""
+
+#: src/Frontend/MyAccount.php
+msgid "Ends %s"
+msgstr ""
+
+#: src/Frontend/MyAccount.php
+msgid "%1$s (minimum term until %2$s)"
+msgstr ""
+
+#: src/Frontend/MyAccount.php
+msgid "Keep subscription"
+msgstr ""
+
+#: src/Plans/Period.php
+msgid "Years"
+msgstr ""
+
+#: src/Plans/Period.php
+msgid "%d year"
+msgid_plural "%d years"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Admin/SubscriptionsPage.php
+msgid "Cancel now"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Minimum term"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "None"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "How long a new customer is bound to this plan. Orders continue until the term is over. A cancellation inside the term takes effect when it ends, and skip and pause are not possible. 0 means no minimum term. Changing this only affects new subscriptions."
+msgstr ""
+
+#: src/Cart/CartHandler.php
+msgid "You already have a subscription for this product. You can manage it under My Account."
+msgstr ""
