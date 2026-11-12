@@ -107,4 +107,26 @@ final class CancelPage {
 			update_option( Settings::CANCEL_PAGE, (int) $id );
 		}
 	}
+
+	public function render_form(): string {
+		return ( new CancelForm( new Repository() ) )->render();
+	}
+
+	/**
+	 * A button linking to the page. The text is the one from the settings, or label="...".
+	 *
+	 * @param array|string $atts Shortcode attributes.
+	 */
+	public function render_button( $atts ): string {
+		$atts = shortcode_atts( array( 'label' => '' ), (array) $atts, 'tasg_abo_cancel_button' );
+		$url  = self::url();
+
+		if ( '' === $url ) {
+			return '';
+		}
+
+		$label = '' !== $atts['label'] ? $atts['label'] : Settings::cancel_button_text();
+
+		return '<a class="button tasg-abo-cancel-button" href="' . esc_url( $url ) . '">' . esc_html( $label ) . '</a>';
+	}
 }
