@@ -63,6 +63,12 @@ final class Creator {
 			$value = (int) $plan['value'];
 			$unit  = in_array( $plan['unit'] ?? '', Period::UNITS, true ) ? $plan['unit'] : 'week';
 
+			// Minimum term from the plan copy. The end date is fixed now, so later edits
+			// of the plan never change it. No term means no end date.
+			$term_value = max( 0, (int) ( $plan['term_value'] ?? 0 ) );
+			$term_unit  = in_array( $plan['term_unit'] ?? '', Period::TERM_UNITS, true ) ? $plan['term_unit'] : 'month';
+			$now        = time();
+
 			$new_id = $this->repository->insert(
 				array(
 					'user_id'          => $user_id,
@@ -75,7 +81,8 @@ final class Creator {
 					'period_unit'      => $unit,
 					'reminder_minutes' => max( 1, (int) ( $plan['reminder_minutes'] ?? 2880 ) ),
 					'status'           => 'active',
-					'next_payment'     => gmdate( 'Y-m-d H:i:s', Period::add( time(), $value, $unit ) ),
+					'next_payment'     => gmdate( 'Y-m-d H:i:s', Period::add( $now, $value, $unit ) ),
+					'term_ends'        => $term_value > 0 ? gmdate( 'Y-m-d H:i:s', Period::add( $now, $term_value, $term_unit ) ) : null,
 					'origin_order_id'  => $order->get_id(),
 					'gateway'          => (string) $order->get_payment_method(),
 					'last_order_id'    => $order->get_id(),
