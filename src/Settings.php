@@ -24,6 +24,8 @@ final class Settings {
 	public const TEST_MARKER_NOTE    = 'tasg_abo_test_marker_note';
 	public const CARD_NOTICE         = 'tasg_abo_card_notice';
 	public const CARD_NOTICE_DAYS    = 'tasg_abo_card_notice_days';
+	public const CANCEL_PAGE         = 'tasg_abo_cancel_page';
+	public const CANCEL_FIELDS       = 'tasg_abo_cancel_fields';
 
 	/**
 	 * What customers may do themselves. Option name and default per action.
@@ -164,6 +166,45 @@ final class Settings {
 	 */
 	public static function card_notice_days(): int {
 		return max( 2, (int) get_option( self::CARD_NOTICE_DAYS, 14 ) );
+	}
+
+	/**
+	 * The page with the cancellation form (shortcode [tasg_abo_cancel]), 0 if none.
+	 */
+	public static function cancel_page_id(): int {
+		return (int) get_option( self::CANCEL_PAGE, 0 );
+	}
+
+	/**
+	 * Questions a customer who is not logged in can be asked, besides the order number.
+	 * They are compared with the billing data of that order.
+	 *
+	 * @return array<string,string> key => label
+	 */
+	public static function cancel_field_choices(): array {
+		return array(
+			'email'      => __( 'Email address', 'tasg-abo' ),
+			'first_name' => __( 'First name', 'tasg-abo' ),
+			'last_name'  => __( 'Last name', 'tasg-abo' ),
+			'postcode'   => __( 'Postcode', 'tasg-abo' ),
+			'city'       => __( 'City', 'tasg-abo' ),
+			'phone'      => __( 'Phone', 'tasg-abo' ),
+		);
+	}
+
+	/**
+	 * The questions that are switched on. Email address and postcode until the owner chooses.
+	 *
+	 * @return string[]
+	 */
+	public static function cancel_fields(): array {
+		$saved = get_option( self::CANCEL_FIELDS, null );
+
+		if ( ! is_array( $saved ) ) {
+			return array( 'email', 'postcode' );
+		}
+
+		return array_values( array_intersect( array_keys( self::cancel_field_choices() ), $saved ) );
 	}
 
 	public static function pause_reminder_days(): int {
