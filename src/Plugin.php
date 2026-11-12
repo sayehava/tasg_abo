@@ -110,6 +110,7 @@ final class Plugin {
 		( new Checkout\CheckoutRules() )->register();
 		( new Subscriptions\Creator( new Subscriptions\Repository() ) )->register();
 		( new Cancellation\CancelPage() )->register();
+		( new Elementor\Integration() )->register();
 		( new Frontend\LinkHandler() )->register();
 		( new Frontend\MyAccount() )->register();
 		( new Frontend\ProductToggle() )->register();
