@@ -242,13 +242,19 @@ abstract class SubscriptionEmail extends \WC_Email {
 	 * email settings, else the built-in default in the customer's language.
 	 */
 	private function body_text(): string {
-		if ( '' !== $this->texts['body'] ) {
-			return $this->texts['body'];
+		$body = '' !== $this->texts['body'] ? $this->texts['body'] : $this->saved_setting( 'body' );
+
+		if ( '' === $body ) {
+			return static::default_body();
 		}
 
-		$saved = $this->saved_setting( 'body' );
+		// A text written before the minimum term existed has no {term_note}. The note is
+		// added at the end, so the customer is told about the term whatever the text says.
+		if ( 'tasg_abo_reminder' === $this->id && false === strpos( $body, '{term_note}' ) ) {
+			$body .= "\n\n{term_note}";
+		}
 
-		return '' !== $saved ? $saved : static::default_body();
+		return $body;
 	}
 
 	private function template_args( bool $plain ): array {
