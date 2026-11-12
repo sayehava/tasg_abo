@@ -46,6 +46,16 @@ final class LinkHandler {
 			$this->page( __( 'Link not valid', 'tasg-abo' ), '<p>' . esc_html__( 'This link is not valid any more.', 'tasg-abo' ) . '</p>' );
 		}
 
+		// Links from older emails open the cancel page, where every cancellation happens now.
+		if ( 'cancel' === $action ) {
+			$page = \TasgAbo\Cancellation\CancelPage::url( $sub );
+
+			if ( '' !== $page ) {
+				wp_safe_redirect( $page );
+				exit;
+			}
+		}
+
 		// Options the shop owner switched off in the settings.
 		if ( ! Settings::customer_may( $action ) ) {
 			$this->page( __( 'Not available', 'tasg-abo' ), '<p>' . esc_html__( 'The shop has switched this option off. Please contact us if you need help.', 'tasg-abo' ) . '</p>' );
