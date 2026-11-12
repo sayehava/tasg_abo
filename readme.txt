@@ -2,7 +2,7 @@
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 0.2.1
+Stable tag: 0.3.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -44,6 +44,11 @@ Customers tick "Subscribe and save" on a product page and choose an interval. Th
 5. Edit a product and enable the subscription fields on the General tab, then tick the plans it offers.
 
 == Changelog ==
+
+= 0.3.0 =
+* One cancel page for everyone: My Account button, reminder email link, the shortcode [tasg_abo_cancel_button] and the short link /?tasg-abo-cancel=1 all lead to it. Logged in customers see their subscriptions, others enter the order number and questions chosen in the settings.
+* Cancellation confirmation email with content, date and time of receipt and the end of the contract.
+* The text of the cancel button is editable.
 
 = 0.2.1 =
 * The one subscription per product rule is also checked at checkout, by the account behind the billing email.
