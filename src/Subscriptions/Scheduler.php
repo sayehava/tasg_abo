@@ -61,6 +61,12 @@ final class Scheduler {
 
 		$now_utc = gmdate( 'Y-m-d H:i:s', $now );
 
+		// Cancellations made inside a minimum term end here, once the last paid period is over.
+		$actions = new Actions( $this->repository );
+		foreach ( $this->repository->ended( $now_utc ) as $row ) {
+			$actions->cancel( $row );
+		}
+
 		foreach ( $this->repository->needing_reminder( $now_utc, self::MARGIN_MINUTES ) as $row ) {
 			$this->queue( 'tasg_abo_send_reminder', (int) $row->id );
 		}
