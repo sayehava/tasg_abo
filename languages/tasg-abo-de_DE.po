@@ -1284,3 +1284,67 @@ msgstr "Fragen ohne Anmeldung"
 #: src/Admin/SettingsPage.php
 msgid "A customer who is not logged in enters the order number and answers these questions. The answers must match the billing data of that order. Ask for at least one, otherwise the order number alone is enough to cancel."
 msgstr "Ein Kunde ohne Anmeldung gibt die Bestellnummer ein und beantwortet diese Fragen. Die Antworten müssen zu den Rechnungsdaten der Bestellung passen. Fragen Sie mindestens eine ab, sonst reicht die Bestellnummer allein zum Kündigen."
+
+#: src/Cancellation/CancelForm.php
+msgid "Subscription no. 12, first order no. 1234"
+msgstr "Abo-Nr. 12, erste Bestellung Nr. 1234"
+
+#: src/Admin/SettingsPage.php
+msgid "Designing the page with Elementor? Add the widgets \"Cancellation form\" and \"Cancel contracts button\" (category Tasg Abo) to a page, then select that page here."
+msgstr "Gestalten Sie die Seite mit Elementor? Fügen Sie die Widgets \"Kündigungsformular\" und \"Button Verträge kündigen\" (Kategorie Tasg Abo) einer Seite hinzu und wählen Sie diese Seite hier aus."
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Cancel contracts button"
+msgstr "Button Verträge kündigen"
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Button"
+msgstr "Button"
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Leave empty to use the text from WooCommerce > Settings > Subscriptions."
+msgstr "Leer lassen, um den Text aus WooCommerce > Einstellungen > Abos zu verwenden."
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Alignment"
+msgstr "Ausrichtung"
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Left"
+msgstr "Links"
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Center"
+msgstr "Zentriert"
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Right"
+msgstr "Rechts"
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Normal"
+msgstr "Normal"
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Hover"
+msgstr "Hover"
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Text colour"
+msgstr "Textfarbe"
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Background"
+msgstr "Hintergrund"
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Corner radius"
+msgstr "Eckenradius"
+
+#: src/Elementor/CancelButtonWidget.php
+msgid "Padding"
+msgstr "Innenabstand"
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Cancellation form"
+msgstr "Kündigungsformular"
