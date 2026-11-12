@@ -40,6 +40,8 @@ final class CancelPage {
 			return '';
 		}
 
+		// With WPML the visitor gets the page in the current language, if it was translated.
+		$id  = (int) apply_filters( 'wpml_object_id', $id, 'page', true );
 		$url = (string) get_permalink( $id );
 
 		return $sub ? add_query_arg( 'tasg_abo_key', $sub->cancel_key, $url ) : $url;
@@ -84,7 +86,13 @@ final class CancelPage {
 	 * Creates the page once, with the form on it, unless the owner already chose one.
 	 */
 	public function ensure_page(): void {
-		if ( ! current_user_can( 'manage_woocommerce' ) || get_option( 'tasg_abo_cancel_page_made' ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			return;
+		}
+
+		$this->assign_language( Settings::cancel_page_id() );
+
+		if ( get_option( 'tasg_abo_cancel_page_made' ) ) {
 			return;
 		}
 
@@ -105,7 +113,35 @@ final class CancelPage {
 
 		if ( $id && ! is_wp_error( $id ) ) {
 			update_option( Settings::CANCEL_PAGE, (int) $id );
+			$this->assign_language( (int) $id );
 		}
+	}
+
+	/**
+	 * WPML hides and redirects a page that has no language. A page made by code gets the
+	 * default language here, otherwise visitors would land on the home page.
+	 */
+	private function assign_language( int $id ): void {
+		if ( $id < 1 || ! has_filter( 'wpml_default_language' ) ) {
+			return;
+		}
+
+		$details = apply_filters( 'wpml_post_language_details', null, $id );
+
+		if ( is_array( $details ) && ! empty( $details['language_code'] ) ) {
+			return;
+		}
+
+		do_action(
+			'wpml_set_element_language_details',
+			array(
+				'element_id'           => $id,
+				'element_type'         => 'post_page',
+				'trid'                 => false,
+				'language_code'        => apply_filters( 'wpml_default_language', null ),
+				'source_language_code' => null,
+			)
+		);
 	}
 
 	public function render_form(): string {
