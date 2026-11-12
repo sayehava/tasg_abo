@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Tasg Abo
  * Description:       Lets customers turn a WooCommerce product into a subscription. Renewal orders are created on schedule and charged through the saved Stripe or PayPal payment method.
- * Version:           0.2.0
+ * Version:           0.2.1
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Requires Plugins:  woocommerce
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'TASG_ABO_VERSION', '0.2.0' );
+define( 'TASG_ABO_VERSION', '0.2.1' );
 define( 'TASG_ABO_FILE', __FILE__ );
 define( 'TASG_ABO_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TASG_ABO_URL', plugin_dir_url( __FILE__ ) );
