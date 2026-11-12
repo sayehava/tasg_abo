@@ -7,7 +7,7 @@
  *
  * Placeholders: {customer_name} {product_name} {next_date} {amount}
  *               {cancel_url} {skip_url} {pause_url} {continue_url}
- *               {shipping_address} {address_url} {payment_url} {plan_url}
+ *               {shipping_address} {address_url} {payment_url} {plan_url} {term_note}
  *
  * @package TasgAbo
  */
@@ -77,9 +77,29 @@ abstract class SubscriptionEmail extends \WC_Email {
 			'{address_url}'      => '',
 			'{payment_url}'      => '',
 			'{plan_url}'         => '',
+			'{term_note}'        => '',
 			'{card_name}'        => '',
 			'{card_expiry}'      => '',
 		);
+	}
+
+	/**
+	 * One sentence about the minimum term, empty for a subscription without a running term.
+	 */
+	private function term_note( object $row ): string {
+		$format = get_option( 'date_format' );
+
+		if ( ! empty( $row->cancel_after ) ) {
+			/* translators: %s: date the minimum term ends */
+			return sprintf( __( 'Your cancellation is noted: your subscription ends with the minimum term on %s.', 'tasg-abo' ), wp_date( $format, strtotime( $row->cancel_after . ' UTC' ) ) );
+		}
+
+		if ( ! empty( $row->term_ends ) && strtotime( $row->term_ends . ' UTC' ) > time() ) {
+			/* translators: %s: date the minimum term ends */
+			return sprintf( __( 'Your minimum term runs until %s. Skip and pause are not possible until then.', 'tasg-abo' ), wp_date( $format, strtotime( $row->term_ends . ' UTC' ) ) );
+		}
+
+		return '';
 	}
 
 	/**
@@ -97,7 +117,7 @@ abstract class SubscriptionEmail extends \WC_Email {
 		$this->form_fields['body'] = array(
 			'title'       => __( 'Email text', 'tasg-abo' ),
 			'type'        => 'textarea',
-			'description' => __( 'Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url} {card_name} {card_expiry}', 'tasg-abo' ),
+			'description' => __( 'Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url} {term_note} {card_name} {card_expiry}', 'tasg-abo' ),
 			'default'     => static::default_body(),
 			'desc_tip'    => false,
 		);
@@ -164,6 +184,7 @@ abstract class SubscriptionEmail extends \WC_Email {
 			$this->placeholders['{address_url}']      = Links::url( $row, 'address' );
 			$this->placeholders['{payment_url}']      = Links::url( $row, 'payment' );
 			$this->placeholders['{plan_url}']         = Links::url( $row, 'plan' );
+			$this->placeholders['{term_note}']        = $this->term_note( $row );
 			$this->placeholders                       = array_merge( $this->placeholders, $this->extra_placeholders( $row ) );
 			self::$live                               = $this->placeholders;
 
