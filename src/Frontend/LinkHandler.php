@@ -70,8 +70,8 @@ final class LinkHandler {
 		$done = ( new Actions( $repository ) )->run( $sub, $action );
 
 		$this->page(
-			$done ? $this->done_title( $action ) : __( 'Nothing changed', 'tasg-abo' ),
-			'<p>' . esc_html( $done ? $this->done_text( $action ) : __( 'This subscription cannot be changed this way right now.', 'tasg-abo' ) ) . '</p>'
+			$done ? $this->done_title( $action, $sub ) : __( 'Nothing changed', 'tasg-abo' ),
+			'<p>' . esc_html( $done ? $this->done_text( $action, $sub ) : $this->failed_text( $action, $sub ) ) . '</p>'
 		);
 	}
 
@@ -265,9 +265,17 @@ final class LinkHandler {
 			'skip'     => array( __( 'Skip your next order?', 'tasg-abo' ), __( 'Yes, skip', 'tasg-abo' ) ),
 			'pause'    => array( __( 'Pause your subscription?', 'tasg-abo' ), __( 'Yes, pause', 'tasg-abo' ) ),
 			'continue' => array( __( 'Continue your subscription?', 'tasg-abo' ), __( 'Yes, continue', 'tasg-abo' ) ),
+			'keep'     => array( __( 'Keep your subscription?', 'tasg-abo' ), __( 'Yes, keep it', 'tasg-abo' ) ),
 		);
 
-		$html  = '<p>' . esc_html( $name ) . '</p>';
+		$html = '<p>' . esc_html( $name ) . '</p>';
+
+		// Inside the minimum term a cancellation only takes effect when the term is over.
+		if ( 'cancel' === $action && ( new Actions( new Repository() ) )->in_term( $sub ) ) {
+			/* translators: %s: date the minimum term ends */
+			$html .= '<p>' . esc_html( sprintf( __( 'Your subscription has a minimum term until %s. If you cancel now, it ends then and you will be charged for the orders until that date.', 'tasg-abo' ), $this->term_date( $sub ) ) ) . '</p>';
+		}
+
 		$html .= '<form method="post" action="">';
 		$html .= '<input type="hidden" name="tasg_abo" value="' . esc_attr( $action ) . '">';
 		$html .= '<input type="hidden" name="key" value="' . esc_attr( $sub->cancel_key ) . '">';
@@ -277,8 +285,30 @@ final class LinkHandler {
 		$this->page( $labels[ $action ][0], $html );
 	}
 
-	private function done_title( string $action ): string {
+	private function term_date( object $sub ): string {
+		return wp_date( get_option( 'date_format' ), strtotime( $sub->term_ends . ' UTC' ) );
+	}
+
+	/**
+	 * Why nothing changed, with the real reason for skip and pause inside the term.
+	 */
+	private function failed_text( string $action, object $sub ): string {
+		if ( in_array( $action, array( 'skip', 'pause' ), true ) && ( new Actions( new Repository() ) )->in_term( $sub ) ) {
+			/* translators: %s: date the minimum term ends */
+			return sprintf( __( 'This is not possible during the minimum term, which runs until %s.', 'tasg-abo' ), $this->term_date( $sub ) );
+		}
+
+		return __( 'This subscription cannot be changed this way right now.', 'tasg-abo' );
+	}
+
+	private function done_title( string $action, object $sub ): string {
+		// The cancellation was only noted when the minimum term is still running.
+		if ( 'cancel' === $action && ( new Actions( new Repository() ) )->in_term( $sub ) ) {
+			return __( 'Cancellation noted', 'tasg-abo' );
+		}
+
 		$titles = array(
+			'keep'     => __( 'Subscription kept', 'tasg-abo' ),
 			'cancel'   => __( 'Subscription cancelled', 'tasg-abo' ),
 			'skip'     => __( 'Order skipped', 'tasg-abo' ),
 			'pause'    => __( 'Subscription paused', 'tasg-abo' ),
@@ -288,8 +318,14 @@ final class LinkHandler {
 		return $titles[ $action ];
 	}
 
-	private function done_text( string $action ): string {
+	private function done_text( string $action, object $sub ): string {
+		if ( 'cancel' === $action && ( new Actions( new Repository() ) )->in_term( $sub ) ) {
+			/* translators: %s: date the minimum term ends */
+			return sprintf( __( 'Your subscription ends with the minimum term on %s. Orders continue until then and you will not be charged after that.', 'tasg-abo' ), $this->term_date( $sub ) );
+		}
+
 		$texts = array(
+			'keep'     => __( 'Thank you. Your cancellation is withdrawn and your subscription continues.', 'tasg-abo' ),
 			'cancel'   => __( 'Your subscription is cancelled. You will not be charged again.', 'tasg-abo' ),
 			'skip'     => __( 'We will skip one order and carry on after that.', 'tasg-abo' ),
 			'pause'    => __( 'Your subscription is paused. We will ask you before the pause ends whether to continue or cancel.', 'tasg-abo' ),
