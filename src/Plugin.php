@@ -109,6 +109,7 @@ final class Plugin {
 		( new Privacy\PrivacyTools() )->register();
 		( new Checkout\CheckoutRules() )->register();
 		( new Subscriptions\Creator( new Subscriptions\Repository() ) )->register();
+		( new Cancellation\CancelPage() )->register();
 		( new Frontend\LinkHandler() )->register();
 		( new Frontend\MyAccount() )->register();
 		( new Frontend\ProductToggle() )->register();
