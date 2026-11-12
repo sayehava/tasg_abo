@@ -36,7 +36,7 @@ final class SubscriptionsPage {
 		$sub        = $repository->find( isset( $_POST['id'] ) ? absint( $_POST['id'] ) : 0 );
 		$action     = isset( $_POST['do'] ) ? sanitize_key( wp_unslash( $_POST['do'] ) ) : '';
 
-		if ( $sub && in_array( $action, array( 'cancel', 'pause', 'continue' ), true ) ) {
+		if ( $sub && in_array( $action, array( 'cancel_now', 'pause', 'continue' ), true ) ) {
 			( new Actions( $repository ) )->run( $sub, $action );
 		}
 
@@ -125,19 +125,24 @@ final class SubscriptionsPage {
 			echo '<td>' . esc_html( $user ? $user->user_email : '' ) . '</td>';
 			echo '<td>' . esc_html( ( $product ? $product->get_name() : '' ) . ' x ' . (int) $row->quantity ) . '</td>';
 			echo '<td>' . esc_html( \TasgAbo\Plans\Period::row_label( $row ) ) . '</td>';
-			echo '<td>' . esc_html( $row->status . ( ! empty( $row->is_test ) ? ' (test)' : '' ) ) . '</td>';
+			$term = '';
+			if ( ! empty( $row->term_ends ) ) {
+				$term = ' [' . ( ! empty( $row->cancel_after ) ? 'ends with term ' : 'term until ' ) . gmdate( 'Y-m-d', strtotime( $row->term_ends . ' UTC' ) ) . ']';
+			}
+			echo '<td>' . esc_html( $row->status . ( ! empty( $row->is_test ) ? ' (test)' : '' ) . $term ) . '</td>';
 			echo '<td>' . esc_html( (string) $row->next_payment ) . '</td><td>';
 			$this->shipping_form( (string) (int) $row->id, (string) $row->shipping_mode, $until, __( 'Save', 'tasg-abo' ) );
 			echo '</td><td>';
 
-			if ( 'active' === $row->status ) {
+			// Pause is not possible inside a minimum term.
+			if ( 'active' === $row->status && ( empty( $row->term_ends ) || strtotime( $row->term_ends . ' UTC' ) <= time() ) ) {
 				$this->button( (int) $row->id, 'pause', __( 'Pause', 'tasg-abo' ) );
 			}
 			if ( 'paused' === $row->status ) {
 				$this->button( (int) $row->id, 'continue', __( 'Continue', 'tasg-abo' ) );
 			}
 			if ( in_array( $row->status, array( 'active', 'paused' ), true ) ) {
-				$this->button( (int) $row->id, 'cancel', __( 'Cancel', 'tasg-abo' ) );
+				$this->button( (int) $row->id, 'cancel_now', __( 'Cancel now', 'tasg-abo' ) );
 			}
 
 			echo '</td></tr>';
