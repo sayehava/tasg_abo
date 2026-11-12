@@ -1019,3 +1019,80 @@ msgstr[1] "%d Abos angelegt."
 msgid "Test order (subscription test): the order is real, but made to test the subscription and the automation."
 msgstr "Testbestellung (Abo-Test): Die Bestellung ist echt, dient aber dazu, das Abo und die Automatik zu testen."
 
+#: src/Frontend/LinkHandler.php
+msgid "Keep your subscription?"
+msgstr "Abo behalten?"
+
+#: src/Frontend/LinkHandler.php
+msgid "Yes, keep it"
+msgstr "Ja, behalten"
+
+#: src/Frontend/LinkHandler.php
+msgid "Your subscription has a minimum term until %s. If you cancel now, it ends then and you will be charged for the orders until that date."
+msgstr "Ihr Abo hat eine Mindestlaufzeit bis %s. Wenn Sie jetzt kündigen, endet es zu diesem Datum und Sie zahlen die Bestellungen bis dahin."
+
+#: src/Frontend/LinkHandler.php
+msgid "This is not possible during the minimum term, which runs until %s."
+msgstr "Das ist während der Mindestlaufzeit, die bis %s läuft, nicht möglich."
+
+#: src/Frontend/LinkHandler.php
+msgid "Cancellation noted"
+msgstr "Kündigung vorgemerkt"
+
+#: src/Frontend/LinkHandler.php
+msgid "Subscription kept"
+msgstr "Abo behalten"
+
+#: src/Frontend/LinkHandler.php
+msgid "Your subscription ends with the minimum term on %s. Orders continue until then and you will not be charged after that."
+msgstr "Ihr Abo endet mit der Mindestlaufzeit am %s. Bis dahin laufen die Bestellungen weiter, danach wird nichts mehr abgebucht."
+
+#: src/Frontend/LinkHandler.php
+msgid "Thank you. Your cancellation is withdrawn and your subscription continues."
+msgstr "Vielen Dank. Ihre Kündigung ist zurückgenommen und Ihr Abo läuft weiter."
+
+#: src/Frontend/ProductToggle.php
+msgid "Minimum term: %s."
+msgstr "Mindestlaufzeit: %s."
+
+#: src/Frontend/MyAccount.php
+msgid "Ends %s"
+msgstr "Endet am %s"
+
+#: src/Frontend/MyAccount.php
+msgid "%1$s (minimum term until %2$s)"
+msgstr "%1$s (Mindestlaufzeit bis %2$s)"
+
+#: src/Frontend/MyAccount.php
+msgid "Keep subscription"
+msgstr "Abo behalten"
+
+#: src/Plans/Period.php
+msgid "Years"
+msgstr "Jahre"
+
+#: src/Plans/Period.php
+msgid "%d year"
+msgid_plural "%d years"
+msgstr[0] "%d Jahr"
+msgstr[1] "%d Jahre"
+
+#: src/Admin/SubscriptionsPage.php
+msgid "Cancel now"
+msgstr "Sofort kündigen"
+
+#: src/Admin/PlansPage.php
+msgid "Minimum term"
+msgstr "Mindestlaufzeit"
+
+#: src/Admin/PlansPage.php
+msgid "None"
+msgstr "Keine"
+
+#: src/Admin/PlansPage.php
+msgid "How long a new customer is bound to this plan. Orders continue until the term is over. A cancellation inside the term takes effect when it ends, and skip and pause are not possible. 0 means no minimum term. Changing this only affects new subscriptions."
+msgstr "Wie lange ein neuer Kunde an diesen Tarif gebunden ist. Bestellungen laufen bis zum Ende der Laufzeit weiter. Eine Kündigung innerhalb der Laufzeit wirkt zum Laufzeitende, Überspringen und Pausieren sind nicht möglich. 0 bedeutet keine Mindestlaufzeit. Eine Änderung betrifft nur neue Abos."
+
+#: src/Cart/CartHandler.php
+msgid "You already have a subscription for this product. You can manage it under My Account."
+msgstr "Sie haben für dieses Produkt bereits ein Abo. Sie können es unter Mein Konto verwalten."
