@@ -1348,3 +1348,67 @@ msgstr "Innenabstand"
 #: src/Elementor/CancelFormWidget.php
 msgid "Cancellation form"
 msgstr "Kündigungsformular"
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Form"
+msgstr "Formular"
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Button text"
+msgstr "Button-Text"
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Leave empty for the standard text. German law asks for \"jetzt kündigen\" or an equally clear wording."
+msgstr "Leer lassen für den Standardtext. Das deutsche Recht verlangt \"jetzt kündigen\" oder eine ebenso klare Formulierung."
+
+#: src/Elementor/CancelFormWidget.php
+msgid "The form shows the questions chosen in WooCommerce > Settings > Subscriptions > Settings. Select this page there as the cancel page, so every cancel link leads here. The preview below shows sample data."
+msgstr "Das Formular zeigt die Fragen aus WooCommerce > Einstellungen > Abos > Einstellungen. Wählen Sie diese Seite dort als Kündigungsseite aus, damit jeder Kündigungslink hierher führt. Die Vorschau zeigt Beispieldaten."
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Labels"
+msgstr "Beschriftungen"
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Colour"
+msgstr "Farbe"
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Fields"
+msgstr "Felder"
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Contract box"
+msgstr "Vertragsbox"
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Text colour on hover"
+msgstr "Textfarbe bei Hover"
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Background on hover"
+msgstr "Hintergrund bei Hover"
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Messages"
+msgstr "Meldungen"
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Error text colour"
+msgstr "Textfarbe bei Fehler"
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Error background"
+msgstr "Hintergrund bei Fehler"
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Notice text colour"
+msgstr "Textfarbe bei Hinweis"
+
+#: src/Elementor/CancelFormWidget.php
+msgid "Notice background"
+msgstr "Hintergrund bei Hinweis"
+
+#: src/Elementor/Integration.php
+msgid "Tasg Abo"
+msgstr "Tasg Abo"
