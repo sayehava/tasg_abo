@@ -13,6 +13,9 @@ final class Period {
 
 	public const UNITS = array( 'minute', 'hour', 'day', 'week', 'month' );
 
+	/** Units for a minimum term. Same as the period units, plus years. */
+	public const TERM_UNITS = array( 'minute', 'hour', 'day', 'week', 'month', 'year' );
+
 	/**
 	 * Timestamp after adding a period.
 	 *
@@ -34,6 +37,8 @@ final class Period {
 				return $timestamp + $value * HOUR_IN_SECONDS;
 			case 'day':
 				return $timestamp + $value * DAY_IN_SECONDS;
+			case 'year':
+				return self::add( $timestamp, $value * 12, 'month', $anchor_day );
 			case 'month':
 				// Calendar months in the shop time zone. A day that does not exist in the
 				// target month (31st to February) becomes the last day of that month.
@@ -81,6 +86,9 @@ final class Period {
 			case 'month':
 				/* translators: %d: number of months */
 				return sprintf( _n( '%d month', '%d months', $value, 'tasg-abo' ), $value );
+			case 'year':
+				/* translators: %d: number of years */
+				return sprintf( _n( '%d year', '%d years', $value, 'tasg-abo' ), $value );
 		}
 
 		/* translators: %d: number of weeks */
@@ -109,6 +117,15 @@ final class Period {
 			'week'   => __( 'Weeks', 'tasg-abo' ),
 			'month'  => __( 'Months', 'tasg-abo' ),
 		);
+	}
+
+	/**
+	 * Names for the unit drop down of a minimum term.
+	 *
+	 * @return array<string,string>
+	 */
+	public static function term_unit_names(): array {
+		return self::unit_names() + array( 'year' => __( 'Years', 'tasg-abo' ) );
 	}
 
 	/**
