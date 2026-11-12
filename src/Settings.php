@@ -46,7 +46,7 @@ final class Settings {
 	 */
 	public static function customer_may( string $action ): bool {
 		if ( ! isset( self::CUSTOMER_OPTIONS[ $action ] ) ) {
-			return in_array( $action, array( 'cancel', 'continue' ), true );
+			return in_array( $action, array( 'cancel', 'continue', 'keep' ), true );
 		}
 
 		list( $option, $default ) = self::CUSTOMER_OPTIONS[ $action ];
