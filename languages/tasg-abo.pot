@@ -648,7 +648,7 @@ msgid "Email text"
 msgstr ""
 
 #: src/Emails/SubscriptionEmail.php
-msgid "Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url} {card_name} {card_expiry}"
+msgid "Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url} {term_note} {card_name} {card_expiry}"
 msgstr ""
 
 #: src/Frontend/LinkHandler.php
@@ -1095,4 +1095,12 @@ msgstr ""
 
 #: src/Cart/CartHandler.php
 msgid "You already have a subscription for this product. You can manage it under My Account."
+msgstr ""
+
+#: src/Emails/SubscriptionEmail.php
+msgid "Your cancellation is noted: your subscription ends with the minimum term on %s."
+msgstr ""
+
+#: src/Emails/SubscriptionEmail.php
+msgid "Your minimum term runs until %s. Skip and pause are not possible until then."
 msgstr ""
