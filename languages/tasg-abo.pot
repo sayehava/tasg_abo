@@ -1412,3 +1412,27 @@ msgstr ""
 #: src/Elementor/Integration.php
 msgid "Tasg Abo"
 msgstr ""
+
+#: src/Emails/ConfirmationEmail.php
+msgid "Subscription confirmation"
+msgstr ""
+
+#: src/Emails/ConfirmationEmail.php
+msgid "Sent to the customer when a subscription starts: product, plan, date of the next order and how to manage the subscription."
+msgstr ""
+
+#: src/Emails/ConfirmationEmail.php
+msgid "Your subscription to {product_name}"
+msgstr ""
+
+#: src/Emails/ConfirmationEmail.php
+msgid "Thank you for your subscription"
+msgstr ""
+
+#: src/Emails/ConfirmationEmail.php
+msgid "Hello {customer_name},\n\nthank you for subscribing to {product_name}. Your subscription number is {subscription_id}.\n\nPlan: {plan_name}\nAmount per order: {amount} plus shipping\nYour next order: {next_date}\n\nYour orders will be sent to:\n{shipping_address}\n\n{term_note}"
+msgstr ""
+
+#: src/Emails/ConfirmationEmail.php
+msgid "We will remind you by email before each order. You can manage your subscription at any time:"
+msgstr ""
