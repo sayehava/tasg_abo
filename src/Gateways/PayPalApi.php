@@ -58,4 +58,68 @@ final class PayPalApi {
 
 		return $token;
 	}
+
+	/**
+	 * One API call. Result: http (status code, 0 when PayPal was not reached),
+	 * data (decoded JSON) and error (text, empty on success).
+	 *
+	 * @param string $request_id Same value for the same action, so PayPal never does it twice.
+	 */
+	public function request( string $method, string $path, array $body = array(), string $request_id = '' ): array {
+		$token = $this->token();
+
+		if ( '' === $token ) {
+			return array(
+				'http'  => 0,
+				'data'  => array(),
+				'error' => 'PayPal did not accept the API credentials.',
+			);
+		}
+
+		$headers = array(
+			'Authorization' => 'Bearer ' . $token,
+			'Content-Type'  => 'application/json',
+		);
+
+		if ( '' !== $request_id ) {
+			$headers['PayPal-Request-Id'] = $request_id;
+		}
+
+		$args = array(
+			'method'  => $method,
+			'timeout' => 45,
+			'headers' => $headers,
+		);
+
+		if ( $body ) {
+			$args['body'] = wp_json_encode( $body );
+		}
+
+		$response = wp_remote_request( $this->base() . $path, $args );
+
+		if ( is_wp_error( $response ) ) {
+			return array(
+				'http'  => 0,
+				'data'  => array(),
+				'error' => $response->get_error_message(),
+			);
+		}
+
+		$code = (int) wp_remote_retrieve_response_code( $response );
+		$data = json_decode( wp_remote_retrieve_body( $response ), true );
+		$data = is_array( $data ) ? $data : array();
+
+		return array(
+			'http'  => $code,
+			'data'  => $data,
+			'error' => $code >= 400 ? $this->describe( $data, $code ) : '',
+		);
+	}
+
+	private function describe( array $data, int $code ): string {
+		$text = (string) ( $data['message'] ?? $data['error_description'] ?? 'PayPal error' );
+		$more = isset( $data['details'][0]['issue'] ) ? ' (' . $data['details'][0]['issue'] . ')' : '';
+
+		return $text . $more . ' [HTTP ' . $code . ']';
+	}
 }
