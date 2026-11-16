@@ -74,12 +74,42 @@ final class TasgShortcodes extends \YayMail\Abstracts\BaseShortcode {
 		foreach ( $this->definitions() as $key => $definition ) {
 			$sample = $definition[1];
 
+			// Sample links differ from each other, so the editor shows which link is which.
+			if ( home_url( '/' ) === $sample ) {
+				$sample = add_query_arg( 'tasg_abo_sample', $key, $sample );
+			}
+
 			$shortcodes[] = array(
 				'name'        => self::PREFIX . $key,
 				'description' => $definition[0],
 				'group'       => 'Tasg Abo',
 				'callback'    => function ( $data, $shortcode_atts = array() ) use ( $key, $sample ) {
 					$render = isset( $data['render_data'] ) && is_array( $data['render_data'] ) ? $data['render_data'] : array();
+
+					// A real order picked in the preview: show the data of its subscription,
+					// or at least the customer and product of that order.
+					$order = $render['order'] ?? null;
+
+					if ( $order instanceof \WC_Order && empty( $render['is_sample'] ) ) {
+						$real = SubscriptionEmail::values_for_order( $order->get_id() );
+
+						if ( null !== $real && isset( $real[ '{' . $key . '}' ] ) ) {
+							return nl2br( esc_html( (string) $real[ '{' . $key . '}' ] ) );
+						}
+
+						if ( null === $real ) {
+							$items = $order->get_items();
+							$first = $items ? reset( $items ) : null;
+							$own   = array(
+								'customer_name' => trim( $order->get_formatted_billing_full_name() ),
+								'product_name'  => $first ? $first->get_name() : '',
+							);
+
+							if ( ! empty( $own[ $key ] ) ) {
+								return esc_html( $own[ $key ] );
+							}
+						}
+					}
 
 					// The editor and sample previews show a sample value.
 					if ( ! empty( $data['is_placeholder'] ) || ! empty( $render['is_sample'] ) ) {
