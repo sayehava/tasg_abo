@@ -2,7 +2,7 @@
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 0.5.2
+Stable tag: 0.5.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -44,6 +44,9 @@ Customers tick "Subscribe and save" on a product page and choose an interval. Th
 5. Edit a product and enable the subscription fields on the General tab, then tick the plans it offers.
 
 == Changelog ==
+
+= 0.5.3 =
+* YayMail: the default templates of the subscription emails no longer contain their own logo and footer blocks, so the global header and footer of YayMail are used. Reset a template in YayMail to get the new default.
 
 = 0.5.2 =
 * YayMail preview: an order without a subscription now shows its own customer, product, shipping address and total.
