@@ -49,6 +49,9 @@ final class SettingsPage {
 		register_setting( self::SLUG, Settings::STRIPE_ENABLED, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 		register_setting( self::SLUG, Settings::STRIPE_METHODS, array( 'sanitize_callback' => array( $this, 'sanitize_methods' ) ) );
 		register_setting( self::SLUG, Settings::PAYPAL_ENABLED, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
+		register_setting( self::SLUG, Settings::PAYPAL_CLIENT_ID, array( 'sanitize_callback' => 'sanitize_text_field' ) );
+		register_setting( self::SLUG, Settings::PAYPAL_SECRET, array( 'sanitize_callback' => array( $this, 'sanitize_secret' ) ) );
+		register_setting( self::SLUG, Settings::PAYPAL_SANDBOX, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 	}
 
 	/**
@@ -91,6 +94,19 @@ final class SettingsPage {
 	/**
 	 * @return string[] Stripe method types, without empty entries.
 	 */
+	/**
+	 * A saved secret is shown as stars. Stars or an empty field mean "keep the saved secret".
+	 */
+	public function sanitize_secret( $value ): string {
+		$value = trim( sanitize_text_field( (string) $value ) );
+
+		if ( '' === $value || '' === trim( $value, '*' ) ) {
+			return Settings::paypal_secret();
+		}
+
+		return $value;
+	}
+
 	public function sanitize_methods( $value ): array {
 		return array_values( array_filter( array_map( 'sanitize_key', (array) $value ) ) );
 	}
@@ -231,8 +247,17 @@ final class SettingsPage {
 		echo '<tr><th scope="row">' . esc_html__( 'PayPal (experimental)', 'tasg-abo' ) . '</th><td>';
 		echo '<input type="hidden" name="' . esc_attr( Settings::PAYPAL_ENABLED ) . '" value="no">';
 		echo '<label><input type="checkbox" name="' . esc_attr( Settings::PAYPAL_ENABLED ) . '" value="yes"' . checked( Settings::paypal_enabled(), true, false ) . '> ' . esc_html__( 'Offer PayPal for subscriptions', 'tasg-abo' ) . '</label>';
-		echo '<p class="description">' . esc_html__( 'Needs the WooCommerce PayPal Payments plugin with saving of PayPal payment methods enabled, and the customer must save the method at checkout. Without a saved method the subscription is not created. Try it with a test purchase first.', 'tasg-abo' ) . '</p>';
-		echo '<p class="description">' . esc_html__( 'PayPal also needs the feature "Save PayPal and Venmo" on your PayPal account: WooCommerce > Settings > Payments > PayPal > Overview > Features > Sign up. Without it PayPal cannot be charged again.', 'tasg-abo' ) . '</p></td></tr>';
+		echo '<p class="description">' . esc_html__( 'Uses its own PayPal connection below, not the WooCommerce PayPal Payments plugin. The customer approves future payments with PayPal at checkout. Try it with a test purchase first.', 'tasg-abo' ) . '</p></td></tr>';
+
+		$secret = Settings::paypal_secret();
+		echo '<tr><th scope="row"><label for="tasg-abo-pp-id">' . esc_html__( 'PayPal client ID', 'tasg-abo' ) . '</label></th><td>';
+		echo '<input type="text" id="tasg-abo-pp-id" class="regular-text" autocomplete="off" name="' . esc_attr( Settings::PAYPAL_CLIENT_ID ) . '" value="' . esc_attr( Settings::paypal_client_id() ) . '"></td></tr>';
+		echo '<tr><th scope="row"><label for="tasg-abo-pp-secret">' . esc_html__( 'PayPal secret', 'tasg-abo' ) . '</label></th><td>';
+		echo '<input type="password" id="tasg-abo-pp-secret" class="regular-text" autocomplete="new-password" name="' . esc_attr( Settings::PAYPAL_SECRET ) . '" value="' . esc_attr( '' !== $secret ? str_repeat( '*', 24 ) : '' ) . '">';
+		echo '<p class="description">' . esc_html__( 'From developer.paypal.com > Apps & Credentials, in the app for this shop. The app needs "Save payment methods" switched on. A saved secret is shown as stars, leave it as it is to keep it.', 'tasg-abo' ) . '</p></td></tr>';
+		echo '<tr><th scope="row">' . esc_html__( 'PayPal test mode', 'tasg-abo' ) . '</th><td>';
+		echo '<input type="hidden" name="' . esc_attr( Settings::PAYPAL_SANDBOX ) . '" value="no">';
+		echo '<label><input type="checkbox" name="' . esc_attr( Settings::PAYPAL_SANDBOX ) . '" value="yes"' . checked( Settings::paypal_sandbox(), true, false ) . '> ' . esc_html__( 'Use the PayPal sandbox (use sandbox credentials above)', 'tasg-abo' ) . '</label></td></tr>';
 
 		echo '</table>';
 		submit_button();
