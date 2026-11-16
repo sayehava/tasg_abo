@@ -35,7 +35,7 @@ final class TasgShortcodes extends \YayMail\Abstracts\BaseShortcode {
 	}
 
 	protected function __construct() {
-		$this->available_email_ids = array( 'tasg_abo_reminder', 'tasg_abo_pause_reminder', 'tasg_abo_failed', 'tasg_abo_card_expiring' );
+		$this->available_email_ids = array( 'tasg_abo_reminder', 'tasg_abo_pause_reminder', 'tasg_abo_failed', 'tasg_abo_card_expiring', 'tasg_abo_cancel_confirmation', 'tasg_abo_confirmation' );
 		parent::__construct();
 	}
 
@@ -58,6 +58,7 @@ final class TasgShortcodes extends \YayMail\Abstracts\BaseShortcode {
 			'cancel_url'       => array( 'Link: cancel the subscription', home_url( '/' ) ),
 			'plan_url'         => array( 'Link: change the plan', home_url( '/' ) ),
 			'subscription_id'  => array( 'Subscription number', '12' ),
+			'plan_name'        => array( 'Name of the plan', 'Monthly' ),
 			'cancel_content'   => array( 'Content of the cancellation', 'Ordinary cancellation of the contract' ),
 			'received_at'      => array( 'Date and time the cancellation was received', '1 January 2027 10:00' ),
 			'end_date'         => array( 'Date the contract ends', '1 February 2027' ),
