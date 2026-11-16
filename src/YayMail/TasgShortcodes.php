@@ -101,12 +101,15 @@ final class TasgShortcodes extends \YayMail\Abstracts\BaseShortcode {
 							$items = $order->get_items();
 							$first = $items ? reset( $items ) : null;
 							$own   = array(
-								'customer_name' => trim( $order->get_formatted_billing_full_name() ),
-								'product_name'  => $first ? $first->get_name() : '',
+								'customer_name'    => trim( $order->get_formatted_billing_full_name() ),
+								'product_name'     => $first ? $first->get_name() : '',
+								'shipping_address' => trim( str_replace( array( '<br/>', '<br>', '<br />' ), "\n", $order->get_formatted_shipping_address() ) ),
+								'amount'           => html_entity_decode( wp_strip_all_tags( wc_price( $order->get_total(), array( 'currency' => $order->get_currency() ) ) ), ENT_QUOTES, 'UTF-8' ),
+								'next_date'        => wp_date( get_option( 'date_format' ), time() + 3 * DAY_IN_SECONDS ),
 							);
 
 							if ( ! empty( $own[ $key ] ) ) {
-								return esc_html( $own[ $key ] );
+								return nl2br( esc_html( $own[ $key ] ) );
 							}
 						}
 					}
