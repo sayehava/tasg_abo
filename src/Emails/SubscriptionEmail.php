@@ -168,25 +168,8 @@ abstract class SubscriptionEmail extends \WC_Email {
 				)
 				: EmailTexts::get( $this->id, EmailTexts::resolve_key( (string) $row->language ) );
 
-			$amount = (float) Pricing::subscriber_price( $product, (int) $row->plan_id ) * (int) $row->quantity;
-
-			$this->placeholders['{customer_name}'] = $user->display_name;
-			$this->placeholders['{product_name}']  = $product->get_name();
-			$this->placeholders['{next_date}']     = wp_date( get_option( 'date_format' ), strtotime( $row->next_payment . ' UTC' ) );
-			$this->placeholders['{amount}']        = html_entity_decode( wp_strip_all_tags( wc_price( $amount ) ), ENT_QUOTES, 'UTF-8' );
-			$this->placeholders['{cancel_url}']    = Links::url( $row, 'cancel' );
-			$this->placeholders['{skip_url}']      = Links::url( $row, 'skip' );
-			$this->placeholders['{pause_url}']     = Links::url( $row, 'pause' );
-			$this->placeholders['{continue_url}']  = Links::url( $row, 'continue' );
-
-			// The address of the next order, with a link to correct it for that order.
-			$this->placeholders['{shipping_address}'] = Address::formatted( Address::shipping( $row ) );
-			$this->placeholders['{address_url}']      = Links::url( $row, 'address' );
-			$this->placeholders['{payment_url}']      = Links::url( $row, 'payment' );
-			$this->placeholders['{plan_url}']         = Links::url( $row, 'plan' );
-			$this->placeholders['{term_note}']        = $this->term_note( $row );
-			$this->placeholders                       = array_merge( $this->placeholders, $this->extra_placeholders( $row ) );
-			self::$live                               = $this->placeholders;
+			$this->placeholders = $this->values_for( $row, $user, $product );
+			self::$live         = $this->placeholders;
 
 			if ( ( '' !== $test_to || $this->is_enabled() ) && $this->get_recipient() ) {
 				$sent = (bool) $this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
@@ -204,6 +187,71 @@ abstract class SubscriptionEmail extends \WC_Email {
 		}
 
 		return $sent;
+	}
+
+	/**
+	 * All placeholder values of this email for one subscription.
+	 *
+	 * @return array<string,string> placeholder (with braces) => value
+	 */
+	public function values_for( object $row, \WP_User $user, \WC_Product $product ): array {
+		$amount = (float) Pricing::subscriber_price( $product, (int) $row->plan_id ) * (int) $row->quantity;
+		$values = $this->placeholders;
+
+		$values['{customer_name}'] = $user->display_name;
+		$values['{product_name}']  = $product->get_name();
+		$values['{next_date}']     = wp_date( get_option( 'date_format' ), strtotime( $row->next_payment . ' UTC' ) );
+		$values['{amount}']        = html_entity_decode( wp_strip_all_tags( wc_price( $amount ) ), ENT_QUOTES, 'UTF-8' );
+		$values['{cancel_url}']    = Links::url( $row, 'cancel' );
+		$values['{skip_url}']      = Links::url( $row, 'skip' );
+		$values['{pause_url}']     = Links::url( $row, 'pause' );
+		$values['{continue_url}']  = Links::url( $row, 'continue' );
+
+		// The address of the next order, with a link to correct it for that order.
+		$values['{shipping_address}'] = Address::formatted( Address::shipping( $row ) );
+		$values['{address_url}']      = Links::url( $row, 'address' );
+		$values['{payment_url}']      = Links::url( $row, 'payment' );
+		$values['{plan_url}']         = Links::url( $row, 'plan' );
+		$values['{term_note}']        = $this->term_note( $row );
+
+		return array_merge( $values, $this->extra_placeholders( $row ) );
+	}
+
+	/**
+	 * Real values for the YayMail preview: the subscription an order belongs to
+	 * (its first order or a renewal order). Null when the order is no subscription order.
+	 *
+	 * @return array<string,string>|null
+	 */
+	public static function values_for_order( int $order_id ): ?array {
+		$row = ( new Repository() )->find_by_order( $order_id );
+
+		if ( ! $row ) {
+			return null;
+		}
+
+		$user    = get_userdata( (int) $row->user_id );
+		$product = wc_get_product( (int) $row->product_id );
+
+		if ( ! $user || ! $product ) {
+			return null;
+		}
+
+		$values = array();
+
+		foreach ( WC()->mailer()->get_emails() as $email ) {
+			if ( ! $email instanceof self ) {
+				continue;
+			}
+
+			try {
+				$values = array_merge( $values, $email->values_for( $row, $user, $product ) );
+			} catch ( \Throwable $e ) {
+				continue;
+			}
+		}
+
+		return $values ? $values : null;
 	}
 
 	/**
