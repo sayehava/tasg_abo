@@ -2,7 +2,7 @@
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 0.4.0
+Stable tag: 0.5.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -44,6 +44,9 @@ Customers tick "Subscribe and save" on a product page and choose an interval. Th
 5. Edit a product and enable the subscription fields on the General tab, then tick the plans it offers.
 
 == Changelog ==
+
+= 0.5.0 =
+* PayPal now uses its own connection to PayPal (client ID and secret in the settings, with a test mode) instead of the WooCommerce PayPal Payments plugin. The customer approves the payment and later charges at PayPal during checkout, so PayPal works for recurring payments in Germany.
 
 = 0.4.0 =
 * Elementor widgets "Cancellation form" and "Cancel contracts button" with style controls, to build the cancel page in the site's own design.
