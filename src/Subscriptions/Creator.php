@@ -95,6 +95,17 @@ final class Creator {
 				\TasgAbo\TestMarker::apply( $order );
 			}
 			Log::info( sprintf( 'Subscription #%d created from order #%d (plan "%s", every %d %s).', $new_id, $order->get_id(), (string) ( $plan['name'] ?? '' ), $value, $unit ) );
+
+			// Tell the customer the subscription has started. A mail problem never stops the order.
+			try {
+				$confirmation = WC()->mailer()->get_emails()['tasg_abo_confirmation'] ?? null;
+
+				if ( $confirmation instanceof \TasgAbo\Emails\SubscriptionEmail ) {
+					$confirmation->trigger( $new_id );
+				}
+			} catch ( \Throwable $e ) {
+				Log::warning( sprintf( 'Subscription #%d: confirmation email failed: %s', $new_id, $e->getMessage() ) );
+			}
 		}
 
 		if ( $made > 0 ) {
