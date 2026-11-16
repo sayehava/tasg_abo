@@ -140,6 +140,17 @@ final class RenewalHandler {
 	private function remember_payment( \WC_Order $order, object $sub, array $result ): void {
 		$order->set_transaction_id( '' !== $result['charge'] ? $result['charge'] : $result['id'] );
 
+		// PayPal: hand the saved payment method (vault id) on from the last order.
+		if ( in_array( (string) $sub->gateway, PayPalCharger::GATEWAY_IDS, true ) ) {
+			$last  = wc_get_order( (int) $sub->last_order_id );
+			$vault = $last ? (string) $last->get_meta( PayPalCharger::VAULT_META ) : '';
+
+			if ( '' !== $vault ) {
+				$order->update_meta_data( PayPalCharger::VAULT_META, $vault );
+			}
+			return;
+		}
+
 		// The Stripe references only belong on orders paid through Stripe.
 		if ( 0 !== strpos( (string) $sub->gateway, 'stripe' ) ) {
 			return;
