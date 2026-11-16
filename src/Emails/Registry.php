@@ -21,6 +21,7 @@ final class Registry {
 		$emails['tasg_abo_failed']         = new FailedEmail();
 		$emails['tasg_abo_card_expiring']  = new CardExpiringEmail();
 		$emails['tasg_abo_cancel_confirmation'] = new CancelConfirmationEmail();
+		$emails['tasg_abo_confirmation']        = new ConfirmationEmail();
 
 		return $emails;
 	}
