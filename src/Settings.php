@@ -14,6 +14,9 @@ final class Settings {
 	public const RENEWAL_STATUS      = 'tasg_abo_renewal_status';
 	public const PAUSE_REMINDER_DAYS = 'tasg_abo_pause_reminder_days';
 	public const PAYPAL_ENABLED      = 'tasg_abo_paypal_enabled';
+	public const PAYPAL_CLIENT_ID    = 'tasg_abo_paypal_client_id';
+	public const PAYPAL_SECRET       = 'tasg_abo_paypal_secret';
+	public const PAYPAL_SANDBOX      = 'tasg_abo_paypal_sandbox';
 	public const ADMIN_ONLY          = 'tasg_abo_admin_only';
 	public const EMAIL_DESIGNER      = 'tasg_abo_email_designer';
 	public const STRIPE_ENABLED      = 'tasg_abo_stripe_enabled';
@@ -98,6 +101,29 @@ final class Settings {
 	 */
 	public static function paypal_enabled(): bool {
 		return 'yes' === get_option( self::PAYPAL_ENABLED, 'no' );
+	}
+
+	/**
+	 * Own PayPal REST app of the shop (client id and secret from the PayPal developer dashboard).
+	 * Used for the PayPal Vault API, independent of the WooCommerce PayPal Payments plugin.
+	 */
+	public static function paypal_client_id(): string {
+		return trim( (string) get_option( self::PAYPAL_CLIENT_ID, '' ) );
+	}
+
+	public static function paypal_secret(): string {
+		return trim( (string) get_option( self::PAYPAL_SECRET, '' ) );
+	}
+
+	/**
+	 * Sandbox mode talks to PayPal's test servers. Off (live) is the default.
+	 */
+	public static function paypal_sandbox(): bool {
+		return 'yes' === get_option( self::PAYPAL_SANDBOX, 'no' );
+	}
+
+	public static function paypal_configured(): bool {
+		return '' !== self::paypal_client_id() && '' !== self::paypal_secret();
 	}
 
 	/**
