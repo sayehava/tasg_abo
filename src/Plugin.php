@@ -104,6 +104,14 @@ final class Plugin {
 		( new Subscriptions\PauseHandler( new Subscriptions\Repository() ) )->register();
 		( new Subscriptions\CardNoticeHandler( new Subscriptions\Repository() ) )->register();
 		( new Renewal\RenewalHandler( new Subscriptions\Repository(), new Renewal\OrderBuilder(), new Gateways\StripeCharger(), new Gateways\PayPalCharger() ) )->register();
+		add_filter(
+			'woocommerce_payment_gateways',
+			static function ( $gateways ) {
+				$gateways[] = Gateways\PayPalGateway::class;
+				return $gateways;
+			}
+		);
+		( new Gateways\PayPalReturn() )->register();
 		( new Emails\Registry() )->register();
 		( new YayMail\Integration() )->register();
 		( new Privacy\PrivacyTools() )->register();
