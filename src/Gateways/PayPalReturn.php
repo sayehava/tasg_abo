@@ -59,6 +59,9 @@ final class PayPalReturn {
 			$order->add_order_note( __( 'PayPal did not save the payment method for later charges.', 'tasg-abo' ) );
 		}
 
+		// Saved first: the subscription is created the moment the order turns "processing".
+		$order->save();
+
 		if ( 'COMPLETED' === $status ) {
 			$order->payment_complete( (string) ( $capture['id'] ?? '' ) );
 		} else {
