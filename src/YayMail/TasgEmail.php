@@ -77,10 +77,13 @@ final class TasgEmail extends \YayMail\Abstracts\BaseEmail {
 		return wpautop( esc_html( (string) $text ) );
 	}
 
+	/**
+	 * No own Logo and Footer blocks: the global header and footer of YayMail provide them.
+	 * With such blocks in the template YayMail hides the global ones on that template.
+	 */
 	public function get_default_elements() {
 		return \YayMail\Elements\ElementsLoader::load_elements(
 			array(
-				array( 'type' => 'Logo' ),
 				array(
 					'type'       => 'Heading',
 					'attributes' => array( 'rich_text' => esc_html( $this->default_heading ) ),
@@ -89,7 +92,6 @@ final class TasgEmail extends \YayMail\Abstracts\BaseEmail {
 					'type'       => 'Text',
 					'attributes' => array( 'rich_text' => $this->as_html( $this->default_body ) ),
 				),
-				array( 'type' => 'Footer' ),
 			)
 		);
 	}
