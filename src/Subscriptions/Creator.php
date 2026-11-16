@@ -38,8 +38,8 @@ final class Creator {
 
 		// PayPal can only be charged again if the customer saved the payment method.
 		$gateway = (string) $order->get_payment_method();
-		if ( in_array( $gateway, \TasgAbo\Gateways\PayPalCharger::GATEWAY_IDS, true ) && ! \WC_Payment_Tokens::get_customer_tokens( $user_id, $gateway ) ) {
-			$order->add_order_note( __( 'No subscription created: the customer did not save the PayPal payment method.', 'tasg-abo' ) );
+		if ( in_array( $gateway, \TasgAbo\Gateways\PayPalCharger::GATEWAY_IDS, true ) && '' === (string) $order->get_meta( \TasgAbo\Gateways\PayPalCharger::VAULT_META ) ) {
+			$order->add_order_note( __( 'No subscription created: PayPal did not save the payment method for later charges.', 'tasg-abo' ) );
 			return;
 		}
 
