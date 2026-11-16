@@ -91,8 +91,11 @@ final class PayPalApi {
 			'headers' => $headers,
 		);
 
+		// PayPal wants a JSON body on POST, an empty object when there is nothing to send.
 		if ( $body ) {
 			$args['body'] = wp_json_encode( $body );
+		} elseif ( 'POST' === $method ) {
+			$args['body'] = '{}';
 		}
 
 		$response = wp_remote_request( $this->base() . $path, $args );
