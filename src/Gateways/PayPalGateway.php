@@ -37,4 +37,78 @@ class PayPalGateway extends \WC_Payment_Gateway {
 	public function is_available() {
 		return Settings::paypal_enabled() && Settings::paypal_configured() && CheckoutRules::cart_has_subscription();
 	}
+
+	public function process_payment( $order_id ) {
+		$order = wc_get_order( $order_id );
+
+		if ( ! $order ) {
+			return array( 'result' => 'failure' );
+		}
+
+		$return = add_query_arg(
+			array(
+				'tasg_abo_pp' => 'return',
+				'order'       => $order->get_id(),
+				'key'         => $order->get_order_key(),
+			),
+			home_url( '/' )
+		);
+
+		$result = ( new PayPalApi() )->request(
+			'POST',
+			'/v2/checkout/orders',
+			array(
+				'intent'         => 'CAPTURE',
+				'purchase_units' => array(
+					array(
+						'invoice_id' => (string) $order->get_order_number(),
+						'custom_id'  => (string) $order->get_id(),
+						'amount'     => array(
+							'currency_code' => $order->get_currency(),
+							'value'         => wc_format_decimal( $order->get_total(), 2 ),
+						),
+					),
+				),
+				'payment_source' => array(
+					'paypal' => array(
+						'attributes'         => array(
+							'vault' => array(
+								'store_in_vault' => 'ON_SUCCESS',
+								'usage_type'     => 'MERCHANT',
+							),
+						),
+						'experience_context' => array(
+							'user_action'         => 'PAY_NOW',
+							'shipping_preference' => 'NO_SHIPPING',
+							'return_url'          => $return,
+							'cancel_url'          => wc_get_checkout_url(),
+						),
+					),
+				),
+			),
+			'tasg-abo-start-' . $order->get_id() . '-' . substr( md5( $order->get_order_key() . microtime() ), 0, 8 )
+		);
+
+		$link = '';
+		foreach ( (array) ( $result['data']['links'] ?? array() ) as $item ) {
+			if ( in_array( $item['rel'] ?? '', array( 'payer-action', 'approve' ), true ) ) {
+				$link = (string) $item['href'];
+				break;
+			}
+		}
+
+		if ( '' === $link ) {
+			Log::warning( sprintf( 'Order #%d: PayPal order could not be created: %s', $order->get_id(), $result['error'] ) );
+			wc_add_notice( __( 'PayPal is not available right now. Please try again or choose another payment method.', 'tasg-abo' ), 'error' );
+			return array( 'result' => 'failure' );
+		}
+
+		$order->update_meta_data( '_tasg_abo_pp_order', (string) ( $result['data']['id'] ?? '' ) );
+		$order->save();
+
+		return array(
+			'result'   => 'success',
+			'redirect' => $link,
+		);
+	}
 }
