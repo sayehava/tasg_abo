@@ -2,7 +2,7 @@
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 0.5.0
+Stable tag: 0.5.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -44,6 +44,9 @@ Customers tick "Subscribe and save" on a product page and choose an interval. Th
 5. Edit a product and enable the subscription fields on the General tab, then tick the plans it offers.
 
 == Changelog ==
+
+= 0.5.1 =
+* YayMail preview: when an order of a subscription is picked, the placeholders show that subscription (customer, product, next date, amount, address and the real links). Orders without a subscription show their own customer and product. Sample links now differ from each other.
 
 = 0.5.0 =
 * PayPal now uses its own connection to PayPal (client ID and secret in the settings, with a test mode) instead of the WooCommerce PayPal Payments plugin. The customer approves the payment and later charges at PayPal during checkout, so PayPal works for recurring payments in Germany.
