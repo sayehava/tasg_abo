@@ -44,7 +44,57 @@ final class PayPalCharger {
 			return $this->result( 'failed', '', 'No saved PayPal payment method on the last order.' );
 		}
 
-		return $this->result( 'error', '', 'PayPal charging is not finished yet.' );
+		$api    = new PayPalApi();
+		$result = $api->request(
+			'POST',
+			'/v2/checkout/orders',
+			array(
+				'intent'         => 'CAPTURE',
+				'purchase_units' => array(
+					array(
+						'invoice_id' => (string) $order->get_order_number(),
+						'custom_id'  => (string) $order->get_id(),
+						'amount'     => array(
+							'currency_code' => $order->get_currency(),
+							'value'         => wc_format_decimal( $order->get_total(), 2 ),
+						),
+					),
+				),
+				'payment_source' => array( 'paypal' => array( 'vault_id' => $vault ) ),
+			),
+			$idempotency
+		);
+
+		// A temporary problem: PayPal not reached or a server error. Nothing was charged.
+		if ( 0 === $result['http'] || $result['http'] >= 500 ) {
+			return $this->result( 'error', '', $result['error'] );
+		}
+
+		// Not accepted (declined, vault removed by the customer and so on). Final.
+		if ( '' !== $result['error'] ) {
+			return $this->result( 'failed', '', $result['error'] );
+		}
+
+		// Normally COMPLETED at once. If PayPal waits for a capture call, do it.
+		if ( 'COMPLETED' !== ( $result['data']['status'] ?? '' ) && ! empty( $result['data']['id'] ) ) {
+			$result = $api->request( 'POST', '/v2/checkout/orders/' . rawurlencode( $result['data']['id'] ) . '/capture', array(), $idempotency . '-capture' );
+
+			if ( '' !== $result['error'] ) {
+				return $this->result( $result['http'] >= 500 || 0 === $result['http'] ? 'error' : 'failed', '', $result['error'] );
+			}
+		}
+
+		$capture = $result['data']['purchase_units'][0]['payments']['captures'][0] ?? array();
+		$id      = (string) ( $capture['id'] ?? '' );
+
+		switch ( (string) ( $capture['status'] ?? '' ) ) {
+			case 'COMPLETED':
+				return $this->result( 'succeeded', $id, '' );
+			case 'PENDING':
+				return $this->result( 'processing', $id, '' );
+			default:
+				return $this->result( 'failed', $id, 'PayPal did not complete the payment.' );
+		}
 	}
 
 	private function result( string $status, string $transaction, string $message ): array {
