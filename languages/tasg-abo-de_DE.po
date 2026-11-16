@@ -1412,3 +1412,27 @@ msgstr "Hintergrund bei Hinweis"
 #: src/Elementor/Integration.php
 msgid "Tasg Abo"
 msgstr "Tasg Abo"
+
+#: src/Emails/ConfirmationEmail.php
+msgid "Subscription confirmation"
+msgstr "Abo-Bestätigung"
+
+#: src/Emails/ConfirmationEmail.php
+msgid "Sent to the customer when a subscription starts: product, plan, date of the next order and how to manage the subscription."
+msgstr "Wird an den Kunden gesendet, wenn ein Abo beginnt: Produkt, Plan, Datum der nächsten Bestellung und wie das Abo verwaltet wird."
+
+#: src/Emails/ConfirmationEmail.php
+msgid "Your subscription to {product_name}"
+msgstr "Ihr Abo von {product_name}"
+
+#: src/Emails/ConfirmationEmail.php
+msgid "Thank you for your subscription"
+msgstr "Vielen Dank für Ihr Abo"
+
+#: src/Emails/ConfirmationEmail.php
+msgid "Hello {customer_name},\n\nthank you for subscribing to {product_name}. Your subscription number is {subscription_id}.\n\nPlan: {plan_name}\nAmount per order: {amount} plus shipping\nYour next order: {next_date}\n\nYour orders will be sent to:\n{shipping_address}\n\n{term_note}"
+msgstr "Hallo {customer_name},\n\nvielen Dank für Ihr Abo von {product_name}. Ihre Abo-Nummer ist {subscription_id}.\n\nPlan: {plan_name}\nBetrag pro Bestellung: {amount} zuzüglich Versand\nIhre nächste Bestellung: {next_date}\n\nIhre Bestellungen werden an diese Adresse geschickt:\n{shipping_address}\n\n{term_note}"
+
+#: src/Emails/ConfirmationEmail.php
+msgid "We will remind you by email before each order. You can manage your subscription at any time:"
+msgstr "Wir erinnern Sie vor jeder Bestellung per E-Mail. Sie können Ihr Abo jederzeit verwalten:"
