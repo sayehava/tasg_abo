@@ -87,4 +87,109 @@ final class PaymentPage {
 		return '';
 	}
 
+	/**
+	 * Save the choice, make a method the default or delete one. Messages go through the
+	 * WooCommerce notices, the page reloads afterwards so a refresh sends nothing twice.
+	 *
+	 * @param object               $sub    Subscription row.
+	 * @param \WC_Payment_Token[] $tokens Saved methods of the customer.
+	 */
+	private static function handle_post( object $sub, array $tokens ): void {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- checked right here.
+		if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['_wpnonce'] ) ), PaymentPageView::NONCE . $sub->id ) ) {
+			wc_add_notice( __( 'This page was open for too long. Please try again.', 'tasg-abo' ), 'error' );
+			return;
+		}
+
+		// "delete-12" or "default-12" from the small buttons, empty from the save button.
+		$parts = explode( '-', isset( $_POST['token_action'] ) ? sanitize_key( wp_unslash( $_POST['token_action'] ) ) : '', 2 );
+		$todo  = $parts[0];
+		$id    = absint( $parts[1] ?? 0 );
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		if ( '' === $todo ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked above.
+			$chosen = isset( $_POST['token'] ) ? absint( $_POST['token'] ) : 0;
+
+			if ( ( 0 === $chosen || isset( $tokens[ $chosen ] ) ) && ( new Actions( new Repository() ) )->set_payment_token( $sub, $chosen ) ) {
+				ThemePage::render( __( 'Payment method saved', 'tasg-abo' ), '<div class="tasg-abo-card"><p>' . esc_html__( 'This payment method will be used for your next order.', 'tasg-abo' ) . '</p></div>' );
+			}
+			return;
+		}
+
+		$token = $tokens[ $id ] ?? null;
+
+		if ( $token && 'default' === $todo ) {
+			\WC_Payment_Tokens::set_users_default( (int) $sub->user_id, $id );
+			/* translators: %s: payment method, for example "Visa ending in 4242" */
+			wc_add_notice( sprintf( __( '%s is now your default payment method.', 'tasg-abo' ), $token->get_display_name() ) );
+		} elseif ( $token && 'delete' === $todo ) {
+			if ( self::in_use( $token, (int) $sub->user_id ) ) {
+				wc_add_notice( __( 'This payment method still pays for a subscription. Choose another one for it first, then you can delete it.', 'tasg-abo' ), 'error' );
+			} else {
+				$name = $token->get_display_name();
+				\WC_Payment_Tokens::delete( $id );
+				/* translators: %s: payment method, for example "Visa ending in 4242" */
+				wc_add_notice( sprintf( __( '%s was deleted.', 'tasg-abo' ), $name ) );
+			}
+		}
+
+		wp_safe_redirect( Links::url( $sub, 'payment' ) );
+		exit;
+	}
+
+	/**
+	 * Does a running subscription of the customer still charge this method, chosen or as
+	 * the method of its last order? Deleting it would make the next renewal fail.
+	 */
+	private static function in_use( \WC_Payment_Token $token, int $user_id ): bool {
+		foreach ( ( new Repository() )->for_user( $user_id ) as $sub ) {
+			if ( ! in_array( $sub->status, array( 'active', 'paused' ), true ) ) {
+				continue;
+			}
+
+			$chosen = (int) $sub->payment_token_id;
+
+			if ( $chosen === $token->get_id() || ( 0 === $chosen && self::fallback_method( $sub ) === $token->get_token() ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * After a payment method was added in the account area, WooCommerce sends the customer
+	 * to the list of payment methods. Customers who came from the subscription page go
+	 * back there instead, to choose the new method. Hooked on wp_redirect.
+	 *
+	 * @param string $location Redirect target.
+	 */
+	public static function back_after_adding( $location ) {
+		if ( ! function_exists( 'WC' ) || ! WC()->session || ! is_string( $location ) ) {
+			return $location;
+		}
+
+		$back = WC()->session->get( self::RETURN_KEY );
+
+		if ( ! is_array( $back ) || 2 !== count( $back ) ) {
+			return $location;
+		}
+
+		// Valid for half an hour, so an abandoned attempt does not catch a later visit.
+		if ( time() - (int) $back[1] > 30 * MINUTE_IN_SECONDS ) {
+			WC()->session->set( self::RETURN_KEY, null );
+			return $location;
+		}
+
+		$list = untrailingslashit( wc_get_account_endpoint_url( 'payment-methods' ) );
+
+		if ( 0 !== strpos( untrailingslashit( strtok( $location, '?' ) ), $list ) ) {
+			return $location;
+		}
+
+		WC()->session->set( self::RETURN_KEY, null );
+
+		return (string) $back[0];
+	}
 }
