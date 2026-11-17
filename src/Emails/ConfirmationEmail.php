@@ -43,10 +43,10 @@ final class ConfirmationEmail extends SubscriptionEmail {
 		$lines = array();
 
 		if ( Settings::customer_may( 'skip' ) ) {
-			$lines[] = __( 'Skip this order: {skip_url}', 'tasg-abo' );
+			$lines[] = '{skip_line}'; // Empty during the minimum term.
 		}
 		if ( Settings::customer_may( 'pause' ) ) {
-			$lines[] = __( 'Pause: {pause_url}', 'tasg-abo' );
+			$lines[] = '{pause_line}'; // Empty during the minimum term.
 		}
 		if ( Settings::customer_may( 'payment' ) ) {
 			$lines[] = __( 'Change your payment method: {payment_url}', 'tasg-abo' );
