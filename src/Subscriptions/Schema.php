@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 
 final class Schema {
 
-	private const VERSION = '8';
+	private const VERSION = '9';
 
 	public static function table(): string {
 		global $wpdb;
@@ -61,6 +61,7 @@ final class Schema {
 			shipping_until datetime DEFAULT NULL,
 			skip_next tinyint(1) NOT NULL DEFAULT 0,
 			pause_reminders tinyint(3) unsigned NOT NULL DEFAULT 0,
+			pause_until datetime DEFAULT NULL,
 			reminder_sent tinyint(1) NOT NULL DEFAULT 0,
 			cancel_key varchar(64) NOT NULL,
 			created datetime NOT NULL,
