@@ -1616,3 +1616,80 @@ msgstr ""
 #: src/Admin/SettingsPage.php
 msgid "PayPal client ID"
 msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "PayPal secret"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "From developer.paypal.com > Apps & Credentials, in the app for this shop. The app needs \"Save payment methods\" switched on. A saved secret is shown as stars, leave it as it is to keep it."
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "PayPal test mode"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Test orders pay in the PayPal sandbox"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Test orders are orders of the test phase or of a test plan. They pay with the sandbox credentials below, no real money moves, and their renewals stay in the sandbox. The WooCommerce order is a normal order. Customers always pay live."
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "PayPal sandbox client ID"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "PayPal sandbox secret"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "From developer.paypal.com > Apps & Credentials, switched to Sandbox, in a sandbox app with \"Save payment methods\" on. Pay with a sandbox personal account from Testing Tools > Sandbox Accounts."
+msgstr ""
+
+#: src/Subscriptions/Creator.php
+msgid "No subscription created: PayPal did not save the payment method for later charges."
+msgstr ""
+
+#: src/Gateways/PayPalGateway.php
+msgid "PayPal (subscriptions)"
+msgstr ""
+
+#: src/Gateways/PayPalGateway.php
+msgid "PayPal for subscription orders. Set up under WooCommerce > Settings > Subscriptions."
+msgstr ""
+
+#: src/Gateways/PayPalGateway.php
+msgid "PayPal"
+msgstr ""
+
+#: src/Gateways/PayPalGateway.php
+msgid "You pay with PayPal now and allow the next payments of your subscription. You can cancel at any time."
+msgstr ""
+
+#: src/Gateways/PayPalGateway.php
+msgid "Paid in the PayPal sandbox (test order). No real money was moved."
+msgstr ""
+
+#: src/Gateways/PayPalGateway.php
+msgid "PayPal is not available right now. Please try again or choose another payment method."
+msgstr ""
+
+#: src/Gateways/PayPalReturn.php
+msgid "PayPal payment was not completed."
+msgstr ""
+
+#: src/Gateways/PayPalReturn.php
+msgid "The PayPal payment was not completed. Please try again."
+msgstr ""
+
+#: src/Gateways/PayPalReturn.php
+msgid "PayPal did not save the payment method for later charges."
+msgstr ""
+
+#: src/Gateways/PayPalReturn.php
+msgid "PayPal payment is pending."
+msgstr ""
+
