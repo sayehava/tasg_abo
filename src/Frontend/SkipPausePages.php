@@ -72,6 +72,57 @@ final class SkipPausePages {
 		ThemePage::render( $title, $html, __( 'Only your next delivery is left out. Nothing else changes.', 'tasg-abo' ) );
 	}
 
+	public static function pause( object $sub, bool $post ): void {
+		$title   = __( 'Pause your subscription', 'tasg-abo' );
+		$options = Settings::pause_options();
+
+		if ( ! $options ) {
+			ThemePage::render( $title, '<div class="tasg-abo-card"><p>' . esc_html__( 'The shop has switched this option off. Please contact us if you need help.', 'tasg-abo' ) . '</p></div>' );
+		}
+
+		if ( ! self::open( $sub, $title ) ) {
+			self::paused_or_closed( $sub, $title );
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- the secret link key proves the request.
+		$chosen = $post && isset( $_POST['length'] ) ? absint( $_POST['length'] ) : -1;
+
+		if ( isset( $options[ $chosen ] ) ) {
+			$length = $options[ $chosen ];
+			$until  = Actions::order_after_pause( $sub, $length['value'], $length['unit'] );
+
+			if ( ( new Actions( new Repository() ) )->pause( $sub, $length['value'], $length['unit'] ) ) {
+				$html = '<div class="tasg-abo-card"><p>' . esc_html( sprintf(
+					/* translators: 1: date of the first order after the pause */
+					__( 'No orders and no charges until then. Your subscription continues by itself with the order on %1$s, and we will remind you by email before it.', 'tasg-abo' ),
+					ThemePage::date( $until )
+				) ) . '</p></div>';
+				ThemePage::render( __( 'Subscription paused', 'tasg-abo' ), $html );
+			}
+		}
+
+		$html  = ThemePage::summary( $sub );
+		$html .= '<div class="tasg-abo-card">' . self::form_start( $sub, 'pause' ) . '<div class="tasg-abo-options">';
+
+		foreach ( $options as $index => $length ) {
+			$until = Actions::order_after_pause( $sub, $length['value'], $length['unit'] );
+			$html .= '<label class="tasg-abo-option"><input type="radio" name="length" value="' . esc_attr( (string) $index ) . '"' . checked( 0, $index, false ) . ' required><span>';
+			/* translators: %s: length of the pause, for example "2 months" */
+			$html .= '<strong>' . esc_html( sprintf( __( 'Pause for %s', 'tasg-abo' ), Period::label( $length['value'], $length['unit'] ) ) ) . '</strong>';
+			/* translators: %s: date */
+			$html .= '<small>' . esc_html( sprintf( __( 'Next order then on %s', 'tasg-abo' ), ThemePage::date( $until ) ) ) . '</small></span></label>';
+		}
+
+		$html .= '</div><div class="tasg-abo-actions"><button type="submit" class="button alt">' . esc_html__( 'Pause subscription', 'tasg-abo' ) . '</button>' . ThemePage::back_link() . '</div></form>';
+		$html .= '<p class="tasg-abo-note">' . esc_html__( 'We remind you by email before the first order after the pause. You can end the pause earlier at any time.', 'tasg-abo' ) . '</p></div>';
+
+		if ( Settings::customer_may( 'skip' ) ) {
+			$html .= '<p class="tasg-abo-note">' . esc_html__( 'Only want to leave out one delivery?', 'tasg-abo' ) . ' <a href="' . esc_url( Links::url( $sub, 'skip' ) ) . '">' . esc_html__( 'Skip the next order instead', 'tasg-abo' ) . '</a></p>';
+		}
+
+		ThemePage::render( $title, $html, __( 'Take a break: no deliveries and no charges during the pause. Afterwards your subscription continues by itself.', 'tasg-abo' ) );
+	}
+
 	/**
 	 * A paused subscription: nothing to skip or pause, but it can continue now.
 	 */
