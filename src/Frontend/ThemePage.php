@@ -50,6 +50,8 @@ final class ThemePage {
 			20
 		);
 
+		self::as_normal_page();
+
 		get_header();
 
 		echo '<main class="tasg-abo-page woocommerce"><div class="tasg-abo-wrap">';
@@ -69,6 +71,26 @@ final class ThemePage {
 
 		get_footer();
 		exit;
+	}
+
+	/**
+	 * The links point to the home page, so the theme would draw its front page header
+	 * (a transparent header over the hero image). Showing the page as the cancel page,
+	 * a normal page of the shop, makes the theme use its normal header and layout.
+	 */
+	private static function as_normal_page(): void {
+		$page_id = (int) apply_filters( 'wpml_object_id', \TasgAbo\Settings::cancel_page_id(), 'page', true );
+
+		if ( $page_id <= 0 || 'publish' !== get_post_status( $page_id ) ) {
+			return;
+		}
+
+		global $wp_query, $wp_the_query, $post;
+
+		$wp_query     = new \WP_Query( array( 'page_id' => $page_id ) ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$wp_the_query = $wp_query; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$post         = get_post( $page_id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		setup_postdata( $post );
 	}
 
 	/**
