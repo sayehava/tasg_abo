@@ -26,6 +26,7 @@ final class CheckoutRules {
 		add_filter( 'pre_option_woocommerce_enable_signup_and_login_from_checkout', array( $this, 'allow_signup' ) );
 		add_filter( 'wc_stripe_force_save_payment_method', array( $this, 'force_save_card' ), 10, 2 );
 		add_filter( 'wc_stripe_generate_create_intent_request', array( $this, 'save_for_renewals' ), 30, 2 );
+		add_filter( 'wc_stripe_request_body', array( $this, 'save_on_any_intent' ), 30, 2 );
 		add_filter( 'woocommerce_package_rates', array( $this, 'free_shipping_rates' ), 100, 2 );
 		add_filter( 'woocommerce_available_payment_gateways', array( $this, 'limit_gateways' ) );
 		add_filter( 'wc_stripe_payment_request_supported_types', array( $this, 'hide_express_checkout' ) );
@@ -228,47 +229,77 @@ final class CheckoutRules {
 			return $request;
 		}
 
+		self::$paying_order = $order->get_id();
+
 		if ( class_exists( 'WC_Stripe_Mode' ) ) {
 			$order->update_meta_data( StripeCharger::MODE_META, \WC_Stripe_Mode::is_test() ? 'test' : 'live' );
 			$order->save_meta_data();
 		}
 
-		if ( ! empty( $request['setup_future_usage'] ) ) {
+		return $this->with_future_usage( $request, $order, 'intent request' );
+	}
+
+	/** Subscription order being paid in this request, remembered for the request body filter. */
+	private static $paying_order = 0;
+
+	/**
+	 * Last look at every payment intent request before it goes to Stripe. The Stripe plugin
+	 * has several ways to create and confirm an intent (Optimized Checkout among them) and not
+	 * all of them pass the intent request filter, so the save setting is checked here again.
+	 *
+	 * @param array  $request Request body.
+	 * @param string $api     Stripe endpoint, for example payment_intents or payment_intents/pi_x/confirm.
+	 */
+	public function save_on_any_intent( $request, $api = '' ) {
+		// Charges of a saved method (off_session) are renewals, not a first payment.
+		if ( ! is_array( $request ) || ! empty( $request['off_session'] ) || ! preg_match( '#^payment_intents(/[^/]+(/confirm)?)?$#', (string) $api ) ) {
 			return $request;
 		}
 
-		// Classic payment method flow: one setting for the whole intent.
-		if ( empty( $request['confirmation_token'] ) ) {
-			$request['setup_future_usage'] = 'off_session';
+		$order_id = isset( $request['metadata']['order_id'] ) ? (int) $request['metadata']['order_id'] : self::$paying_order;
+		$order    = $order_id > 0 ? wc_get_order( $order_id ) : false;
+
+		if ( ! $order instanceof \WC_Order || ! self::order_has_subscription( $order ) ) {
 			return $request;
 		}
 
-		// Optimized Checkout (confirmation token): the setting belongs to the chosen method.
-		$type = $this->confirmation_type( (string) $request['confirmation_token'], $order );
-
-		if ( '' !== $type && empty( $request['payment_method_options'][ $type ]['setup_future_usage'] ) ) {
-			$request['payment_method_options'][ $type ]['setup_future_usage'] = 'off_session';
-		}
-
-		return $request;
+		return $this->with_future_usage( $request, $order, $api );
 	}
 
 	/**
-	 * Payment method type of a confirmation token (card, sepa_debit and so on), empty if unknown.
+	 * Ask Stripe to keep the payment method on the customer for later charges.
+	 * Classic flow: one setting for the whole intent. Optimized Checkout (confirmation
+	 * token): the setting belongs to the chosen method, the way the Stripe plugin does it
+	 * for its own subscriptions. Every decision is logged.
 	 */
-	private function confirmation_type( string $token, \WC_Order $order ): string {
-		if ( ! class_exists( 'WC_Stripe_API' ) ) {
-			return '';
+	private function with_future_usage( array $request, \WC_Order $order, string $where ): array {
+		$token = (string) ( $request['confirmation_token'] ?? '' );
+		$type  = '';
+		$asked = 'none';
+
+		if ( '' !== $token && class_exists( 'WC_Stripe_API' ) ) {
+			$data  = \WC_Stripe_API::retrieve( 'confirmation_tokens/' . rawurlencode( $token ) );
+			$type  = is_object( $data ) && isset( $data->payment_method_preview->type ) ? (string) $data->payment_method_preview->type : '';
+			$asked = is_object( $data ) && ! empty( $data->setup_future_usage ) ? (string) $data->setup_future_usage : 'none';
 		}
 
-		$data = \WC_Stripe_API::retrieve( 'confirmation_tokens/' . rawurlencode( $token ) );
-		$type = is_object( $data ) && isset( $data->payment_method_preview->type ) ? (string) $data->payment_method_preview->type : '';
+		if ( ! empty( $request['setup_future_usage'] ) ) {
+			$result = 'already set on the intent';
+		} elseif ( '' === $token ) {
+			$request['setup_future_usage'] = 'off_session';
+			$result                        = 'set on the intent';
+		} elseif ( '' !== $type ) {
+			if ( empty( $request['payment_method_options'][ $type ]['setup_future_usage'] ) ) {
+				$request['payment_method_options'][ $type ]['setup_future_usage'] = 'off_session';
+			}
+			$result = 'set for ' . $type;
+		} else {
+			$result = 'NOT set, payment method type unknown';
+		}
 
-		// For the log: did the checkout form itself ask to save the method?
-		$asked = is_object( $data ) && ! empty( $data->setup_future_usage ) ? (string) $data->setup_future_usage : 'none';
-		Log::info( sprintf( 'Order #%d: Stripe method "%s", saved for renewals (form asked: %s).', $order->get_id(), '' !== $type ? $type : 'unknown', $asked ) );
+		Log::info( sprintf( 'Order #%1$d (%2$s): saving for renewals %3$s (confirmation token: %4$s, form asked: %5$s, customer: %6$s).', $order->get_id(), $where, $result, '' !== $token ? 'yes' : 'no', $asked, ! empty( $request['customer'] ) ? 'yes' : 'no' ) );
 
-		return $type;
+		return $request;
 	}
 
 	/**
