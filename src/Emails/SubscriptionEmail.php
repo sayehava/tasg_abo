@@ -7,7 +7,7 @@
  *
  * Placeholders: {customer_name} {product_name} {next_date} {amount}
  *               {cancel_url} {skip_url} {pause_url} {continue_url}
- *               {shipping_address} {address_url} {payment_url} {plan_url} {term_note}
+ *               {shipping_address} {address_url} {payment_url} {term_note}
  *               {skip_line} {pause_line} (whole lines, empty during the minimum term)
  *
  * Recipient and name come from the billing data of the subscription's order, as with
@@ -80,7 +80,6 @@ abstract class SubscriptionEmail extends \WC_Email {
 			'{shipping_address}' => '',
 			'{address_url}'      => '',
 			'{payment_url}'      => '',
-			'{plan_url}'         => '',
 			'{term_note}'        => '',
 			'{card_name}'        => '',
 			'{card_expiry}'      => '',
@@ -178,7 +177,7 @@ abstract class SubscriptionEmail extends \WC_Email {
 		$this->form_fields['body'] = array(
 			'title'       => __( 'Email text', 'tasg-abo' ),
 			'type'        => 'textarea',
-			'description' => __( 'Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url} {term_note} {card_name} {card_expiry} {skip_line} {pause_line}', 'tasg-abo' ),
+			'description' => __( 'Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {term_note} {card_name} {card_expiry} {skip_line} {pause_line}', 'tasg-abo' ),
 			'default'     => static::default_body(),
 			'desc_tip'    => false,
 		);
@@ -280,7 +279,6 @@ abstract class SubscriptionEmail extends \WC_Email {
 		$values['{shipping_address}'] = Address::formatted( Address::shipping( $row ) );
 		$values['{address_url}']      = Links::url( $row, 'address' );
 		$values['{payment_url}']      = Links::url( $row, 'payment' );
-		$values['{plan_url}']         = Links::url( $row, 'plan' );
 		$values['{term_note}']        = $this->term_note( $row );
 
 		return array_merge( $values, $this->extra_placeholders( $row ) );

@@ -1,6 +1,6 @@
 <?php
 /**
- * Landing page for the cancel, skip, pause, continue, address, plan and payment
+ * Landing page for the cancel, skip, pause, continue, address and payment
  * links in emails. The pages are shown inside the shop theme (ThemePage).
  *
  * Opening a link only shows a confirmation button. The change happens when the
@@ -12,7 +12,6 @@
 
 namespace TasgAbo\Frontend;
 
-use TasgAbo\Pricing;
 use TasgAbo\Settings;
 use TasgAbo\Subscriptions\Actions;
 use TasgAbo\Subscriptions\Address;
@@ -65,10 +64,6 @@ final class LinkHandler {
 
 		if ( 'address' === $action ) {
 			$this->address_form( $sub, $post );
-		}
-
-		if ( 'plan' === $action ) {
-			$this->plan_form( $sub, $post );
 		}
 
 		if ( 'payment' === $action ) {
@@ -202,43 +197,6 @@ final class LinkHandler {
 		}
 
 		return $errors;
-	}
-
-	/**
-	 * Lets the customer switch to another plan the product offers.
-	 */
-	private function plan_form( object $sub, bool $post ): void {
-		$product = wc_get_product( (int) $sub->product_id );
-		$plans   = $product ? Pricing::plans( $product ) : array();
-
-		if ( ! $plans || ! in_array( $sub->status, array( 'active', 'paused' ), true ) ) {
-			$this->page( __( 'Nothing changed', 'tasg-abo' ), '<p>' . esc_html__( 'This subscription cannot be changed this way right now.', 'tasg-abo' ) . '</p>' );
-		}
-
-		if ( $post ) {
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$chosen = isset( $_POST['plan'] ) ? absint( $_POST['plan'] ) : 0;
-
-			if ( isset( $plans[ $chosen ] ) && ( new Actions( new Repository() ) )->change_plan( $sub, $plans[ $chosen ] ) ) {
-				$this->page( __( 'Plan changed', 'tasg-abo' ), '<p>' . esc_html__( 'Your plan was changed. You will get a reminder before the next order, with the new date and price.', 'tasg-abo' ) . '</p>' );
-			}
-		}
-
-		$html = ThemePage::summary( $sub, false ) . '<div class="tasg-abo-card">' . SkipPausePages::form_start( $sub, 'plan' ) . '<div class="tasg-abo-options">';
-
-		foreach ( $plans as $id => $plan ) {
-			$price = wc_price( Pricing::subscriber_price( $product, (int) $id ) );
-			$label = $plan->display_name();
-			$name  = '' !== $label ? $label : $plan->period_label();
-			$now   = (int) $sub->plan_id === (int) $id ? ' ' . __( '(current)', 'tasg-abo' ) : '';
-
-			$html .= '<label class="tasg-abo-option"><input type="radio" name="plan" value="' . esc_attr( (string) $id ) . '"' . checked( (int) $sub->plan_id === (int) $id, true, false ) . '><span>';
-			$html .= '<strong>' . esc_html( $name . $now ) . '</strong><small>' . esc_html( $plan->period_label() ) . ' &middot; ' . wp_kses_post( $price ) . '</small></span></label>';
-		}
-
-		$html .= '</div><div class="tasg-abo-actions"><button type="submit" class="button alt">' . esc_html__( 'Save plan', 'tasg-abo' ) . '</button>' . ThemePage::back_link() . '</div></form></div>';
-
-		$this->page( __( 'Choose a new plan', 'tasg-abo' ), $html );
 	}
 
 	/**

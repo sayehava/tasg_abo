@@ -55,9 +55,6 @@ final class ReminderEmail extends SubscriptionEmail {
 		if ( Settings::customer_may( 'pause' ) ) {
 			$lines[] = '{pause_line}'; // Empty during the minimum term.
 		}
-		if ( Settings::customer_may( 'plan' ) ) {
-			$lines[] = __( 'Change your plan: {plan_url}', 'tasg-abo' );
-		}
 		if ( Settings::customer_may( 'payment' ) ) {
 			$lines[] = __( 'Change your payment method: {payment_url}', 'tasg-abo' );
 		}

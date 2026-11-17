@@ -41,7 +41,6 @@ final class Settings {
 		'skip'    => array( 'tasg_abo_allow_skip', 'yes' ),
 		'pause'   => array( 'tasg_abo_allow_pause', 'yes' ),
 		'address' => array( 'tasg_abo_allow_address', 'yes' ),
-		'plan'    => array( 'tasg_abo_allow_plan', 'no' ),
 		'payment' => array( 'tasg_abo_allow_payment', 'yes' ),
 		'orders'  => array( 'tasg_abo_show_orders', 'yes' ),
 	);

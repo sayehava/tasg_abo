@@ -207,7 +207,6 @@ final class SettingsPage {
 			'skip'    => __( 'Skip the next order', 'tasg-abo' ),
 			'pause'   => __( 'Pause for one of the lengths above', 'tasg-abo' ),
 			'address' => __( 'Change the shipping address of the next order', 'tasg-abo' ),
-			'plan'    => __( 'Change the plan (period)', 'tasg-abo' ),
 			'payment' => __( 'Change the payment method (Stripe)', 'tasg-abo' ),
 			'orders'  => __( 'See the past orders of the subscription', 'tasg-abo' ),
 		);

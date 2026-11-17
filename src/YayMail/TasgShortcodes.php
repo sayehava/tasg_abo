@@ -56,7 +56,6 @@ final class TasgShortcodes extends \YayMail\Abstracts\BaseShortcode {
 			'pause_url'        => array( 'Link: pause', home_url( '/' ) ),
 			'continue_url'     => array( 'Link: continue after a pause', home_url( '/' ) ),
 			'cancel_url'       => array( 'Link: cancel the subscription', home_url( '/' ) ),
-			'plan_url'         => array( 'Link: change the plan', home_url( '/' ) ),
 			'subscription_id'  => array( 'Subscription number', '12' ),
 			'plan_name'        => array( 'Name of the plan', 'Monthly' ),
 			'cancel_content'   => array( 'Content of the cancellation', 'Ordinary cancellation of the contract' ),

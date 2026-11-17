@@ -12,7 +12,6 @@ namespace TasgAbo\Subscriptions;
 
 use TasgAbo\Log;
 use TasgAbo\Plans\Period;
-use TasgAbo\Plans\Plan;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -195,50 +194,6 @@ final class Actions {
 				'pause_until'     => null,
 			)
 		);
-
-		return true;
-	}
-
-	/**
-	 * Switch to another plan. For an active subscription the next order is placed one
-	 * new period after the last order, but never sooner than the plan's reminder time
-	 * from now, and a fresh reminder goes out with the new date and price. A paused
-	 * subscription only changes its plan.
-	 */
-	public function change_plan( object $sub, Plan $plan ): bool {
-		if ( ! in_array( $sub->status, array( 'active', 'paused' ), true ) ) {
-			return false;
-		}
-
-		$data = array(
-			'plan_id'          => $plan->id,
-			'plan_name'        => $plan->title(),
-			'period_value'     => $plan->value,
-			'period_unit'      => $plan->unit,
-			'reminder_minutes' => $plan->reminder_minutes,
-		);
-
-		// A plan with free shipping brings it along.
-		if ( $plan->free_shipping ) {
-			$data['shipping_mode']  = 'free';
-			$data['shipping_until'] = null;
-		}
-
-		if ( 'active' === $sub->status ) {
-			$last = Address::last_order( $sub );
-			$date = $last ? $last->get_date_created() : null;
-			$base = $date ? $date->getTimestamp() : time();
-
-			$next     = Period::add( $base, $plan->value, $plan->unit, Period::anchor_day( $sub ) );
-			$earliest = time() + $plan->reminder_minutes * MINUTE_IN_SECONDS + 5 * MINUTE_IN_SECONDS;
-
-			$data['next_payment']  = gmdate( 'Y-m-d H:i:s', max( $next, $earliest ) );
-			$data['reminder_sent'] = 0;
-			$data['skip_next']     = 0;
-		}
-
-		$this->repository->update( (int) $sub->id, $data );
-		Log::info( sprintf( 'Subscription #%d: plan changed to plan %d (next order %s UTC).', (int) $sub->id, $plan->id, $data['next_payment'] ?? 'unchanged' ) );
 
 		return true;
 	}

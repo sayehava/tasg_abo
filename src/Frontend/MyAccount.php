@@ -9,7 +9,6 @@
 
 namespace TasgAbo\Frontend;
 
-use TasgAbo\Pricing;
 use TasgAbo\Settings;
 use TasgAbo\Subscriptions\Address;
 use TasgAbo\Subscriptions\Links;
@@ -124,9 +123,6 @@ final class MyAccount {
 			}
 			if ( $open && Settings::customer_may( 'address' ) ) {
 				echo $this->link( $row, 'address', __( 'Change address', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			}
-			if ( $open && Settings::customer_may( 'plan' ) && $product && count( Pricing::plans( $product ) ) > 1 ) {
-				echo $this->link( $row, 'plan', __( 'Change plan', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 			if ( $open && Settings::customer_may( 'payment' ) && 0 === strpos( (string) $row->gateway, 'stripe' ) ) {
 				echo $this->link( $row, 'payment', __( 'Payment method', 'tasg-abo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
