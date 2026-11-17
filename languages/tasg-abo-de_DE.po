@@ -1464,3 +1464,79 @@ msgstr "Bitte prüfen Sie Ihre Zahlungsmethode oder wählen Sie eine andere, dan
 #: src/Emails/PaymentRetryEmail.php
 msgid "If the last try also fails, your subscription ends."
 msgstr "Wenn auch der letzte Versuch fehlschlägt, endet Ihr Abo."
+
+#: src/Frontend/LinkHandler.php
+msgid "Your orders are sent to this address, starting with your next order on %s."
+msgstr "Ihre Bestellungen werden an diese Adresse geschickt, beginnend mit Ihrer nächsten Bestellung am %s."
+
+#: src/Frontend/LinkHandler.php
+msgid "Please log in to your account to choose the payment method for your subscription."
+msgstr "Bitte melden Sie sich in Ihrem Kundenkonto an, um die Zahlungsmethode für Ihr Abo zu wählen."
+
+#: src/Frontend/LinkHandler.php
+msgid "Your pause ends now. We send you a reminder by email before the next order."
+msgstr "Ihre Pause endet jetzt. Vor der nächsten Bestellung erinnern wir Sie per E-Mail."
+
+#: src/Frontend/LinkHandler.php
+msgid "Your cancellation is withdrawn and your subscription continues as before."
+msgstr "Ihre Kündigung wird zurückgenommen und Ihr Abo läuft weiter wie bisher."
+
+#: src/Frontend/ThemePage.php
+msgid "Amount"
+msgstr "Betrag"
+
+#: src/Frontend/ThemePage.php
+msgid "Shipping to"
+msgstr "Lieferung an"
+
+#: src/Frontend/ThemePage.php
+msgid "Change nothing"
+msgstr "Nichts ändern"
+
+#: src/Frontend/MyAccount.php
+msgid "Paused until %s"
+msgstr "Pausiert bis %s"
+
+#: src/Frontend/SkipPausePages.php
+msgid "Your order on %1$s is already skipped. Your next order comes on %2$s."
+msgstr "Ihre Bestellung am %1$s ist bereits übersprungen. Ihre nächste Bestellung kommt am %2$s."
+
+#: src/Frontend/SkipPausePages.php
+msgid "Your order on %1$s will not be sent or charged. Your next order comes on %2$s, and we will remind you by email before it."
+msgstr "Ihre Bestellung am %1$s wird weder verschickt noch abgebucht. Ihre nächste Bestellung kommt am %2$s, vorher erinnern wir Sie per E-Mail."
+
+#: src/Frontend/SkipPausePages.php
+msgid "Your order on %1$s will not be sent or charged. Your subscription continues as usual: the order after it comes on %2$s."
+msgstr "Ihre Bestellung am %1$s wird weder verschickt noch abgebucht. Danach läuft Ihr Abo wie gewohnt weiter: Die folgende Bestellung kommt am %2$s."
+
+#: src/Frontend/SkipPausePages.php
+msgid "Skip the order on %s"
+msgstr "Bestellung am %s überspringen"
+
+#: src/Frontend/SkipPausePages.php
+msgid "Need a longer break?"
+msgstr "Sie brauchen eine längere Pause?"
+
+#: src/Frontend/SkipPausePages.php
+msgid "Pause your subscription instead"
+msgstr "Pausieren Sie stattdessen Ihr Abo"
+
+#: src/Frontend/SkipPausePages.php
+msgid "Only your next delivery is left out. Nothing else changes."
+msgstr "Nur Ihre nächste Lieferung entfällt. Sonst ändert sich nichts."
+
+#: src/Frontend/SkipPausePages.php
+msgid "Pause your subscription"
+msgstr "Abo pausieren"
+
+#: src/Frontend/SkipPausePages.php
+msgid "No orders and no charges until then. Your subscription continues by itself with the order on %1$s, and we will remind you by email before it."
+msgstr "Bis dahin gibt es keine Bestellungen und keine Abbuchungen. Ihr Abo läuft danach von selbst weiter, mit der Bestellung am %1$s. Vorher erinnern wir Sie per E-Mail."
+
+#: src/Frontend/SkipPausePages.php
+msgid "Pause for %s"
+msgstr "%s pausieren"
+
+#: src/Frontend/SkipPausePages.php
+msgid "Next order then on %s"
+msgstr "Nächste Bestellung dann am %s"
