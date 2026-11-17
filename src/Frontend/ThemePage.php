@@ -45,7 +45,9 @@ final class ThemePage {
 		add_action(
 			'wp_enqueue_scripts',
 			static function () {
-				wp_enqueue_style( 'tasg-abo-pages', TASG_ABO_URL . 'assets/css/pages.css', array(), TASG_ABO_VERSION );
+				// The file time in the version: the server cache keeps a file per version.
+				$file = TASG_ABO_DIR . 'assets/css/pages.css';
+				wp_enqueue_style( 'tasg-abo-pages', TASG_ABO_URL . 'assets/css/pages.css', array(), TASG_ABO_VERSION . '.' . (int) @filemtime( $file ) ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 			},
 			20
 		);
