@@ -2,7 +2,7 @@
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 0.9.0
+Stable tag: 0.9.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -44,6 +44,11 @@ Customers tick "Subscribe and save" on a product page and choose an interval. Th
 5. Edit a product and enable the subscription fields on the General tab, then tick the plans it offers.
 
 == Changelog ==
+
+= 0.9.1 =
+* The customer pages use the theme's normal page header (not the transparent front page header) and the summary stacks on phones.
+* The page stylesheet carries its file time in the version, so the server cache serves every change at once.
+* YayMail: the skip and pause link texts follow the customer's language.
 
 = 0.9.0 =
 * The pages behind the email links (skip, pause, continue, address, plan, payment method) are shown inside the shop theme with its header and footer, a summary of the next order and forms that work on phones.
