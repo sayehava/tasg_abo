@@ -26,6 +26,7 @@ final class CheckoutRules {
 		add_filter( 'pre_option_woocommerce_enable_signup_and_login_from_checkout', array( $this, 'allow_signup' ) );
 		add_filter( 'wc_stripe_force_save_payment_method', array( $this, 'force_save_card' ), 10, 2 );
 		add_filter( 'wc_stripe_generate_create_intent_request', array( $this, 'save_for_renewals' ), 30, 2 );
+		add_filter( 'woocommerce_package_rates', array( $this, 'free_shipping_rates' ), 100, 2 );
 		add_filter( 'woocommerce_available_payment_gateways', array( $this, 'limit_gateways' ) );
 		add_filter( 'wc_stripe_payment_request_supported_types', array( $this, 'hide_express_checkout' ) );
 		add_filter( 'wc_stripe_upe_params', array( $this, 'flag_subscription_cart' ) );
@@ -145,6 +146,39 @@ final class CheckoutRules {
 		}
 
 		return $request;
+	}
+
+	/**
+	 * A plan with free shipping: the shipping methods stay (so label and invoice
+	 * automation see the usual method), only their price becomes 0 and the name says why.
+	 *
+	 * @param \WC_Shipping_Rate[] $rates   Rates WooCommerce found for the package.
+	 * @param array               $package Cart package.
+	 */
+	public function free_shipping_rates( $rates, $package ) {
+		$free = false;
+
+		foreach ( (array) ( $package['contents'] ?? array() ) as $item ) {
+			if ( ! empty( $item['tasg_abo_plan']['free_shipping'] ) ) {
+				$free = true;
+				break;
+			}
+		}
+
+		if ( ! $free || ! is_array( $rates ) ) {
+			return $rates;
+		}
+
+		foreach ( $rates as $rate ) {
+			if ( $rate instanceof \WC_Shipping_Rate && (float) $rate->get_cost() > 0 ) {
+				$rate->set_cost( 0 );
+				$rate->set_taxes( array() );
+				/* translators: %s: name of the shipping method */
+				$rate->set_label( sprintf( __( '%s (free with your subscription)', 'tasg-abo' ), $rate->get_label() ) );
+			}
+		}
+
+		return $rates;
 	}
 
 	public function require_account( $required ) {
