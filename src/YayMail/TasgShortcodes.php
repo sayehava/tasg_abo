@@ -148,9 +148,10 @@ final class TasgShortcodes extends \YayMail\Abstracts\BaseShortcode {
 			return '';
 		}
 
+		// The email worked the texts out in the customer's language before rendering.
 		$lines = array(
-			'skip_line'  => array( '{skip_url}', __( 'Skip this order', 'tasg-abo' ) ),
-			'pause_line' => array( '{pause_url}', __( 'Pause your subscription', 'tasg-abo' ) ),
+			'skip_line'  => array( '{skip_url}', (string) ( $values['{skip_link_text}'] ?? __( 'Skip this order', 'tasg-abo' ) ) ),
+			'pause_line' => array( '{pause_url}', (string) ( $values['{pause_link_text}'] ?? __( 'Pause your subscription', 'tasg-abo' ) ) ),
 		);
 
 		if ( isset( $lines[ $key ] ) && ! empty( $values[ $lines[ $key ][0] ] ) ) {
