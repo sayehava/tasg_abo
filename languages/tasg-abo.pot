@@ -1464,3 +1464,79 @@ msgstr ""
 #: src/Emails/PaymentRetryEmail.php
 msgid "If the last try also fails, your subscription ends."
 msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Your orders are sent to this address, starting with your next order on %s."
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Please log in to your account to choose the payment method for your subscription."
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Your pause ends now. We send you a reminder by email before the next order."
+msgstr ""
+
+#: src/Frontend/LinkHandler.php
+msgid "Your cancellation is withdrawn and your subscription continues as before."
+msgstr ""
+
+#: src/Frontend/ThemePage.php
+msgid "Amount"
+msgstr ""
+
+#: src/Frontend/ThemePage.php
+msgid "Shipping to"
+msgstr ""
+
+#: src/Frontend/ThemePage.php
+msgid "Change nothing"
+msgstr ""
+
+#: src/Frontend/MyAccount.php
+msgid "Paused until %s"
+msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "Your order on %1$s is already skipped. Your next order comes on %2$s."
+msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "Your order on %1$s will not be sent or charged. Your next order comes on %2$s, and we will remind you by email before it."
+msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "Your order on %1$s will not be sent or charged. Your subscription continues as usual: the order after it comes on %2$s."
+msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "Skip the order on %s"
+msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "Need a longer break?"
+msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "Pause your subscription instead"
+msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "Only your next delivery is left out. Nothing else changes."
+msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "Pause your subscription"
+msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "No orders and no charges until then. Your subscription continues by itself with the order on %1$s, and we will remind you by email before it."
+msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "Pause for %s"
+msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "Next order then on %s"
+msgstr ""
