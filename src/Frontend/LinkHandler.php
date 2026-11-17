@@ -163,7 +163,7 @@ final class LinkHandler {
 			__( 'Check your shipping address', 'tasg-abo' ),
 			$html,
 			/* translators: %s: date of the next order */
-			sprintf( __( 'This address is used for your next order on %s. To change it for all orders, update your address in your account.', 'tasg-abo' ), ThemePage::date( Actions::next_order( $sub ) ) )
+			sprintf( __( 'Your orders are sent to this address, starting with your next order on %s.', 'tasg-abo' ), ThemePage::date( Actions::next_order( $sub ) ) )
 		);
 	}
 
