@@ -1540,3 +1540,79 @@ msgstr "%s pausieren"
 #: src/Frontend/SkipPausePages.php
 msgid "Next order then on %s"
 msgstr "Nächste Bestellung dann am %s"
+
+#: src/Frontend/SkipPausePages.php
+msgid "Pause subscription"
+msgstr "Abo pausieren"
+
+#: src/Frontend/SkipPausePages.php
+msgid "We remind you by email before the first order after the pause. You can end the pause earlier at any time."
+msgstr "Vor der ersten Bestellung nach der Pause erinnern wir Sie per E-Mail. Sie können die Pause jederzeit früher beenden."
+
+#: src/Frontend/SkipPausePages.php
+msgid "Only want to leave out one delivery?"
+msgstr "Sie möchten nur eine Lieferung auslassen?"
+
+#: src/Frontend/SkipPausePages.php
+msgid "Skip the next order instead"
+msgstr "Überspringen Sie stattdessen die nächste Bestellung"
+
+#: src/Frontend/SkipPausePages.php
+msgid "Take a break: no deliveries and no charges during the pause. Afterwards your subscription continues by itself."
+msgstr "Machen Sie eine Pause: Während der Pause gibt es keine Lieferungen und keine Abbuchungen. Danach läuft Ihr Abo von selbst weiter."
+
+#: src/Frontend/SkipPausePages.php
+msgid "Your subscription is paused. It continues by itself with the order on %s."
+msgstr "Ihr Abo ist pausiert. Es läuft von selbst weiter, mit der Bestellung am %s."
+
+#: src/Frontend/SkipPausePages.php
+msgid "Your subscription is paused."
+msgstr "Ihr Abo ist pausiert."
+
+#: src/Frontend/SkipPausePages.php
+msgid "End the pause now"
+msgstr "Pause jetzt beenden"
+
+#: src/Frontend/SkipPausePages.php
+msgid "This subscription has ended, so there is nothing to change."
+msgstr "Dieses Abo ist beendet, daher gibt es nichts zu ändern."
+
+#: src/Frontend/SkipPausePages.php
+msgid "Your subscription has a minimum term until %s. Skipping and pausing are possible after that date."
+msgstr "Ihr Abo hat eine Mindestlaufzeit bis zum %s. Überspringen und Pausieren sind nach diesem Datum möglich."
+
+#: src/Admin/SettingsPage.php
+msgid "days"
+msgstr "Tage"
+
+#: src/Admin/SettingsPage.php
+msgid "weeks"
+msgstr "Wochen"
+
+#: src/Admin/SettingsPage.php
+msgid "months"
+msgstr "Monate"
+
+#: src/Admin/SettingsPage.php
+msgid "minutes (for testing)"
+msgstr "Minuten (zum Testen)"
+
+#: src/Admin/SettingsPage.php
+msgid "Pause lengths"
+msgstr "Pausenlängen"
+
+#: src/Admin/SettingsPage.php
+msgid "Customers choose one of these lengths when they pause. During the pause there are no orders and no charges; afterwards the subscription continues by itself, with the usual reminder before the next order. Leave a row empty to leave it out. With no length at all, pausing is not offered."
+msgstr "Kunden wählen beim Pausieren eine dieser Längen. Während der Pause gibt es keine Bestellungen und keine Abbuchungen; danach läuft das Abo von selbst weiter, mit der üblichen Erinnerung vor der nächsten Bestellung. Lassen Sie eine Zeile leer, um sie wegzulassen. Ohne jede Länge wird Pausieren nicht angeboten."
+
+#: src/Admin/SettingsPage.php
+msgid "Pause for one of the lengths above"
+msgstr "Für eine der Längen oben pausieren"
+
+#: src/Admin/SettingsPage.php
+msgid "Uses its own PayPal connection below, not the WooCommerce PayPal Payments plugin. The customer approves future payments with PayPal at checkout. Try it with a test purchase first."
+msgstr "Nutzt die eigene PayPal-Verbindung unten, nicht das Plugin WooCommerce PayPal Payments. Der Kunde erlaubt die künftigen Zahlungen beim Bezahlen mit PayPal. Testen Sie es zuerst mit einem Testkauf."
+
+#: src/Admin/SettingsPage.php
+msgid "PayPal client ID"
+msgstr "PayPal Client-ID"
