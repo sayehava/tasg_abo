@@ -5,7 +5,7 @@
  * shop owner chose YayMail for the email design.
  *
  * Written from the YayMail developer documentation (Email class and Register new
- * template). Not tested against a live YayMail yet.
+ * template) and checked against YayMail Pro's own email classes.
  *
  * @package TasgAbo
  */
@@ -66,6 +66,10 @@ final class TasgEmail extends \YayMail\Abstracts\BaseEmail {
 
 		$this->default_heading = $email->get_default_heading();
 		$this->default_body    = $email::default_body();
+
+		// YayMail's own emails hook in like this. Without it a sent email ignores the
+		// design made in YayMail and uses the plain template (the preview still works).
+		add_filter( 'wc_get_template', array( $this, 'get_template_file' ), $this->render_priority ?? 10, 3 );
 	}
 
 	/**
