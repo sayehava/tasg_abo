@@ -146,6 +146,58 @@
 	box-sizing: border-box;
 }
 
+/* Same size as the add to cart button of the shop (child theme class my-atc-button). */
+.tasg-abo-page .my-atc-button {
+	display: block;
+	width: 100%;
+	padding: 16px 18px;
+	font-size: 16px;
+	text-align: center;
+	box-sizing: border-box;
+}
+
+.tasg-abo-page .tasg-abo-actions .my-atc-button {
+	flex: 1 1 100%;
+}
+
+.tasg-abo-token .tasg-abo-option {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.tasg-abo-token-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 16px;
+	border: 1px solid rgba(0, 0, 0, 0.15);
+	border-top: 0;
+	border-radius: 0 0 10px 10px;
+	padding: 6px 16px;
+}
+
+.tasg-abo-page .tasg-abo-text-button {
+	background: none;
+	border: 0;
+	padding: 4px 0;
+	margin: 0;
+	color: inherit;
+	font: inherit;
+	font-size: 0.9em;
+	text-decoration: underline;
+	cursor: pointer;
+	box-shadow: none;
+}
+
+.tasg-abo-page .tasg-abo-text-button[value^="delete"] {
+	color: #b32d2e;
+}
+
+.tasg-abo-add {
+	margin-top: 24px;
+	padding-top: 20px;
+	border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
 @media (max-width: 600px) {
 	.tasg-abo-page {
 		padding: 24px 16px 40px;
