@@ -5,11 +5,12 @@
  *
  * - Success: the order is paid and gets the status chosen in the settings,
  *   exactly like a normal order (stock, emails, invoice automation).
- * - Payment declined: no order is kept, the subscription is cancelled and the
- *   customer is told.
+ * - Payment declined: no order is kept, the subscription stays active, the customer
+ *   is asked to check the payment method and the same order is tried again 1, 3
+ *   and 5 days after it was due (DeclineRetry). Cancelled only when the last try fails.
  * - Temporary problem (network, Stripe outage, unexpected error before the
  *   charge): nothing is charged, the renewal is tried again after 1 hour, then
- *   after 2 hours, and cancelled at the third failure.
+ *   after 2 hours; the third failure is handled like a decline.
  * - An error after the money was taken is only logged. The order stays and the
  *   renewal is never repeated, so the customer cannot be charged twice.
  *
@@ -46,6 +47,7 @@ final class RenewalHandler {
 
 	public function register(): void {
 		add_action( 'tasg_abo_renew', array( $this, 'handle' ) );
+		add_action( 'tasg_abo_subscription_cancelled', array( DeclineRetry::class, 'clear' ) );
 	}
 
 	public function handle( $subscription_id ): void {
@@ -57,7 +59,13 @@ final class RenewalHandler {
 
 		$due = strtotime( $row->next_payment . ' UTC' );
 
-		if ( $due > time() || (int) get_transient( 'tasg_abo_retry_at_' . (int) $row->id ) > time() ) {
+		// A retry waits on a due date in the past. A future one (the order was skipped
+		// meanwhile) means nothing is waiting, so an old count must not carry over.
+		if ( $due > time() ) {
+			DeclineRetry::clear( (int) $row->id );
+		}
+
+		if ( $due > time() || (int) get_transient( 'tasg_abo_retry_at_' . (int) $row->id ) > time() || DeclineRetry::waiting( (int) $row->id ) ) {
 			return;
 		}
 
@@ -87,6 +95,11 @@ final class RenewalHandler {
 
 		$order = null;
 
+		// Each retry after a decline is a new attempt for the provider. With the same key
+		// Stripe would answer with the stored decline for 24 hours.
+		$attempt     = DeclineRetry::get( (int) $row->id )['tries'];
+		$idempotency = 'tasg-abo-' . (int) $row->id . '-' . md5( $row->next_payment ) . ( $attempt > 0 ? '-r' . $attempt : '' );
+
 		// Everything up to and including the charge. Any unexpected error here means
 		// nothing was taken, so the renewal goes back for another try.
 		try {
@@ -98,7 +111,7 @@ final class RenewalHandler {
 			}
 
 			$result = (float) $order->get_total() > 0
-				? $charger->charge( $order, $row, 'tasg-abo-' . (int) $row->id . '-' . md5( $row->next_payment ) )
+				? $charger->charge( $order, $row, $idempotency )
 				: array(
 					'status'  => 'succeeded',
 					'id'      => '',
@@ -115,11 +128,13 @@ final class RenewalHandler {
 		switch ( $result['status'] ) {
 			case 'succeeded':
 				$this->clear_retry( $row );
+				DeclineRetry::clear( (int) $row->id );
 				$this->complete( $order, $row, $result );
 				break;
 
 			case 'processing':
 				$this->clear_retry( $row );
+				DeclineRetry::clear( (int) $row->id );
 				$this->hold( $order, $row, $result );
 				break;
 
@@ -128,7 +143,7 @@ final class RenewalHandler {
 				break;
 
 			default:
-				$this->fail( $row, $order, $result['message'] );
+				$this->declined( $row, $order, $result['message'] );
 		}
 	}
 
@@ -236,7 +251,7 @@ final class RenewalHandler {
 
 		if ( $tries >= self::MAX_TEMPORARY_ERRORS ) {
 			$this->clear_retry( $sub );
-			$this->fail( $sub, null, $message );
+			$this->declined( $sub, null, $message );
 			return;
 		}
 
@@ -251,6 +266,41 @@ final class RenewalHandler {
 				'reminder_sent' => 1,
 			)
 		);
+	}
+
+	/**
+	 * The payment was refused. No order stays, the subscription goes on and the same
+	 * order is tried again later; the customer is asked to check the payment method.
+	 * After the last try the subscription ends.
+	 */
+	private function declined( object $sub, ?\WC_Order $order, string $message ): void {
+		if ( $order ) {
+			$order->delete( true );
+		}
+
+		$at = DeclineRetry::record( $sub );
+
+		if ( 0 === $at ) {
+			$this->fail( $sub, null, $message );
+			return;
+		}
+
+		Log::warning( sprintf( 'Subscription #%d: payment declined (%s). Try %d of %d on %s UTC.', (int) $sub->id, $message, DeclineRetry::get( (int) $sub->id )['tries'], count( DeclineRetry::DAYS ), gmdate( 'Y-m-d H:i', $at ) ) );
+
+		// Back to the original due date, so the same order is retried and no period is skipped.
+		$this->repository->update(
+			(int) $sub->id,
+			array(
+				'next_payment'  => $sub->next_payment,
+				'reminder_sent' => 1,
+			)
+		);
+
+		$emails = WC()->mailer()->get_emails();
+		if ( isset( $emails['tasg_abo_payment_retry'] ) ) {
+			$sent = $emails['tasg_abo_payment_retry']->trigger( (int) $sub->id );
+			Log::info( sprintf( 'Subscription #%d: payment retry email %s.', (int) $sub->id, $sent ? 'sent' : 'NOT sent' ) );
+		}
 	}
 
 	/**
