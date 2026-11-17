@@ -17,6 +17,8 @@ final class Settings {
 	public const PAYPAL_CLIENT_ID    = 'tasg_abo_paypal_client_id';
 	public const PAYPAL_SECRET       = 'tasg_abo_paypal_secret';
 	public const PAYPAL_SANDBOX      = 'tasg_abo_paypal_sandbox';
+	public const PAYPAL_SB_CLIENT_ID = 'tasg_abo_paypal_sandbox_client_id';
+	public const PAYPAL_SB_SECRET    = 'tasg_abo_paypal_sandbox_secret';
 	public const ADMIN_ONLY          = 'tasg_abo_admin_only';
 	public const EMAIL_DESIGNER      = 'tasg_abo_email_designer';
 	public const STRIPE_ENABLED      = 'tasg_abo_stripe_enabled';
@@ -107,23 +109,24 @@ final class Settings {
 	 * Own PayPal REST app of the shop (client id and secret from the PayPal developer dashboard).
 	 * Used for the PayPal Vault API, independent of the WooCommerce PayPal Payments plugin.
 	 */
-	public static function paypal_client_id(): string {
-		return trim( (string) get_option( self::PAYPAL_CLIENT_ID, '' ) );
+	public static function paypal_client_id( bool $sandbox = false ): string {
+		return trim( (string) get_option( $sandbox ? self::PAYPAL_SB_CLIENT_ID : self::PAYPAL_CLIENT_ID, '' ) );
 	}
 
-	public static function paypal_secret(): string {
-		return trim( (string) get_option( self::PAYPAL_SECRET, '' ) );
+	public static function paypal_secret( bool $sandbox = false ): string {
+		return trim( (string) get_option( $sandbox ? self::PAYPAL_SB_SECRET : self::PAYPAL_SECRET, '' ) );
 	}
 
 	/**
-	 * Sandbox mode talks to PayPal's test servers. Off (live) is the default.
+	 * Test orders (test phase or test plan) pay in the PayPal sandbox with the sandbox
+	 * credentials. Customers always pay live. The WooCommerce order is a normal order.
 	 */
 	public static function paypal_sandbox(): bool {
 		return 'yes' === get_option( self::PAYPAL_SANDBOX, 'no' );
 	}
 
-	public static function paypal_configured(): bool {
-		return '' !== self::paypal_client_id() && '' !== self::paypal_secret();
+	public static function paypal_configured( bool $sandbox = false ): bool {
+		return '' !== self::paypal_client_id( $sandbox ) && '' !== self::paypal_secret( $sandbox );
 	}
 
 	/**
