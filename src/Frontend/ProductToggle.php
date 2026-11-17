@@ -115,6 +115,13 @@ final class ProductToggle {
 		return '<br><strong>' . esc_html( sprintf( __( 'Minimum term: %s.', 'tasg-abo' ), $plan->term_label() ) ) . '</strong>';
 	}
 
+	/**
+	 * Shown under the plan text when the plan includes free shipping.
+	 */
+	private function shipping_note( Plan $plan ): string {
+		return $plan->free_shipping ? '<br><strong>' . esc_html__( 'Free shipping included.', 'tasg-abo' ) . '</strong>' : '';
+	}
+
 	public function render(): void {
 		global $product;
 
@@ -146,7 +153,7 @@ final class ProductToggle {
 		}
 
 		foreach ( $plans as $id => $plan ) {
-			echo '<div class="tasg-abo-text" data-plan="' . esc_attr( (string) $id ) . '"' . ( (int) $id === $default_id ? '' : ' hidden' ) . ' style="margin-top:3px;color:#555;font-size:13px">' . $this->text( $product, $plan ) . $this->term_note( $plan ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<div class="tasg-abo-text" data-plan="' . esc_attr( (string) $id ) . '"' . ( (int) $id === $default_id ? '' : ' hidden' ) . ' style="margin-top:3px;color:#555;font-size:13px">' . $this->text( $product, $plan ) . $this->term_note( $plan ) . $this->shipping_note( $plan ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		echo '</div>';
