@@ -8,6 +8,10 @@
  * Placeholders: {customer_name} {product_name} {next_date} {amount}
  *               {cancel_url} {skip_url} {pause_url} {continue_url}
  *               {shipping_address} {address_url} {payment_url} {plan_url} {term_note}
+ *               {skip_line} {pause_line} (whole lines, empty during the minimum term)
+ *
+ * Recipient and name come from the billing data of the subscription's order, as with
+ * the WooCommerce order emails, so a changed checkout email or a guest order is respected.
  *
  * @package TasgAbo
  */
@@ -80,7 +84,64 @@ abstract class SubscriptionEmail extends \WC_Email {
 			'{term_note}'        => '',
 			'{card_name}'        => '',
 			'{card_expiry}'      => '',
+			'{skip_line}'        => '',
+			'{pause_line}'       => '',
 		);
+	}
+
+	/**
+	 * The newest order of the subscription, the first one if the newest is gone.
+	 * Emails go where WooCommerce sends the order emails: the billing email of the order.
+	 */
+	private static function order_of( object $row ): ?\WC_Order {
+		foreach ( array( (int) ( $row->last_order_id ?? 0 ), (int) ( $row->origin_order_id ?? 0 ) ) as $order_id ) {
+			$order = $order_id ? wc_get_order( $order_id ) : false;
+
+			if ( $order instanceof \WC_Order ) {
+				return $order;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Billing email of the order, the account email only when the order has none.
+	 */
+	private static function recipient_of( object $row ): string {
+		$order = self::order_of( $row );
+		$email = $order ? (string) $order->get_billing_email() : '';
+
+		if ( '' === $email ) {
+			$user  = get_userdata( (int) $row->user_id );
+			$email = $user ? (string) $user->user_email : '';
+		}
+
+		return $email;
+	}
+
+	/**
+	 * Billing name of the order, the account name only when the order has none.
+	 */
+	private static function name_of( object $row ): string {
+		$order = self::order_of( $row );
+		$name  = $order ? trim( $order->get_formatted_billing_full_name() ) : '';
+
+		if ( '' === $name ) {
+			$user = get_userdata( (int) $row->user_id );
+			$name = $user ? (string) $user->display_name : '';
+		}
+
+		return $name;
+	}
+
+	/**
+	 * Skip and pause only exist after the minimum term and when the owner allows them.
+	 */
+	private static function action_open( object $row, string $action ): bool {
+		$in_term = ! empty( $row->term_ends ) && strtotime( $row->term_ends . ' UTC' ) > time();
+
+		return ! $in_term && Settings::customer_may( $action );
 	}
 
 	/**
@@ -117,7 +178,7 @@ abstract class SubscriptionEmail extends \WC_Email {
 		$this->form_fields['body'] = array(
 			'title'       => __( 'Email text', 'tasg-abo' ),
 			'type'        => 'textarea',
-			'description' => __( 'Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url} {term_note} {card_name} {card_expiry}', 'tasg-abo' ),
+			'description' => __( 'Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url} {term_note} {card_name} {card_expiry} {skip_line} {pause_line}', 'tasg-abo' ),
 			'default'     => static::default_body(),
 			'desc_tip'    => false,
 		);
@@ -139,10 +200,9 @@ abstract class SubscriptionEmail extends \WC_Email {
 	 * up sample, and the mail goes to that address even if the email is switched off.
 	 */
 	public function deliver( object $row, string $test_to = '' ): bool {
-		$user    = get_userdata( (int) $row->user_id );
 		$product = wc_get_product( (int) $row->product_id );
 
-		if ( ! $user || ! $product ) {
+		if ( ! $product ) {
 			return false;
 		}
 
@@ -158,7 +218,7 @@ abstract class SubscriptionEmail extends \WC_Email {
 
 		try {
 			$this->object    = $row;
-			$this->recipient = '' !== $test_to ? $test_to : $user->user_email;
+			$this->recipient = '' !== $test_to ? $test_to : self::recipient_of( $row );
 			// With YayMail the design and text come from YayMail, not from our editor.
 			$this->texts = Settings::use_yaymail()
 				? array(
@@ -168,7 +228,7 @@ abstract class SubscriptionEmail extends \WC_Email {
 				)
 				: EmailTexts::get( $this->id, EmailTexts::resolve_key( (string) $row->language ) );
 
-			$this->placeholders = $this->values_for( $row, $user, $product );
+			$this->placeholders = $this->values_for( $row, $product );
 			self::$live         = $this->placeholders;
 
 			if ( ( '' !== $test_to || $this->is_enabled() ) && $this->get_recipient() ) {
@@ -194,17 +254,21 @@ abstract class SubscriptionEmail extends \WC_Email {
 	 *
 	 * @return array<string,string> placeholder (with braces) => value
 	 */
-	public function values_for( object $row, \WP_User $user, \WC_Product $product ): array {
+	public function values_for( object $row, \WC_Product $product ): array {
 		$amount = (float) Pricing::subscriber_price( $product, (int) $row->plan_id ) * (int) $row->quantity;
 		$values = $this->placeholders;
 
-		$values['{customer_name}'] = $user->display_name;
+		$values['{customer_name}'] = self::name_of( $row );
 		$values['{product_name}']  = $product->get_name();
 		$values['{next_date}']     = wp_date( get_option( 'date_format' ), strtotime( $row->next_payment . ' UTC' ) );
 		$values['{amount}']        = html_entity_decode( wp_strip_all_tags( wc_price( $amount ) ), ENT_QUOTES, 'UTF-8' );
 		$values['{cancel_url}']    = Links::url( $row, 'cancel' );
-		$values['{skip_url}']      = Links::url( $row, 'skip' );
-		$values['{pause_url}']     = Links::url( $row, 'pause' );
+		$values['{skip_url}']      = self::action_open( $row, 'skip' ) ? Links::url( $row, 'skip' ) : '';
+		$values['{pause_url}']     = self::action_open( $row, 'pause' ) ? Links::url( $row, 'pause' ) : '';
+
+		// Whole lines, empty during the minimum term, so no label is left without its link.
+		$values['{skip_line}']  = '' !== $values['{skip_url}'] ? str_replace( '{skip_url}', $values['{skip_url}'], __( 'Skip this order: {skip_url}', 'tasg-abo' ) ) : '';
+		$values['{pause_line}'] = '' !== $values['{pause_url}'] ? str_replace( '{pause_url}', $values['{pause_url}'], __( 'Pause: {pause_url}', 'tasg-abo' ) ) : '';
 		$values['{continue_url}']  = Links::url( $row, 'continue' );
 
 		// The address of the next order, with a link to correct it for that order.
@@ -230,10 +294,9 @@ abstract class SubscriptionEmail extends \WC_Email {
 			return null;
 		}
 
-		$user    = get_userdata( (int) $row->user_id );
 		$product = wc_get_product( (int) $row->product_id );
 
-		if ( ! $user || ! $product ) {
+		if ( ! $product ) {
 			return null;
 		}
 
@@ -245,7 +308,7 @@ abstract class SubscriptionEmail extends \WC_Email {
 			}
 
 			try {
-				$values = array_merge( $values, $email->values_for( $row, $user, $product ) );
+				$values = array_merge( $values, $email->values_for( $row, $product ) );
 			} catch ( \Throwable $e ) {
 				continue;
 			}
