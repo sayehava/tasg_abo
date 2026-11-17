@@ -2,7 +2,7 @@
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 0.10.0
+Stable tag: 0.10.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -44,6 +44,9 @@ Customers tick "Subscribe and save" on a product page and choose an interval. Th
 5. Edit a product and enable the subscription fields on the General tab, then tick the plans it offers.
 
 == Changelog ==
+
+= 0.10.1 =
+* Plan switching is removed (setting, My Account button, page, email line, {plan_url}). Customers cancel and subscribe to the new plan; during a minimum term the new subscription is possible once the old one has ended.
 
 = 0.10.0 =
 * Plans can include free shipping (Plans > Free shipping), alone (product discount 0) or together with a discount. It applies to the first order and every renewal. The shipping method stays the same for label and invoice automation, only its price is 0; at checkout it reads "(free with your subscription)" and the product page says "Free shipping included."
