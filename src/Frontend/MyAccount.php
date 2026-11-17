@@ -88,7 +88,10 @@ final class MyAccount {
 			echo '<td>' . esc_html( \TasgAbo\Plans\Period::row_label( $row ) ) . '</td>';
 			$status = $names[ $row->status ] ?? $row->status;
 
-			if ( 'active' === $row->status && ! empty( $row->cancel_after ) ) {
+			if ( 'paused' === $row->status && ! empty( $row->pause_until ) ) {
+				/* translators: %s: date of the first order after the pause */
+				$status = sprintf( __( 'Paused until %s', 'tasg-abo' ), wp_date( get_option( 'date_format' ), strtotime( $row->pause_until . ' UTC' ) ) );
+			} elseif ( 'active' === $row->status && ! empty( $row->cancel_after ) ) {
 				/* translators: %s: date the minimum term ends */
 				$status = sprintf( __( 'Ends %s', 'tasg-abo' ), wp_date( get_option( 'date_format' ), strtotime( $row->cancel_after . ' UTC' ) ) );
 			} elseif ( ! empty( $row->term_ends ) && in_array( $row->status, array( 'active', 'paused' ), true ) && strtotime( $row->term_ends . ' UTC' ) > time() ) {
@@ -97,7 +100,9 @@ final class MyAccount {
 			}
 
 			echo '<td>' . esc_html( $status ) . '</td>';
-			echo '<td>' . ( 'cancelled' === $row->status ? '' : esc_html( wp_date( get_option( 'date_format' ), strtotime( $row->next_payment . ' UTC' ) ) ) ) . '</td>';
+			// The real date of the next order: after a timed pause, or after a noted skip.
+			$next = 'paused' === $row->status && ! empty( $row->pause_until ) ? strtotime( $row->pause_until . ' UTC' ) : \TasgAbo\Subscriptions\Actions::next_order( $row );
+			echo '<td>' . ( 'cancelled' === $row->status ? '' : esc_html( wp_date( get_option( 'date_format' ), $next ) ) ) . '</td>';
 
 			// The address the next order will use, from the last order or a correction.
 			echo '<td>' . ( 'cancelled' === $row->status ? '' : nl2br( esc_html( Address::formatted( Address::shipping( $row ) ) ) ) ) . '</td><td>';
