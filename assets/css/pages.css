@@ -65,3 +65,112 @@
 	margin: 0 0 8px;
 }
 
+.tasg-abo-options {
+	display: grid;
+	gap: 12px;
+	margin: 0 0 24px;
+}
+
+.tasg-abo-option {
+	display: flex;
+	gap: 12px;
+	align-items: flex-start;
+	border: 1px solid rgba(0, 0, 0, 0.15);
+	border-radius: 10px;
+	padding: 14px 16px;
+	cursor: pointer;
+	margin: 0;
+}
+
+.tasg-abo-option input {
+	margin-top: 4px;
+	flex: 0 0 auto;
+}
+
+.tasg-abo-option strong {
+	display: block;
+}
+
+.tasg-abo-option small {
+	display: block;
+	opacity: 0.8;
+	margin-top: 2px;
+}
+
+.tasg-abo-option:has(input:checked) {
+	border-color: currentColor;
+	box-shadow: 0 0 0 1px currentColor;
+}
+
+.tasg-abo-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px 20px;
+	align-items: center;
+	margin-top: 8px;
+}
+
+.tasg-abo-note {
+	font-size: 0.95em;
+	opacity: 0.85;
+	margin: 16px 0 0;
+}
+
+.tasg-abo-error {
+	border-left: 4px solid #b32d2e;
+	padding: 10px 14px;
+	margin: 0 0 16px;
+	background: rgba(179, 45, 46, 0.06);
+}
+
+.tasg-abo-fields {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0 16px;
+}
+
+.tasg-abo-fields .form-row {
+	margin: 0 0 14px;
+	padding: 0;
+	width: auto;
+	float: none;
+}
+
+.tasg-abo-fields .tasg-abo-wide {
+	grid-column: 1 / -1;
+}
+
+.tasg-abo-fields input,
+.tasg-abo-fields select {
+	width: 100%;
+	box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+	.tasg-abo-page {
+		padding: 24px 16px 40px;
+	}
+
+	.tasg-abo-card {
+		padding: 16px;
+	}
+
+	.tasg-abo-summary {
+		align-items: flex-start;
+	}
+
+	.tasg-abo-summary img {
+		width: 56px;
+		height: 56px;
+		flex-basis: 56px;
+	}
+
+	.tasg-abo-fields {
+		grid-template-columns: 1fr;
+	}
+
+	.tasg-abo-actions .button {
+		width: 100%;
+		text-align: center;
+	}
+}
