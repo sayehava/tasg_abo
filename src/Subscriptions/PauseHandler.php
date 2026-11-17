@@ -35,6 +35,22 @@ final class PauseHandler {
 			return;
 		}
 
+		// A pause with a chosen length ends by itself: active again, the next order on the
+		// planned date, and the usual reminder goes out before it.
+		if ( ! empty( $row->pause_until ) ) {
+			$this->repository->update(
+				(int) $row->id,
+				array(
+					'status'        => 'active',
+					'next_payment'  => $row->pause_until,
+					'pause_until'   => null,
+					'reminder_sent' => 0,
+				)
+			);
+			Log::info( sprintf( 'Subscription #%d: pause ended, next order %s UTC.', (int) $row->id, $row->pause_until ) );
+			return;
+		}
+
 		$sent = (int) $row->pause_reminders;
 
 		if ( $sent >= Settings::PAUSE_MAX_REMINDERS ) {
