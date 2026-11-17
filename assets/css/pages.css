@@ -169,6 +169,16 @@
 		grid-template-columns: 1fr;
 	}
 
+	/* Label above its value, so names and dates keep the full width. */
+	.tasg-abo-summary dl {
+		grid-template-columns: 1fr;
+		gap: 0;
+	}
+
+	.tasg-abo-summary dd {
+		margin-bottom: 8px;
+	}
+
 	.tasg-abo-actions .button {
 		width: 100%;
 		text-align: center;
