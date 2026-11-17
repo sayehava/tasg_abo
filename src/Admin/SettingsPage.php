@@ -52,6 +52,8 @@ final class SettingsPage {
 		register_setting( self::SLUG, Settings::PAYPAL_CLIENT_ID, array( 'sanitize_callback' => 'sanitize_text_field' ) );
 		register_setting( self::SLUG, Settings::PAYPAL_SECRET, array( 'sanitize_callback' => array( $this, 'sanitize_secret' ) ) );
 		register_setting( self::SLUG, Settings::PAYPAL_SANDBOX, array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
+		register_setting( self::SLUG, Settings::PAYPAL_SB_CLIENT_ID, array( 'sanitize_callback' => 'sanitize_text_field' ) );
+		register_setting( self::SLUG, Settings::PAYPAL_SB_SECRET, array( 'sanitize_callback' => array( $this, 'sanitize_sandbox_secret' ) ) );
 	}
 
 	/**
@@ -102,6 +104,16 @@ final class SettingsPage {
 
 		if ( '' === $value || '' === trim( $value, '*' ) ) {
 			return Settings::paypal_secret();
+		}
+
+		return $value;
+	}
+
+	public function sanitize_sandbox_secret( $value ): string {
+		$value = trim( sanitize_text_field( (string) $value ) );
+
+		if ( '' === $value || '' === trim( $value, '*' ) ) {
+			return Settings::paypal_secret( true );
 		}
 
 		return $value;
@@ -257,7 +269,15 @@ final class SettingsPage {
 		echo '<p class="description">' . esc_html__( 'From developer.paypal.com > Apps & Credentials, in the app for this shop. The app needs "Save payment methods" switched on. A saved secret is shown as stars, leave it as it is to keep it.', 'tasg-abo' ) . '</p></td></tr>';
 		echo '<tr><th scope="row">' . esc_html__( 'PayPal test mode', 'tasg-abo' ) . '</th><td>';
 		echo '<input type="hidden" name="' . esc_attr( Settings::PAYPAL_SANDBOX ) . '" value="no">';
-		echo '<label><input type="checkbox" name="' . esc_attr( Settings::PAYPAL_SANDBOX ) . '" value="yes"' . checked( Settings::paypal_sandbox(), true, false ) . '> ' . esc_html__( 'Use the PayPal sandbox (use sandbox credentials above)', 'tasg-abo' ) . '</label></td></tr>';
+		echo '<label><input type="checkbox" name="' . esc_attr( Settings::PAYPAL_SANDBOX ) . '" value="yes"' . checked( Settings::paypal_sandbox(), true, false ) . '> ' . esc_html__( 'Test orders pay in the PayPal sandbox', 'tasg-abo' ) . '</label>';
+		echo '<p class="description">' . esc_html__( 'Test orders are orders of the test phase or of a test plan. They pay with the sandbox credentials below, no real money moves, and their renewals stay in the sandbox. The WooCommerce order is a normal order. Customers always pay live.', 'tasg-abo' ) . '</p></td></tr>';
+
+		$sb_secret = Settings::paypal_secret( true );
+		echo '<tr><th scope="row"><label for="tasg-abo-pp-sb-id">' . esc_html__( 'PayPal sandbox client ID', 'tasg-abo' ) . '</label></th><td>';
+		echo '<input type="text" id="tasg-abo-pp-sb-id" class="regular-text" autocomplete="off" name="' . esc_attr( Settings::PAYPAL_SB_CLIENT_ID ) . '" value="' . esc_attr( Settings::paypal_client_id( true ) ) . '"></td></tr>';
+		echo '<tr><th scope="row"><label for="tasg-abo-pp-sb-secret">' . esc_html__( 'PayPal sandbox secret', 'tasg-abo' ) . '</label></th><td>';
+		echo '<input type="password" id="tasg-abo-pp-sb-secret" class="regular-text" autocomplete="new-password" name="' . esc_attr( Settings::PAYPAL_SB_SECRET ) . '" value="' . esc_attr( '' !== $sb_secret ? str_repeat( '*', 24 ) : '' ) . '">';
+		echo '<p class="description">' . esc_html__( 'From developer.paypal.com > Apps & Credentials, switched to Sandbox, in a sandbox app with "Save payment methods" on. Pay with a sandbox personal account from Testing Tools > Sandbox Accounts.', 'tasg-abo' ) . '</p></td></tr>';
 
 		echo '</table>';
 		submit_button();
