@@ -1712,3 +1712,43 @@ msgstr "Funktioniert allein oder zusammen mit dem Rabatt des Produkts: Setzen Si
 #: src/Checkout/CheckoutRules.php
 msgid "%s (free with your subscription)"
 msgstr "%s (kostenlos mit Ihrem Abo)"
+
+#: src/Frontend/PaymentPageView.php
+msgid "Which payment method pays for your next orders?"
+msgstr "Mit welcher Zahlungsmethode werden Ihre nächsten Bestellungen bezahlt?"
+
+#: src/Frontend/PaymentPageView.php
+msgid "The card or account you paid with last time."
+msgstr "Die Karte oder das Konto, mit dem Sie zuletzt bezahlt haben."
+
+#: src/Frontend/PaymentPageView.php
+msgid "Your default payment method"
+msgstr "Ihre Standard-Zahlungsmethode"
+
+#: src/Frontend/PaymentPageView.php
+msgid "Make default"
+msgstr "Als Standard festlegen"
+
+#: src/Frontend/PaymentPageView.php
+msgid "Delete this payment method?"
+msgstr "Diese Zahlungsmethode löschen?"
+
+#: src/Frontend/PaymentPageView.php
+msgid "You enter the new card or account securely with our payment provider Stripe. Afterwards you come back here and can choose it."
+msgstr "Sie geben die neue Karte oder das neue Konto sicher bei unserem Zahlungsdienstleister Stripe ein. Danach kommen Sie hierher zurück und können sie auswählen."
+
+#: src/Frontend/PaymentPage.php
+msgid "This page was open for too long. Please try again."
+msgstr "Diese Seite war zu lange geöffnet. Bitte versuchen Sie es noch einmal."
+
+#: src/Frontend/PaymentPage.php
+msgid "%s is now your default payment method."
+msgstr "%s ist jetzt Ihre Standard-Zahlungsmethode."
+
+#: src/Frontend/PaymentPage.php
+msgid "This payment method still pays for a subscription. Choose another one for it first, then you can delete it."
+msgstr "Mit dieser Zahlungsmethode wird noch ein Abo bezahlt. Wählen Sie dafür zuerst eine andere, dann können Sie sie löschen."
+
+#: src/Frontend/PaymentPage.php
+msgid "%s was deleted."
+msgstr "%s wurde gelöscht."
