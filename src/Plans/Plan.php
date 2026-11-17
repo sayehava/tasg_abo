@@ -22,6 +22,8 @@ final class Plan {
 	public $test             = false;
 	public $active           = true;
 	public $default          = false;
+	/** Free shipping on the first order and every renewal, alone or together with a discount. */
+	public $free_shipping    = false;
 
 	public static function from_array( array $data ): Plan {
 		$plan                   = new self();
@@ -35,6 +37,7 @@ final class Plan {
 		$plan->test             = ! empty( $data['test'] );
 		$plan->active           = ! isset( $data['active'] ) || ! empty( $data['active'] );
 		$plan->default          = ! empty( $data['default'] );
+		$plan->free_shipping    = ! empty( $data['free_shipping'] );
 
 		return $plan;
 	}
@@ -51,6 +54,7 @@ final class Plan {
 			'test'             => $this->test,
 			'active'           => $this->active,
 			'default'          => $this->default,
+			'free_shipping'    => $this->free_shipping,
 		);
 	}
 
@@ -96,6 +100,7 @@ final class Plan {
 			'term_value'       => $this->term_value,
 			'term_unit'        => $this->term_unit,
 			'test'             => $this->test,
+			'free_shipping'    => $this->free_shipping,
 		);
 	}
 
