@@ -127,24 +127,52 @@ final class Actions {
 		return true;
 	}
 
+	/** Date of the next planned order (a noted skip already counted). */
+	public static function next_order( object $sub ): int {
+		$due = strtotime( $sub->next_payment . ' UTC' );
+
+		return ! empty( $sub->skip_next ) ? self::order_after( $sub, $due ) : $due;
+	}
+
+	/** Date of the order one period after the given one. */
+	public static function order_after( object $sub, int $timestamp ): int {
+		return Period::add( $timestamp, (int) $sub->period_value, (string) $sub->period_unit, Period::anchor_day( $sub ) );
+	}
+
+	/** First order after a pause of this length: the next planned order moves back by it. */
+	public static function order_after_pause( object $sub, int $value, string $unit ): int {
+		return Period::add( self::next_order( $sub ), $value, $unit, Period::anchor_day( $sub ) );
+	}
+
 	/**
-	 * Pause for the next period only. The order due next is not made. From its
-	 * due date on, the customer is asked to continue or cancel.
+	 * Pause for a length the customer chose. No order and no charge until the pause
+	 * ends, then the subscription continues by itself; the usual reminder goes out
+	 * before that first order. Without a length: the old open pause, from the next
+	 * due date the customer is asked to continue or cancel.
 	 */
-	public function pause( object $sub ): bool {
+	public function pause( object $sub, int $value = 0, string $unit = '' ): bool {
 		if ( 'active' !== $sub->status || $this->in_term( $sub ) ) {
 			return false;
 		}
 
-		$this->repository->update(
-			(int) $sub->id,
-			array(
-				'status'          => 'paused',
-				'reminder_sent'   => 0,
-				'skip_next'       => 0,
-				'pause_reminders' => 0,
-			)
+		$data = array(
+			'status'          => 'paused',
+			'reminder_sent'   => 0,
+			'skip_next'       => 0,
+			'pause_reminders' => 0,
+			'pause_until'     => null,
 		);
+
+		if ( $value > 0 ) {
+			$until = self::order_after_pause( $sub, $value, $unit );
+
+			// The pause job wakes the subscription up in time for the reminder before that order.
+			$data['pause_until']  = gmdate( 'Y-m-d H:i:s', $until );
+			$data['next_payment'] = gmdate( 'Y-m-d H:i:s', max( time() + MINUTE_IN_SECONDS, $until - (int) $sub->reminder_minutes * MINUTE_IN_SECONDS ) );
+		}
+
+		$this->repository->update( (int) $sub->id, $data );
+		Log::info( sprintf( 'Subscription #%d: paused%s.', (int) $sub->id, $value > 0 ? ' until ' . $data['pause_until'] . ' UTC' : '' ) );
 
 		return true;
 	}
@@ -164,6 +192,7 @@ final class Actions {
 				'next_payment'    => gmdate( 'Y-m-d H:i:s', time() + (int) $sub->reminder_minutes * MINUTE_IN_SECONDS + 5 * MINUTE_IN_SECONDS ),
 				'reminder_sent'   => 0,
 				'pause_reminders' => 0,
+				'pause_until'     => null,
 			)
 		);
 
