@@ -1696,3 +1696,19 @@ msgstr ""
 #: src/YayMail/TasgShortcodes.php
 msgid "Skip this order"
 msgstr ""
+
+#: src/Frontend/ProductToggle.php
+msgid "Free shipping included."
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Customers of this plan pay no shipping, on the first order and on every renewal"
+msgstr ""
+
+#: src/Admin/PlansPage.php
+msgid "Works alone or together with the discount of the product: set the discount to 0 for free shipping only. The shipping method stays the same (for your label and invoice automation), only its price is 0. Changing this applies to new subscriptions."
+msgstr ""
+
+#: src/Checkout/CheckoutRules.php
+msgid "%s (free with your subscription)"
+msgstr ""
