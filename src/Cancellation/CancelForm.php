@@ -57,7 +57,7 @@ final class CancelForm {
 		}
 
 		$printed = true;
-		echo '<style>:where(.tasg-abo-cancel-wrap) .tasg-abo-contract{margin:1em 0;padding:1em;border:1px solid #ddd}:where(.tasg-abo-cancel-wrap) .tasg-abo-input{width:100%;box-sizing:border-box}</style>';
+		echo '<style>:where(.tasg-abo-cancel-wrap) .tasg-abo-contract{margin:1em 0;padding:1em;border:1px solid #ddd}:where(.tasg-abo-cancel-wrap) .tasg-abo-input{width:100%;box-sizing:border-box;border:1px solid #ddd}</style>';
 	}
 
 	/**
