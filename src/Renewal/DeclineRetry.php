@@ -79,6 +79,24 @@ final class DeclineRetry {
 		return self::get( $subscription_id )['retry_at'] > time();
 	}
 
+	/**
+	 * The customer chose another payment method: try at once instead of waiting.
+	 */
+	public static function retry_now( int $subscription_id ): void {
+		$state = self::get( $subscription_id );
+
+		if ( $state['tries'] > 0 ) {
+			update_option(
+				self::key( $subscription_id ),
+				array(
+					'tries'    => $state['tries'],
+					'retry_at' => time(),
+				),
+				false
+			);
+		}
+	}
+
 	public static function clear( int $subscription_id ): void {
 		delete_option( self::key( $subscription_id ) );
 	}
