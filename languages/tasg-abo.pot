@@ -1540,3 +1540,79 @@ msgstr ""
 #: src/Frontend/SkipPausePages.php
 msgid "Next order then on %s"
 msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "Pause subscription"
+msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "We remind you by email before the first order after the pause. You can end the pause earlier at any time."
+msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "Only want to leave out one delivery?"
+msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "Skip the next order instead"
+msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "Take a break: no deliveries and no charges during the pause. Afterwards your subscription continues by itself."
+msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "Your subscription is paused. It continues by itself with the order on %s."
+msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "Your subscription is paused."
+msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "End the pause now"
+msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "This subscription has ended, so there is nothing to change."
+msgstr ""
+
+#: src/Frontend/SkipPausePages.php
+msgid "Your subscription has a minimum term until %s. Skipping and pausing are possible after that date."
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "days"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "weeks"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "months"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "minutes (for testing)"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Pause lengths"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Customers choose one of these lengths when they pause. During the pause there are no orders and no charges; afterwards the subscription continues by itself, with the usual reminder before the next order. Leave a row empty to leave it out. With no length at all, pausing is not offered."
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Pause for one of the lengths above"
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "Uses its own PayPal connection below, not the WooCommerce PayPal Payments plugin. The customer approves future payments with PayPal at checkout. Try it with a test purchase first."
+msgstr ""
+
+#: src/Admin/SettingsPage.php
+msgid "PayPal client ID"
+msgstr ""
