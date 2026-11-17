@@ -1696,3 +1696,19 @@ msgstr "Die PayPal-Zahlung ist noch ausstehend."
 #: src/YayMail/TasgShortcodes.php
 msgid "Skip this order"
 msgstr "Diese Bestellung überspringen"
+
+#: src/Frontend/ProductToggle.php
+msgid "Free shipping included."
+msgstr "Inklusive kostenlosem Versand."
+
+#: src/Admin/PlansPage.php
+msgid "Customers of this plan pay no shipping, on the first order and on every renewal"
+msgstr "Kunden dieses Plans zahlen keinen Versand, bei der ersten Bestellung und bei jeder Verlängerung"
+
+#: src/Admin/PlansPage.php
+msgid "Works alone or together with the discount of the product: set the discount to 0 for free shipping only. The shipping method stays the same (for your label and invoice automation), only its price is 0. Changing this applies to new subscriptions."
+msgstr "Funktioniert allein oder zusammen mit dem Rabatt des Produkts: Setzen Sie den Rabatt auf 0, um nur kostenlosen Versand anzubieten. Die Versandart bleibt gleich (für Ihre Etiketten- und Rechnungsautomatik), nur ihr Preis ist 0. Eine Änderung gilt für neue Abos."
+
+#: src/Checkout/CheckoutRules.php
+msgid "%s (free with your subscription)"
+msgstr "%s (kostenlos mit Ihrem Abo)"
