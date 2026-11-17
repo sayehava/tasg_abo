@@ -2,7 +2,7 @@
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 0.6.0
+Stable tag: 0.7.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -44,6 +44,13 @@ Customers tick "Subscribe and save" on a product page and choose an interval. Th
 5. Edit a product and enable the subscription fields on the General tab, then tick the plans it offers.
 
 == Changelog ==
+
+= 0.7.0 =
+* Emails go to the billing email of the order, like the WooCommerce order emails, also when the email was changed at checkout. The name comes from the order too.
+* YayMail: sent subscription emails now use the template designed in YayMail (before, only the preview did), in the language of the subscription.
+* Skip and pause links are empty during the minimum term. New placeholders {skip_line} and {pause_line} (YayMail [yaymail_tasg_abo_skip_line] and [yaymail_tasg_abo_pause_line]) print the whole line or nothing.
+* Stripe: the first payment now saves the payment method on the Stripe customer, so renewals can be charged. Renewals use the Stripe mode (live or test) of the first payment.
+* PayPal: test orders can pay in the PayPal sandbox with their own sandbox credentials, renewals stay in the sandbox, customers always pay live.
 
 = 0.6.0 =
 * New email "Subscription confirmation", sent to the customer when a subscription starts (product, plan, next order, links to manage it). Editable in WooCommerce > Settings > Emails and in YayMail, with German translation.
