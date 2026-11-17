@@ -65,4 +65,51 @@ final class ThemePage {
 		get_footer();
 		exit;
 	}
+
+	/**
+	 * Card with the product, the date and amount of the next order and where it goes.
+	 */
+	public static function summary( object $sub, bool $with_address = true ): string {
+		$product = wc_get_product( (int) $sub->product_id );
+
+		if ( ! $product ) {
+			return '';
+		}
+
+		$amount = wc_price( (float) Pricing::subscriber_price( $product, (int) $sub->plan_id ) * (int) $sub->quantity );
+		$rows   = array();
+
+		if ( in_array( $sub->status, array( 'active', 'paused' ), true ) ) {
+			$next   = 'paused' === $sub->status && ! empty( $sub->pause_until ) ? strtotime( $sub->pause_until . ' UTC' ) : Actions::next_order( $sub );
+			$rows[] = array( __( 'Next order', 'tasg-abo' ), esc_html( self::date( $next ) ) );
+		}
+
+		$rows[] = array( __( 'Amount', 'tasg-abo' ), wp_kses_post( $amount ) );
+
+		if ( $with_address ) {
+			$rows[] = array( __( 'Shipping to', 'tasg-abo' ), nl2br( esc_html( Address::formatted( Address::shipping( $sub ) ) ) ) );
+		}
+
+		$html = '<div class="tasg-abo-card tasg-abo-summary">' . $product->get_image( 'thumbnail' ) . '<div>';
+		$html .= '<p class="tasg-abo-product">' . esc_html( $product->get_name() ) . '</p><dl>';
+
+		foreach ( $rows as $row ) {
+			$html .= '<dt>' . esc_html( $row[0] ) . '</dt><dd>' . $row[1] . '</dd>';
+		}
+
+		return $html . '</dl></div></div>';
+	}
+
+	public static function date( int $timestamp ): string {
+		return wp_date( get_option( 'date_format' ), $timestamp );
+	}
+
+	/**
+	 * Secondary link next to the main button: back without changing anything.
+	 */
+	public static function back_link(): string {
+		$url = is_user_logged_in() ? wc_get_account_endpoint_url( 'dashboard' ) : home_url( '/' );
+
+		return '<a class="tasg-abo-back" href="' . esc_url( $url ) . '">' . esc_html__( 'Change nothing', 'tasg-abo' ) . '</a>';
+	}
 }
