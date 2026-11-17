@@ -1616,3 +1616,80 @@ msgstr "Nutzt die eigene PayPal-Verbindung unten, nicht das Plugin WooCommerce P
 #: src/Admin/SettingsPage.php
 msgid "PayPal client ID"
 msgstr "PayPal Client-ID"
+
+#: src/Admin/SettingsPage.php
+msgid "PayPal secret"
+msgstr "PayPal Secret"
+
+#: src/Admin/SettingsPage.php
+msgid "From developer.paypal.com > Apps & Credentials, in the app for this shop. The app needs \"Save payment methods\" switched on. A saved secret is shown as stars, leave it as it is to keep it."
+msgstr "Aus developer.paypal.com > Apps & Credentials, in der App für diesen Shop. Bei der App muss \"Save payment methods\" eingeschaltet sein. Ein gespeichertes Secret wird als Sterne angezeigt; lassen Sie es so, um es zu behalten."
+
+#: src/Admin/SettingsPage.php
+msgid "PayPal test mode"
+msgstr "PayPal-Testmodus"
+
+#: src/Admin/SettingsPage.php
+msgid "Test orders pay in the PayPal sandbox"
+msgstr "Testbestellungen zahlen in der PayPal-Sandbox"
+
+#: src/Admin/SettingsPage.php
+msgid "Test orders are orders of the test phase or of a test plan. They pay with the sandbox credentials below, no real money moves, and their renewals stay in the sandbox. The WooCommerce order is a normal order. Customers always pay live."
+msgstr "Testbestellungen sind Bestellungen der Testphase oder eines Testplans. Sie zahlen mit den Sandbox-Zugangsdaten unten, es fließt kein echtes Geld, und ihre Verlängerungen bleiben in der Sandbox. Die WooCommerce-Bestellung ist eine normale Bestellung. Kunden zahlen immer live."
+
+#: src/Admin/SettingsPage.php
+msgid "PayPal sandbox client ID"
+msgstr "PayPal-Sandbox Client-ID"
+
+#: src/Admin/SettingsPage.php
+msgid "PayPal sandbox secret"
+msgstr "PayPal-Sandbox Secret"
+
+#: src/Admin/SettingsPage.php
+msgid "From developer.paypal.com > Apps & Credentials, switched to Sandbox, in a sandbox app with \"Save payment methods\" on. Pay with a sandbox personal account from Testing Tools > Sandbox Accounts."
+msgstr "Aus developer.paypal.com > Apps & Credentials, umgeschaltet auf Sandbox, in einer Sandbox-App mit eingeschaltetem \"Save payment methods\". Bezahlen Sie mit einem privaten Sandbox-Konto aus Testing Tools > Sandbox Accounts."
+
+#: src/Subscriptions/Creator.php
+msgid "No subscription created: PayPal did not save the payment method for later charges."
+msgstr "Kein Abo angelegt: PayPal hat die Zahlungsmethode nicht für spätere Abbuchungen gespeichert."
+
+#: src/Gateways/PayPalGateway.php
+msgid "PayPal (subscriptions)"
+msgstr "PayPal (Abos)"
+
+#: src/Gateways/PayPalGateway.php
+msgid "PayPal for subscription orders. Set up under WooCommerce > Settings > Subscriptions."
+msgstr "PayPal für Abo-Bestellungen. Einrichtung unter WooCommerce > Einstellungen > Abos."
+
+#: src/Gateways/PayPalGateway.php
+msgid "PayPal"
+msgstr "PayPal"
+
+#: src/Gateways/PayPalGateway.php
+msgid "You pay with PayPal now and allow the next payments of your subscription. You can cancel at any time."
+msgstr "Sie zahlen jetzt mit PayPal und erlauben die nächsten Zahlungen Ihres Abos. Sie können jederzeit kündigen."
+
+#: src/Gateways/PayPalGateway.php
+msgid "Paid in the PayPal sandbox (test order). No real money was moved."
+msgstr "In der PayPal-Sandbox bezahlt (Testbestellung). Es wurde kein echtes Geld bewegt."
+
+#: src/Gateways/PayPalGateway.php
+msgid "PayPal is not available right now. Please try again or choose another payment method."
+msgstr "PayPal ist gerade nicht verfügbar. Bitte versuchen Sie es erneut oder wählen Sie eine andere Zahlungsmethode."
+
+#: src/Gateways/PayPalReturn.php
+msgid "PayPal payment was not completed."
+msgstr "Die PayPal-Zahlung wurde nicht abgeschlossen."
+
+#: src/Gateways/PayPalReturn.php
+msgid "The PayPal payment was not completed. Please try again."
+msgstr "Die PayPal-Zahlung wurde nicht abgeschlossen. Bitte versuchen Sie es erneut."
+
+#: src/Gateways/PayPalReturn.php
+msgid "PayPal did not save the payment method for later charges."
+msgstr "PayPal hat die Zahlungsmethode nicht für spätere Abbuchungen gespeichert."
+
+#: src/Gateways/PayPalReturn.php
+msgid "PayPal payment is pending."
+msgstr "Die PayPal-Zahlung ist noch ausstehend."
+
