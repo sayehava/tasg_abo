@@ -218,6 +218,12 @@ final class Actions {
 			'reminder_minutes' => $plan->reminder_minutes,
 		);
 
+		// A plan with free shipping brings it along.
+		if ( $plan->free_shipping ) {
+			$data['shipping_mode']  = 'free';
+			$data['shipping_until'] = null;
+		}
+
 		if ( 'active' === $sub->status ) {
 			$last = Address::last_order( $sub );
 			$date = $last ? $last->get_date_created() : null;
