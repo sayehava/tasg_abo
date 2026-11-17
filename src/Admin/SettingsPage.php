@@ -31,6 +31,7 @@ final class SettingsPage {
 	public function register_settings(): void {
 		register_setting( self::SLUG, Settings::RENEWAL_STATUS, array( 'sanitize_callback' => 'sanitize_key' ) );
 		register_setting( self::SLUG, Settings::PAUSE_REMINDER_DAYS, array( 'sanitize_callback' => array( $this, 'sanitize_days' ) ) );
+		register_setting( self::SLUG, Settings::PAUSE_OPTIONS, array( 'sanitize_callback' => array( $this, 'sanitize_pause_options' ) ) );
 		foreach ( Settings::CUSTOMER_OPTIONS as $definition ) {
 			register_setting( self::SLUG, $definition[0], array( 'sanitize_callback' => array( $this, 'sanitize_yes_no' ) ) );
 		}
@@ -119,6 +120,27 @@ final class SettingsPage {
 		return $value;
 	}
 
+	/**
+	 * Pause lengths from the rows of the settings form. Empty rows are left out.
+	 */
+	public function sanitize_pause_options( $value ): array {
+		$clean = array();
+
+		foreach ( (array) $value as $row ) {
+			$number = absint( $row['value'] ?? 0 );
+			$unit   = sanitize_key( (string) ( $row['unit'] ?? '' ) );
+
+			if ( $number > 0 && in_array( $unit, Settings::PAUSE_UNITS, true ) ) {
+				$clean[] = array(
+					'value' => $number,
+					'unit'  => $unit,
+				);
+			}
+		}
+
+		return $clean;
+	}
+
 	public function sanitize_methods( $value ): array {
 		return array_values( array_filter( array_map( 'sanitize_key', (array) $value ) ) );
 	}
@@ -162,13 +184,28 @@ final class SettingsPage {
 		}
 		echo '</select><p class="description">' . esc_html__( 'Choose the status your invoice, delivery note and label automation reacts to.', 'tasg-abo' ) . '</p></td></tr>';
 
-		echo '<tr><th scope="row"><label for="tasg_days">' . esc_html__( 'Days between pause reminders', 'tasg-abo' ) . '</label></th><td>';
-		echo '<input id="tasg_days" type="number" min="1" name="' . esc_attr( Settings::PAUSE_REMINDER_DAYS ) . '" value="' . esc_attr( (string) Settings::pause_reminder_days() ) . '">';
-		echo '<p class="description">' . esc_html__( 'A paused customer gets three reminders to continue or cancel. Without an answer the subscription is cancelled.', 'tasg-abo' ) . '</p></td></tr>';
+		$units = array(
+			'day'    => __( 'days', 'tasg-abo' ),
+			'week'   => __( 'weeks', 'tasg-abo' ),
+			'month'  => __( 'months', 'tasg-abo' ),
+			'minute' => __( 'minutes (for testing)', 'tasg-abo' ),
+		);
+		$rows  = array_pad( Settings::pause_options(), 6, array( 'value' => '', 'unit' => 'month' ) );
+
+		echo '<tr><th scope="row">' . esc_html__( 'Pause lengths', 'tasg-abo' ) . '</th><td>';
+		foreach ( $rows as $i => $row ) {
+			$name = Settings::PAUSE_OPTIONS . '[' . (int) $i . ']';
+			echo '<p><input type="number" min="1" class="small-text" name="' . esc_attr( $name ) . '[value]" value="' . esc_attr( (string) $row['value'] ) . '"> <select name="' . esc_attr( $name ) . '[unit]">';
+			foreach ( $units as $unit => $label ) {
+				echo '<option value="' . esc_attr( $unit ) . '"' . selected( $row['unit'], $unit, false ) . '>' . esc_html( $label ) . '</option>';
+			}
+			echo '</select></p>';
+		}
+		echo '<p class="description">' . esc_html__( 'Customers choose one of these lengths when they pause. During the pause there are no orders and no charges; afterwards the subscription continues by itself, with the usual reminder before the next order. Leave a row empty to leave it out. With no length at all, pausing is not offered.', 'tasg-abo' ) . '</p></td></tr>';
 
 		$choices = array(
 			'skip'    => __( 'Skip the next order', 'tasg-abo' ),
-			'pause'   => __( 'Pause for the next period', 'tasg-abo' ),
+			'pause'   => __( 'Pause for one of the lengths above', 'tasg-abo' ),
 			'address' => __( 'Change the shipping address of the next order', 'tasg-abo' ),
 			'plan'    => __( 'Change the plan (period)', 'tasg-abo' ),
 			'payment' => __( 'Change the payment method (Stripe)', 'tasg-abo' ),
