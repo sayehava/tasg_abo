@@ -66,6 +66,8 @@ final class TasgShortcodes extends \YayMail\Abstracts\BaseShortcode {
 			'payment_url'      => array( 'Link: change the payment method', home_url( '/' ) ),
 			'card_name'        => array( 'Card (expiring card email)', 'Visa **** 4242' ),
 			'card_expiry'      => array( 'Card expiry (expiring card email)', '12/2030' ),
+			'skip_line'        => array( 'Line with the skip link (empty during the minimum term)', str_replace( '{skip_url}', add_query_arg( 'tasg_abo_sample', 'skip_url', home_url( '/' ) ), __( 'Skip this order: {skip_url}', 'tasg-abo' ) ) ),
+			'pause_line'       => array( 'Line with the pause link (empty during the minimum term)', str_replace( '{pause_url}', add_query_arg( 'tasg_abo_sample', 'pause_url', home_url( '/' ) ), __( 'Pause: {pause_url}', 'tasg-abo' ) ) ),
 		);
 	}
 
