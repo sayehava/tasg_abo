@@ -229,6 +229,9 @@ final class Actions {
 		$this->repository->update( (int) $sub->id, array( 'payment_token_id' => $token_id ) );
 		Log::info( sprintf( 'Subscription #%d: payment method choice changed.', (int) $sub->id ) );
 
+		// A declined payment waiting for its next try is tried again with the new method at once.
+		\TasgAbo\Renewal\DeclineRetry::retry_now( (int) $sub->id );
+
 		return true;
 	}
 
