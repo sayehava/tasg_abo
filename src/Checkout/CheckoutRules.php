@@ -11,7 +11,9 @@
 namespace TasgAbo\Checkout;
 
 use TasgAbo\Gateways\PayPalCharger;
+use TasgAbo\Gateways\StripeCharger;
 use TasgAbo\Gateways\StripeMethods;
+use TasgAbo\Log;
 use TasgAbo\Settings;
 
 defined( 'ABSPATH' ) || exit;
@@ -22,7 +24,8 @@ final class CheckoutRules {
 		add_action( 'woocommerce_after_checkout_validation', array( $this, 'block_second_subscription' ), 10, 2 );
 		add_filter( 'woocommerce_checkout_registration_required', array( $this, 'require_account' ) );
 		add_filter( 'pre_option_woocommerce_enable_signup_and_login_from_checkout', array( $this, 'allow_signup' ) );
-		add_filter( 'wc_stripe_force_save_payment_method', array( $this, 'force_save_card' ) );
+		add_filter( 'wc_stripe_force_save_payment_method', array( $this, 'force_save_card' ), 10, 2 );
+		add_filter( 'wc_stripe_generate_create_intent_request', array( $this, 'save_for_renewals' ), 30, 2 );
 		add_filter( 'woocommerce_available_payment_gateways', array( $this, 'limit_gateways' ) );
 		add_filter( 'wc_stripe_payment_request_supported_types', array( $this, 'hide_express_checkout' ) );
 		add_filter( 'wc_stripe_upe_params', array( $this, 'flag_subscription_cart' ) );
@@ -134,17 +137,9 @@ final class CheckoutRules {
 			return $request;
 		}
 
-		$has_subscription = false;
-		foreach ( $order->get_items() as $item ) {
-			if ( '' !== (string) $item->get_meta( '_tasg_abo_plan' ) ) {
-				$has_subscription = true;
-				break;
-			}
-		}
-
 		$excluded = StripeMethods::excluded_types();
 
-		if ( $has_subscription && $excluded ) {
+		if ( $excluded && self::order_has_subscription( $order ) ) {
 			$existing                                 = isset( $request['excluded_payment_method_types'] ) ? (array) $request['excluded_payment_method_types'] : array();
 			$request['excluded_payment_method_types'] = array_values( array_unique( array_merge( $existing, $excluded ) ) );
 		}
@@ -164,8 +159,82 @@ final class CheckoutRules {
 		return self::cart_has_subscription() ? 'yes' : $value;
 	}
 
-	public function force_save_card( $force ) {
-		return self::cart_has_subscription() ? true : $force;
+	public function force_save_card( $force, $order_id = 0 ) {
+		if ( self::cart_has_subscription() ) {
+			return true;
+		}
+
+		$order = $order_id ? wc_get_order( $order_id ) : false;
+
+		return $order && self::order_has_subscription( $order ) ? true : $force;
+	}
+
+	public static function order_has_subscription( \WC_Order $order ): bool {
+		foreach ( $order->get_items() as $item ) {
+			if ( '' !== (string) $item->get_meta( '_tasg_abo_plan' ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * The first payment must save the payment method on the Stripe customer, or a renewal
+	 * is refused ("PaymentMethod was previously used without Customer attachment"). The
+	 * Stripe plugin asks for that only for WooCommerce Subscriptions orders, so it is added
+	 * here for ours, the same way the plugin does it for its own subscriptions. The Stripe
+	 * mode of the first payment is noted on the order, so renewals use the same keys.
+	 *
+	 * @param array          $request Payment intent request about to be sent to Stripe.
+	 * @param \WC_Order|null $order   Order being paid.
+	 */
+	public function save_for_renewals( $request, $order = null ) {
+		if ( ! is_array( $request ) || ! $order instanceof \WC_Order || ! self::order_has_subscription( $order ) ) {
+			return $request;
+		}
+
+		if ( class_exists( 'WC_Stripe_Mode' ) ) {
+			$order->update_meta_data( StripeCharger::MODE_META, \WC_Stripe_Mode::is_test() ? 'test' : 'live' );
+			$order->save_meta_data();
+		}
+
+		if ( ! empty( $request['setup_future_usage'] ) ) {
+			return $request;
+		}
+
+		// Classic payment method flow: one setting for the whole intent.
+		if ( empty( $request['confirmation_token'] ) ) {
+			$request['setup_future_usage'] = 'off_session';
+			return $request;
+		}
+
+		// Optimized Checkout (confirmation token): the setting belongs to the chosen method.
+		$type = $this->confirmation_type( (string) $request['confirmation_token'], $order );
+
+		if ( '' !== $type && empty( $request['payment_method_options'][ $type ]['setup_future_usage'] ) ) {
+			$request['payment_method_options'][ $type ]['setup_future_usage'] = 'off_session';
+		}
+
+		return $request;
+	}
+
+	/**
+	 * Payment method type of a confirmation token (card, sepa_debit and so on), empty if unknown.
+	 */
+	private function confirmation_type( string $token, \WC_Order $order ): string {
+		if ( ! class_exists( 'WC_Stripe_API' ) ) {
+			return '';
+		}
+
+		$data = \WC_Stripe_API::retrieve( 'confirmation_tokens/' . rawurlencode( $token ) );
+		$type = is_object( $data ) && isset( $data->payment_method_preview->type ) ? (string) $data->payment_method_preview->type : '';
+
+		// For the log: did the checkout form itself ask to save the method?
+		$asked = is_object( $data ) && ! empty( $data->setup_future_usage ) ? (string) $data->setup_future_usage : 'none';
+		Log::info( sprintf( 'Order #%d: Stripe method "%s", saved for renewals (form asked: %s).', $order->get_id(), '' !== $type ? $type : 'unknown', $asked ) );
+
+		return $type;
 	}
 
 	/**
