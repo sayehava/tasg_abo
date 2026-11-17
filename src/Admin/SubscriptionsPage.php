@@ -129,6 +129,10 @@ final class SubscriptionsPage {
 			if ( ! empty( $row->term_ends ) ) {
 				$term = ' [' . ( ! empty( $row->cancel_after ) ? 'ends with term ' : 'term until ' ) . gmdate( 'Y-m-d', strtotime( $row->term_ends . ' UTC' ) ) . ']';
 			}
+			if ( 'paused' === $row->status && ! empty( $row->pause_until ) ) {
+				$term .= ' [paused until ' . gmdate( 'Y-m-d H:i', strtotime( $row->pause_until . ' UTC' ) ) . ' UTC]';
+			}
+
 			// A declined payment waiting for its next try.
 			$retry = \TasgAbo\Renewal\DeclineRetry::get( (int) $row->id );
 			if ( $retry['tries'] > 0 && $retry['retry_at'] > 0 ) {
