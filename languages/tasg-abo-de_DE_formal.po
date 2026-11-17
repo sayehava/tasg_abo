@@ -1692,4 +1692,3 @@ msgstr "PayPal hat die Zahlungsmethode nicht für spätere Abbuchungen gespeiche
 #: src/Gateways/PayPalReturn.php
 msgid "PayPal payment is pending."
 msgstr "Die PayPal-Zahlung ist noch ausstehend."
-
