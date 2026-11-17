@@ -279,30 +279,28 @@ final class LinkHandler {
 	}
 
 	private function confirm( object $sub, string $action ): void {
-		$product = wc_get_product( (int) $sub->product_id );
-		$name    = $product ? $product->get_name() : '';
-
 		$labels = array(
-			'cancel'   => array( __( 'Cancel your subscription?', 'tasg-abo' ), __( 'Yes, cancel', 'tasg-abo' ) ),
-			'skip'     => array( __( 'Skip your next order?', 'tasg-abo' ), __( 'Yes, skip', 'tasg-abo' ) ),
-			'pause'    => array( __( 'Pause your subscription?', 'tasg-abo' ), __( 'Yes, pause', 'tasg-abo' ) ),
-			'continue' => array( __( 'Continue your subscription?', 'tasg-abo' ), __( 'Yes, continue', 'tasg-abo' ) ),
-			'keep'     => array( __( 'Keep your subscription?', 'tasg-abo' ), __( 'Yes, keep it', 'tasg-abo' ) ),
+			'cancel'   => array( __( 'Cancel your subscription?', 'tasg-abo' ), __( 'Yes, cancel', 'tasg-abo' ), '' ),
+			'continue' => array( __( 'Continue your subscription?', 'tasg-abo' ), __( 'Yes, continue', 'tasg-abo' ), __( 'Your pause ends now. We send you a reminder by email before the next order.', 'tasg-abo' ) ),
+			'keep'     => array( __( 'Keep your subscription?', 'tasg-abo' ), __( 'Yes, keep it', 'tasg-abo' ), __( 'Your cancellation is withdrawn and your subscription continues as before.', 'tasg-abo' ) ),
 		);
 
-		$html = '<p>' . esc_html( $name ) . '</p>';
+		if ( ! isset( $labels[ $action ] ) ) {
+			$this->page( __( 'Link not valid', 'tasg-abo' ), '<p>' . esc_html__( 'This link is not valid any more.', 'tasg-abo' ) . '</p>' );
+		}
+
+		$text = $labels[ $action ][2];
 
 		// Inside the minimum term a cancellation only takes effect when the term is over.
 		if ( 'cancel' === $action && ( new Actions( new Repository() ) )->in_term( $sub ) ) {
 			/* translators: %s: date the minimum term ends */
-			$html .= '<p>' . esc_html( sprintf( __( 'Your subscription has a minimum term until %s. If you cancel now, it ends then and you will be charged for the orders until that date.', 'tasg-abo' ), $this->term_date( $sub ) ) ) . '</p>';
+			$text = sprintf( __( 'Your subscription has a minimum term until %s. If you cancel now, it ends then and you will be charged for the orders until that date.', 'tasg-abo' ), $this->term_date( $sub ) );
 		}
 
-		$html .= '<form method="post" action="">';
-		$html .= '<input type="hidden" name="tasg_abo" value="' . esc_attr( $action ) . '">';
-		$html .= '<input type="hidden" name="key" value="' . esc_attr( $sub->cancel_key ) . '">';
-		$html .= '<button type="submit" class="button">' . esc_html( $labels[ $action ][1] ) . '</button>';
-		$html .= '</form>';
+		$html  = ThemePage::summary( $sub ) . '<div class="tasg-abo-card">';
+		$html .= '' !== $text ? '<p>' . esc_html( $text ) . '</p>' : '';
+		$html .= SkipPausePages::form_start( $sub, $action );
+		$html .= '<div class="tasg-abo-actions"><button type="submit" class="button alt">' . esc_html( $labels[ $action ][1] ) . '</button>' . ThemePage::back_link() . '</div></form></div>';
 
 		$this->page( $labels[ $action ][0], $html );
 	}
