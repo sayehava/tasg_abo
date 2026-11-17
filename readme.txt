@@ -2,7 +2,7 @@
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 0.10.1
+Stable tag: 0.10.2
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -44,6 +44,11 @@ Customers tick "Subscribe and save" on a product page and choose an interval. Th
 5. Edit a product and enable the subscription fields on the General tab, then tick the plans it offers.
 
 == Changelog ==
+
+= 0.10.2 =
+* Stripe: the save for renewals setting is now also added on the last step before a payment request goes to Stripe, because Optimized Checkout can create the payment without the intent request filter. Every decision is logged ("saving for renewals ...").
+* Payment method page: choose which saved method pays, make one the default or delete one (not while a running subscription still pays with it), and a button in the shop's add to cart style to add a new method. After adding, the customer comes back to this page.
+* Cancel form: the input fields get a light border.
 
 = 0.10.1 =
 * Plan switching is removed (setting, My Account button, page, email line, {plan_url}). Customers cancel and subscribe to the new plan; during a minimum term the new subscription is possible once the old one has ended.
