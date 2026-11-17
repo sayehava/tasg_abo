@@ -59,6 +59,11 @@ final class ThemePage {
 			echo '<p class="tasg-abo-lead">' . esc_html( $lead ) . '</p>';
 		}
 
+		// WooCommerce messages, for example a failed login on the payment page.
+		if ( function_exists( 'wc_print_notices' ) && WC()->session ) {
+			wc_print_notices();
+		}
+
 		echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo '</div></main>';
 
