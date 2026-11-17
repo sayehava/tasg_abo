@@ -25,6 +25,7 @@ final class LinkHandler {
 	public function register(): void {
 		add_action( 'template_redirect', array( $this, 'maybe_handle' ), 1 );
 		add_filter( 'request', array( ThemePage::class, 'normal_page_request' ) );
+		PaymentPage::register();
 	}
 
 	public function maybe_handle(): void {
@@ -67,7 +68,7 @@ final class LinkHandler {
 		}
 
 		if ( 'payment' === $action ) {
-			$this->payment_form( $sub, $post );
+			PaymentPage::show( $sub, $post );
 		}
 
 		if ( 'skip' === $action ) {
@@ -197,51 +198,6 @@ final class LinkHandler {
 		}
 
 		return $errors;
-	}
-
-	/**
-	 * Lets the logged in customer choose which saved Stripe payment method is used.
-	 * Cards are added in the normal WooCommerce account area, this plugin never sees card data.
-	 */
-	private function payment_form( object $sub, bool $post ): void {
-		// Saved payment methods belong to the customer account: log in right here.
-		if ( ! is_user_logged_in() || get_current_user_id() !== (int) $sub->user_id ) {
-			ob_start();
-			woocommerce_login_form( array( 'redirect' => Links::url( $sub, 'payment' ) ) );
-			$this->page( __( 'Change your payment method', 'tasg-abo' ), '<div class="tasg-abo-card">' . ob_get_clean() . '</div>', __( 'Please log in to your account to choose the payment method for your subscription.', 'tasg-abo' ) );
-		}
-
-		if ( 0 !== strpos( (string) $sub->gateway, 'stripe' ) || ! in_array( $sub->status, array( 'active', 'paused' ), true ) ) {
-			$this->page( __( 'Nothing changed', 'tasg-abo' ), '<p>' . esc_html__( 'The payment method of this subscription cannot be changed here.', 'tasg-abo' ) . '</p>' );
-		}
-
-		$tokens = array();
-		foreach ( \WC_Payment_Tokens::get_customer_tokens( (int) $sub->user_id ) as $token ) {
-			if ( 0 === strpos( (string) $token->get_gateway_id(), 'stripe' ) ) {
-				$tokens[ $token->get_id() ] = $token;
-			}
-		}
-
-		if ( $post ) {
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$chosen = isset( $_POST['token'] ) ? absint( $_POST['token'] ) : 0;
-
-			if ( ( 0 === $chosen || isset( $tokens[ $chosen ] ) ) && ( new Actions( new Repository() ) )->set_payment_token( $sub, $chosen ) ) {
-				$this->page( __( 'Payment method saved', 'tasg-abo' ), '<p>' . esc_html__( 'This payment method will be used for your next order.', 'tasg-abo' ) . '</p>' );
-			}
-		}
-
-		$html  = ThemePage::summary( $sub, false ) . '<div class="tasg-abo-card">' . SkipPausePages::form_start( $sub, 'payment' ) . '<div class="tasg-abo-options">';
-		$html .= '<label class="tasg-abo-option"><input type="radio" name="token" value="0"' . checked( (int) $sub->payment_token_id, 0, false ) . '><span><strong>' . esc_html__( 'The payment method of my last order', 'tasg-abo' ) . '</strong></span></label>';
-
-		foreach ( $tokens as $id => $token ) {
-			$html .= '<label class="tasg-abo-option"><input type="radio" name="token" value="' . esc_attr( (string) $id ) . '"' . checked( (int) $sub->payment_token_id === (int) $id, true, false ) . '><span><strong>' . esc_html( $token->get_display_name() ) . '</strong></span></label>';
-		}
-
-		$html .= '</div><div class="tasg-abo-actions"><button type="submit" class="button alt">' . esc_html__( 'Save payment method', 'tasg-abo' ) . '</button>' . ThemePage::back_link() . '</div></form>';
-		$html .= '<p class="tasg-abo-note"><a href="' . esc_url( wc_get_account_endpoint_url( 'add-payment-method' ) ) . '">' . esc_html__( 'Add a new payment method', 'tasg-abo' ) . '</a></p></div>';
-
-		$this->page( __( 'Change your payment method', 'tasg-abo' ), $html );
 	}
 
 	private function confirm( object $sub, string $action ): void {
