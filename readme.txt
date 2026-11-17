@@ -2,7 +2,7 @@
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 0.8.0
+Stable tag: 0.9.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -44,6 +44,14 @@ Customers tick "Subscribe and save" on a product page and choose an interval. Th
 5. Edit a product and enable the subscription fields on the General tab, then tick the plans it offers.
 
 == Changelog ==
+
+= 0.9.0 =
+* The pages behind the email links (skip, pause, continue, address, plan, payment method) are shown inside the shop theme with its header and footer, a summary of the next order and forms that work on phones.
+* Skip explains which order is left out and when the next one comes. Pause now offers the lengths set under Settings > Pause lengths (default 1, 2 and 3 months), shows the date of the next order for each, and the subscription continues by itself when the pause ends.
+* The payment method page shows the login form on the page instead of the WordPress login screen.
+* YayMail: links can be clickable text, for example [yaymail_tasg_abo_address_url text="Change address"]; the skip and pause lines are clickable.
+* My Account shows "Paused until" and the real date of the next order.
+* German texts for the new pages and the PayPal texts.
 
 = 0.8.0 =
 * A declined renewal payment no longer cancels the subscription at once. It stays active, the customer gets the new email "Subscription payment will be retried" (with {retry_date} and the link to change the payment method), and the same order is tried again 1, 3 and 5 days after it was due. Only when the last try fails is the subscription cancelled with the "Subscription payment failed" email. Plans shorter than a day retry after 5, 15 and 25 minutes.
