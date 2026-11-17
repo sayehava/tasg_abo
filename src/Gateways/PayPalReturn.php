@@ -39,7 +39,7 @@ final class PayPalReturn {
 		}
 
 		$paypal_order = (string) $order->get_meta( '_tasg_abo_pp_order' );
-		$result       = ( new PayPalApi() )->request( 'POST', '/v2/checkout/orders/' . rawurlencode( $paypal_order ) . '/capture', array(), 'tasg-abo-capture-' . $order->get_id() );
+		$result       = PayPalApi::for_order( $order )->request( 'POST', '/v2/checkout/orders/' . rawurlencode( $paypal_order ) . '/capture', array(), 'tasg-abo-capture-' . $order->get_id() );
 		$capture      = $result['data']['purchase_units'][0]['payments']['captures'][0] ?? array();
 		$status       = (string) ( $capture['status'] ?? '' );
 
