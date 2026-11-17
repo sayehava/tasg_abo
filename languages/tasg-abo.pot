@@ -1692,3 +1692,7 @@ msgstr ""
 #: src/Gateways/PayPalReturn.php
 msgid "PayPal payment is pending."
 msgstr ""
+
+#: src/YayMail/TasgShortcodes.php
+msgid "Skip this order"
+msgstr ""
