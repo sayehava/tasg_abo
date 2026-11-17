@@ -269,6 +269,11 @@ abstract class SubscriptionEmail extends \WC_Email {
 		// Whole lines, empty during the minimum term, so no label is left without its link.
 		$values['{skip_line}']  = '' !== $values['{skip_url}'] ? str_replace( '{skip_url}', $values['{skip_url}'], __( 'Skip this order: {skip_url}', 'tasg-abo' ) ) : '';
 		$values['{pause_line}'] = '' !== $values['{pause_url}'] ? str_replace( '{pause_url}', $values['{pause_url}'], __( 'Pause: {pause_url}', 'tasg-abo' ) ) : '';
+
+		// Link texts in the customer's language, worked out now: YayMail may switch the
+		// language while it renders, so its shortcodes take them from here.
+		$values['{skip_link_text}']  = __( 'Skip this order', 'tasg-abo' );
+		$values['{pause_link_text}'] = __( 'Pause your subscription', 'tasg-abo' );
 		$values['{continue_url}']  = Links::url( $row, 'continue' );
 
 		// The address of the next order, with a link to correct it for that order.
