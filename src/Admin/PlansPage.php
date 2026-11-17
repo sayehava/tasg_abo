@@ -74,6 +74,7 @@ final class PlansPage {
 		$plan->term_value       = $term_value;
 		$plan->term_unit        = $term_unit;
 		$plan->test             = ! empty( $_POST['test'] );
+		$plan->free_shipping    = ! empty( $_POST['free_shipping'] );
 		$plan->active           = ! empty( $_POST['active'] );
 		$plan->default          = ! empty( $_POST['default'] ) && $plan->active;
 
@@ -133,13 +134,13 @@ final class PlansPage {
 	 */
 	private function render_list( array $plans ): void {
 		echo '<table class="widefat striped" style="margin:1em 0"><thead><tr>';
-		foreach ( array( __( 'Name', 'tasg-abo' ), __( 'Period', 'tasg-abo' ), __( 'Reminder before charge', 'tasg-abo' ), __( 'Minimum term', 'tasg-abo' ), __( 'Visible to', 'tasg-abo' ), '' ) as $head ) {
+		foreach ( array( __( 'Name', 'tasg-abo' ), __( 'Period', 'tasg-abo' ), __( 'Reminder before charge', 'tasg-abo' ), __( 'Minimum term', 'tasg-abo' ), __( 'Shipping', 'tasg-abo' ), __( 'Visible to', 'tasg-abo' ), '' ) as $head ) {
 			echo '<th>' . esc_html( $head ) . '</th>';
 		}
 		echo '</tr></thead><tbody>';
 
 		if ( ! $plans ) {
-			echo '<tr><td colspan="6">' . esc_html__( 'No plans yet. Add your first plan below.', 'tasg-abo' ) . '</td></tr>';
+			echo '<tr><td colspan="7">' . esc_html__( 'No plans yet. Add your first plan below.', 'tasg-abo' ) . '</td></tr>';
 		}
 
 		foreach ( $plans as $plan ) {
@@ -150,6 +151,7 @@ final class PlansPage {
 			echo '<td>' . esc_html( $plan->period_label() ) . '</td>';
 			echo '<td>' . esc_html( Period::minutes_label( $plan->reminder_minutes ) . $warning ) . '</td>';
 			echo '<td>' . esc_html( '' !== $plan->term_label() ? $plan->term_label() : __( 'None', 'tasg-abo' ) ) . '</td>';
+			echo '<td>' . esc_html( $plan->free_shipping ? __( 'Free shipping', 'tasg-abo' ) : __( 'Normal', 'tasg-abo' ) ) . '</td>';
 			echo '<td>' . esc_html( $visible ) . '</td><td>';
 			echo '<a class="button button-small" href="' . esc_url( add_query_arg( 'edit', $plan->id, SettingsHub::url( 'plans' ) ) ) . '">' . esc_html__( 'Edit', 'tasg-abo' ) . '</a> ';
 			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="display:inline">';
@@ -208,6 +210,9 @@ final class PlansPage {
 		echo '<input type="number" min="0" name="term_value" style="width:5em" value="' . esc_attr( (string) $plan->term_value ) . '"> ';
 		$this->unit_select( 'term_unit', $plan->term_unit, Period::term_unit_names() );
 		echo '<p class="description">' . esc_html__( 'How long a new customer is bound to this plan. Orders continue until the term is over. A cancellation inside the term takes effect when it ends, and skip and pause are not possible. 0 means no minimum term. Changing this only affects new subscriptions.', 'tasg-abo' ) . '</p></td></tr>';
+
+		echo '<tr><th>' . esc_html__( 'Free shipping', 'tasg-abo' ) . '</th><td><label><input type="checkbox" name="free_shipping" value="1"' . checked( $plan->free_shipping, true, false ) . '> ' . esc_html__( 'Customers of this plan pay no shipping, on the first order and on every renewal', 'tasg-abo' ) . '</label>';
+		echo '<p class="description">' . esc_html__( 'Works alone or together with the discount of the product: set the discount to 0 for free shipping only. The shipping method stays the same (for your label and invoice automation), only its price is 0. Changing this applies to new subscriptions.', 'tasg-abo' ) . '</p></td></tr>';
 
 		echo '<tr><th>' . esc_html__( 'Test plan', 'tasg-abo' ) . '</th><td><label><input type="checkbox" name="test" value="1"' . checked( $plan->test, true, false ) . '> ' . esc_html__( 'Only shop managers can see this plan', 'tasg-abo' ) . '</label></td></tr>';
 		echo '<tr><th>' . esc_html__( 'Active', 'tasg-abo' ) . '</th><td><label><input type="checkbox" name="active" value="1"' . checked( $plan->active || ! $plan->id, true, false ) . '> ' . esc_html__( 'Offer this plan', 'tasg-abo' ) . '</label></td></tr>';
