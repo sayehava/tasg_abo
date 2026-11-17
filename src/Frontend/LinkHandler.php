@@ -25,6 +25,7 @@ final class LinkHandler {
 
 	public function register(): void {
 		add_action( 'template_redirect', array( $this, 'maybe_handle' ), 1 );
+		add_filter( 'request', array( ThemePage::class, 'normal_page_request' ) );
 	}
 
 	public function maybe_handle(): void {
