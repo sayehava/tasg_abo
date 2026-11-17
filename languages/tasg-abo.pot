@@ -648,7 +648,7 @@ msgid "Email text"
 msgstr ""
 
 #: src/Emails/SubscriptionEmail.php
-msgid "Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {plan_url} {term_note} {card_name} {card_expiry} {skip_line} {pause_line}"
+msgid "Placeholders: {customer_name} {product_name} {next_date} {amount} {cancel_url} {skip_url} {pause_url} {continue_url} {shipping_address} {address_url} {payment_url} {term_note} {card_name} {card_expiry} {skip_line} {pause_line}"
 msgstr ""
 
 #: src/Frontend/LinkHandler.php
