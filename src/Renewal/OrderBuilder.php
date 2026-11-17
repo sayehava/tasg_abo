@@ -81,7 +81,10 @@ final class OrderBuilder {
 		$free = 'free' === $sub->shipping_mode
 			&& ( empty( $sub->shipping_until ) || strtotime( $sub->shipping_until . ' UTC' ) > time() );
 
-		if ( $free ) {
+		$lines = $origin->get_items( 'shipping' );
+
+		// Free shipping without a method on the first order: a plain free shipping line.
+		if ( $free && ! $lines ) {
 			$item = new \WC_Order_Item_Shipping();
 			$item->set_method_title( __( 'Free shipping', 'tasg-abo' ) );
 			$item->set_method_id( 'free_shipping' );
@@ -90,12 +93,13 @@ final class OrderBuilder {
 			return;
 		}
 
-		foreach ( $origin->get_items( 'shipping' ) as $source ) {
+		foreach ( $lines as $source ) {
 			$item = new \WC_Order_Item_Shipping();
 			$item->set_method_title( $source->get_method_title() );
 			$item->set_method_id( $source->get_method_id() );
 			$item->set_instance_id( $source->get_instance_id() );
-			$item->set_total( $source->get_total() );
+			// Free shipping keeps the method (for label and invoice automation), only the price is 0.
+			$item->set_total( $free ? 0 : $source->get_total() );
 
 			// Keeps extra data of shipping plugins (for example the DHL product).
 			foreach ( $source->get_meta_data() as $meta ) {
