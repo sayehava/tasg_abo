@@ -35,7 +35,7 @@ final class TasgShortcodes extends \YayMail\Abstracts\BaseShortcode {
 	}
 
 	protected function __construct() {
-		$this->available_email_ids = array( 'tasg_abo_reminder', 'tasg_abo_pause_reminder', 'tasg_abo_failed', 'tasg_abo_card_expiring', 'tasg_abo_cancel_confirmation', 'tasg_abo_confirmation' );
+		$this->available_email_ids = array( 'tasg_abo_reminder', 'tasg_abo_pause_reminder', 'tasg_abo_failed', 'tasg_abo_card_expiring', 'tasg_abo_cancel_confirmation', 'tasg_abo_confirmation', 'tasg_abo_payment_retry' );
 		parent::__construct();
 	}
 
@@ -66,6 +66,7 @@ final class TasgShortcodes extends \YayMail\Abstracts\BaseShortcode {
 			'payment_url'      => array( 'Link: change the payment method', home_url( '/' ) ),
 			'card_name'        => array( 'Card (expiring card email)', 'Visa **** 4242' ),
 			'card_expiry'      => array( 'Card expiry (expiring card email)', '12/2030' ),
+			'retry_date'       => array( 'Date of the next payment try (payment retry email)', wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), time() + DAY_IN_SECONDS ) ),
 			'skip_line'        => array( 'Line with the skip link (empty during the minimum term)', str_replace( '{skip_url}', add_query_arg( 'tasg_abo_sample', 'skip_url', home_url( '/' ) ), __( 'Skip this order: {skip_url}', 'tasg-abo' ) ) ),
 			'pause_line'       => array( 'Line with the pause link (empty during the minimum term)', str_replace( '{pause_url}', add_query_arg( 'tasg_abo_sample', 'pause_url', home_url( '/' ) ), __( 'Pause: {pause_url}', 'tasg-abo' ) ) ),
 		);
