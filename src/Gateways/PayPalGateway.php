@@ -35,7 +35,38 @@ class PayPalGateway extends \WC_Payment_Gateway {
 	 * Offered only for carts with a subscription, and only when set up.
 	 */
 	public function is_available() {
-		return Settings::paypal_enabled() && Settings::paypal_configured() && CheckoutRules::cart_has_subscription();
+		return Settings::paypal_enabled() && CheckoutRules::cart_has_subscription() && Settings::paypal_configured( self::cart_in_sandbox() );
+	}
+
+	/**
+	 * A test subscription (test phase on, or a test plan) pays in the sandbox when that is switched on.
+	 */
+	private static function cart_in_sandbox(): bool {
+		if ( ! Settings::paypal_sandbox() || ! WC()->cart ) {
+			return false;
+		}
+
+		foreach ( WC()->cart->get_cart() as $item ) {
+			if ( ! empty( $item['tasg_abo_plan'] ) && ( Settings::admin_only() || ! empty( $item['tasg_abo_plan']['test'] ) ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private static function order_in_sandbox( \WC_Order $order ): bool {
+		if ( ! Settings::paypal_sandbox() ) {
+			return false;
+		}
+
+		foreach ( $order->get_items() as $item ) {
+			if ( 'yes' === (string) $item->get_meta( '_tasg_abo_test' ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public function process_payment( $order_id ) {
@@ -54,7 +85,15 @@ class PayPalGateway extends \WC_Payment_Gateway {
 			home_url( '/' )
 		);
 
-		$result = ( new PayPalApi() )->request(
+		// Noted before the call: the return page and every renewal use the same PayPal mode.
+		$sandbox = self::order_in_sandbox( $order );
+		$order->update_meta_data( PayPalApi::SANDBOX_META, $sandbox ? 'yes' : 'no' );
+
+		if ( $sandbox ) {
+			$order->add_order_note( __( 'Paid in the PayPal sandbox (test order). No real money was moved.', 'tasg-abo' ) );
+		}
+
+		$result = ( new PayPalApi( $sandbox ) )->request(
 			'POST',
 			'/v2/checkout/orders',
 			array(
