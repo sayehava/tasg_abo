@@ -1692,4 +1692,3 @@ msgstr ""
 #: src/Gateways/PayPalReturn.php
 msgid "PayPal payment is pending."
 msgstr ""
-
