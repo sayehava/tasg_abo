@@ -1,0 +1,67 @@
+/*
+ * Customer pages of the subscription links (skip, pause, address, payment ...).
+ * They sit inside the shop theme, so colours and fonts come from the theme;
+ * only layout, spacing and the option cards are set here.
+ */
+.tasg-abo-page {
+	padding: 48px 16px 64px;
+}
+
+.tasg-abo-wrap {
+	max-width: 640px;
+	margin: 0 auto;
+}
+
+.tasg-abo-title {
+	margin: 0 0 8px;
+	line-height: 1.25;
+}
+
+.tasg-abo-lead {
+	margin: 0 0 24px;
+	opacity: 0.85;
+}
+
+.tasg-abo-card {
+	border: 1px solid rgba(0, 0, 0, 0.12);
+	border-radius: 12px;
+	padding: 20px;
+	margin: 0 0 20px;
+	background: rgba(255, 255, 255, 0.6);
+}
+
+.tasg-abo-summary {
+	display: flex;
+	gap: 16px;
+	align-items: center;
+}
+
+.tasg-abo-summary img {
+	width: 72px;
+	height: 72px;
+	object-fit: cover;
+	border-radius: 8px;
+	flex: 0 0 72px;
+}
+
+.tasg-abo-summary dl {
+	margin: 0;
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 4px 16px;
+}
+
+.tasg-abo-summary dt {
+	font-weight: 600;
+}
+
+.tasg-abo-summary dd {
+	margin: 0;
+}
+
+.tasg-abo-product {
+	font-weight: 600;
+	font-size: 1.1em;
+	margin: 0 0 8px;
+}
+
