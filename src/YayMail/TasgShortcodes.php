@@ -74,20 +74,21 @@ final class TasgShortcodes extends \YayMail\Abstracts\BaseShortcode {
 
 	public function get_shortcodes() {
 		$shortcodes = array();
+		$samples    = array();
 
 		foreach ( $this->definitions() as $key => $definition ) {
-			$sample = $definition[1];
-
 			// Sample links differ from each other, so the editor shows which link is which.
-			if ( home_url( '/' ) === $sample ) {
-				$sample = add_query_arg( 'tasg_abo_sample', $key, $sample );
-			}
+			$samples[ '{' . $key . '}' ] = home_url( '/' ) === $definition[1] ? add_query_arg( 'tasg_abo_sample', $key, $definition[1] ) : $definition[1];
+		}
+
+		foreach ( $this->definitions() as $key => $definition ) {
 
 			$shortcodes[] = array(
 				'name'        => self::PREFIX . $key,
 				'description' => $definition[0],
 				'group'       => 'Tasg Abo',
-				'callback'    => function ( $data, $shortcode_atts = array() ) use ( $key, $sample ) {
+				'callback'    => function ( $data, $shortcode_atts = array() ) use ( $key, $samples ) {
+					$atts   = is_array( $shortcode_atts ) ? $shortcode_atts : array();
 					$render = isset( $data['render_data'] ) && is_array( $data['render_data'] ) ? $data['render_data'] : array();
 
 					// A real order picked in the preview: show the data of its subscription,
@@ -98,7 +99,7 @@ final class TasgShortcodes extends \YayMail\Abstracts\BaseShortcode {
 						$real = SubscriptionEmail::values_for_order( $order->get_id() );
 
 						if ( null !== $real && isset( $real[ '{' . $key . '}' ] ) ) {
-							return nl2br( esc_html( (string) $real[ '{' . $key . '}' ] ) );
+							return self::format( $key, $real, $atts );
 						}
 
 						if ( null === $real ) {
@@ -113,23 +114,55 @@ final class TasgShortcodes extends \YayMail\Abstracts\BaseShortcode {
 							);
 
 							if ( ! empty( $own[ $key ] ) ) {
-								return nl2br( esc_html( $own[ $key ] ) );
+								return self::format( $key, array( '{' . $key . '}' => $own[ $key ] ), $atts );
 							}
 						}
 					}
 
 					// The editor and sample previews show a sample value.
 					if ( ! empty( $data['is_placeholder'] ) || ! empty( $render['is_sample'] ) ) {
-						return nl2br( esc_html( $sample ) );
+						return self::format( $key, $samples, $atts );
 					}
 
-					$live = SubscriptionEmail::live_values();
-
-					return isset( $live[ '{' . $key . '}' ] ) ? nl2br( esc_html( (string) $live[ '{' . $key . '}' ] ) ) : '';
+					return self::format( $key, SubscriptionEmail::live_values(), $atts );
 				},
 			);
 		}
 
 		return $shortcodes;
+	}
+
+	/**
+	 * One placeholder as email HTML. A link with text="..." becomes a clickable text,
+	 * for example [yaymail_tasg_abo_address_url text="Change address"]; without it the
+	 * plain address is printed, so it still works inside a button's link field. The
+	 * skip and pause lines become clickable lines.
+	 *
+	 * @param array<string,string> $values Placeholder values (with braces) of one source.
+	 * @param array                $atts   Attributes written in the shortcode.
+	 */
+	private static function format( string $key, array $values, array $atts ): string {
+		$value = (string) ( $values[ '{' . $key . '}' ] ?? '' );
+
+		if ( '' === $value ) {
+			return '';
+		}
+
+		$lines = array(
+			'skip_line'  => array( '{skip_url}', __( 'Skip this order', 'tasg-abo' ) ),
+			'pause_line' => array( '{pause_url}', __( 'Pause your subscription', 'tasg-abo' ) ),
+		);
+
+		if ( isset( $lines[ $key ] ) && ! empty( $values[ $lines[ $key ][0] ] ) ) {
+			$text = ! empty( $atts['text'] ) ? (string) $atts['text'] : $lines[ $key ][1];
+
+			return '<a href="' . esc_url( (string) $values[ $lines[ $key ][0] ] ) . '">' . esc_html( $text ) . '</a>';
+		}
+
+		if ( '_url' === substr( $key, -4 ) && ! empty( $atts['text'] ) ) {
+			return '<a href="' . esc_url( $value ) . '">' . esc_html( (string) $atts['text'] ) . '</a>';
+		}
+
+		return nl2br( esc_html( $value ) );
 	}
 }
