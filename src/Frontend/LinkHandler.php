@@ -1,6 +1,7 @@
 <?php
 /**
- * Landing page for the cancel, skip, pause and continue links in emails.
+ * Landing page for the cancel, skip, pause, continue, address, plan and payment
+ * links in emails. The pages are shown inside the shop theme (ThemePage).
  *
  * Opening a link only shows a confirmation button. The change happens when the
  * button is pressed (POST), so mail scanners that open links cannot cancel
@@ -73,15 +74,26 @@ final class LinkHandler {
 			$this->payment_form( $sub, $post );
 		}
 
+		if ( 'skip' === $action ) {
+			SkipPausePages::skip( $sub, $post );
+		}
+
+		if ( 'pause' === $action ) {
+			SkipPausePages::pause( $sub, $post );
+		}
+
 		if ( ! $post ) {
 			$this->confirm( $sub, $action );
 		}
 
 		$done = ( new Actions( $repository ) )->run( $sub, $action );
 
+		$fresh = $repository->find( (int) $sub->id );
+
 		$this->page(
 			$done ? $this->done_title( $action, $sub ) : __( 'Nothing changed', 'tasg-abo' ),
-			'<p>' . esc_html( $done ? $this->done_text( $action, $sub ) : $this->failed_text( $action, $sub ) ) . '</p>'
+			'<div class="tasg-abo-card"><p>' . esc_html( $done ? $this->done_text( $action, $sub ) : $this->failed_text( $action, $sub ) ) . '</p></div>'
+			. ( $fresh && 'cancelled' !== $fresh->status ? ThemePage::summary( $fresh ) : '' )
 		);
 	}
 
@@ -346,11 +358,13 @@ final class LinkHandler {
 	}
 
 	/**
-	 * Simple standalone page that works with any theme.
-	 * Every dynamic value in $html is escaped where it is built, and the
-	 * form markup must stay intact, so it is not run through wp_kses.
+	 * Page inside the shop theme. Plain paragraphs are put in a card.
 	 */
-	private function page( string $title, string $html ): void {
-		wp_die( $html, esc_html( $title ), array( 'response' => 200, 'back_link' => false ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	private function page( string $title, string $html, string $lead = '' ): void {
+		if ( 0 === strpos( $html, '<p>' ) ) {
+			$html = '<div class="tasg-abo-card">' . $html . '</div>';
+		}
+
+		ThemePage::render( $title, $html, $lead );
 	}
 }
