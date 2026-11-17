@@ -27,9 +27,29 @@ final class StripeCharger {
 		return 0 === strpos( $gateway_id, 'stripe' );
 	}
 
-	private function secret_key(): string {
+	/** Order meta on the first order: "test" or "live", the Stripe mode that took the first payment. */
+	public const MODE_META = '_tasg_abo_stripe_mode';
+
+	/**
+	 * A subscription started in Stripe test mode renews in test mode, one started live
+	 * renews live, whatever the Stripe plugin is set to today. Older subscriptions
+	 * without the note follow the Stripe plugin setting, as before.
+	 */
+	private function is_test( object $sub ): bool {
+		$origin = wc_get_order( (int) $sub->origin_order_id );
+		$mode   = $origin ? (string) $origin->get_meta( self::MODE_META ) : '';
+
+		if ( '' !== $mode ) {
+			return 'test' === $mode;
+		}
+
 		$settings = (array) get_option( 'woocommerce_stripe_settings', array() );
-		$test     = isset( $settings['testmode'] ) && 'yes' === $settings['testmode'];
+
+		return isset( $settings['testmode'] ) && 'yes' === $settings['testmode'];
+	}
+
+	private function secret_key( bool $test ): string {
+		$settings = (array) get_option( 'woocommerce_stripe_settings', array() );
 		$key      = $test ? ( $settings['test_secret_key'] ?? '' ) : ( $settings['secret_key'] ?? '' );
 
 		return (string) $key;
@@ -46,7 +66,7 @@ final class StripeCharger {
 	 *                            request can never charge twice.
 	 */
 	public function charge( \WC_Order $order, object $sub, string $idempotency ): array {
-		$key = $this->secret_key();
+		$key = $this->secret_key( $this->is_test( $sub ) );
 
 		// No card data is stored by this plugin. The Stripe references come from
 		// the last order of the subscription, where the Stripe plugin keeps them.
