@@ -50,10 +50,10 @@ final class ReminderEmail extends SubscriptionEmail {
 		$lines = array();
 
 		if ( Settings::customer_may( 'skip' ) ) {
-			$lines[] = __( 'Skip this order: {skip_url}', 'tasg-abo' );
+			$lines[] = '{skip_line}'; // Empty during the minimum term.
 		}
 		if ( Settings::customer_may( 'pause' ) ) {
-			$lines[] = __( 'Pause: {pause_url}', 'tasg-abo' );
+			$lines[] = '{pause_line}'; // Empty during the minimum term.
 		}
 		if ( Settings::customer_may( 'plan' ) ) {
 			$lines[] = __( 'Change your plan: {plan_url}', 'tasg-abo' );
