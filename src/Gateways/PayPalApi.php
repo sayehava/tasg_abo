@@ -18,8 +18,28 @@ final class PayPalApi {
 	private const LIVE    = 'https://api-m.paypal.com';
 	private const SANDBOX = 'https://api-m.sandbox.paypal.com';
 
+	/** Order meta "yes" when the order was paid in the PayPal sandbox. */
+	public const SANDBOX_META = '_tasg_abo_pp_sandbox';
+
+	/** @var bool */
+	private $sandbox;
+
+	/**
+	 * @param bool $sandbox True for PayPal's test servers and the sandbox credentials.
+	 */
+	public function __construct( bool $sandbox = false ) {
+		$this->sandbox = $sandbox;
+	}
+
+	/**
+	 * Client for the mode an order was paid in. Renewals keep the mode of their first order.
+	 */
+	public static function for_order( \WC_Order $order ): self {
+		return new self( 'yes' === (string) $order->get_meta( self::SANDBOX_META ) );
+	}
+
 	public function base(): string {
-		return Settings::paypal_sandbox() ? self::SANDBOX : self::LIVE;
+		return $this->sandbox ? self::SANDBOX : self::LIVE;
 	}
 
 	/**
@@ -27,7 +47,7 @@ final class PayPalApi {
 	 * Returns an empty string when PayPal refuses the credentials.
 	 */
 	private function token(): string {
-		$cache = 'tasg_abo_pp_token_' . md5( $this->base() . Settings::paypal_client_id() );
+		$cache = 'tasg_abo_pp_token_' . md5( $this->base() . Settings::paypal_client_id( $this->sandbox ) );
 		$known = get_transient( $cache );
 
 		if ( is_string( $known ) && '' !== $known ) {
@@ -39,7 +59,7 @@ final class PayPalApi {
 			array(
 				'timeout' => 30,
 				'headers' => array(
-					'Authorization' => 'Basic ' . base64_encode( Settings::paypal_client_id() . ':' . Settings::paypal_secret() ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+					'Authorization' => 'Basic ' . base64_encode( Settings::paypal_client_id( $this->sandbox ) . ':' . Settings::paypal_secret( $this->sandbox ) ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 				),
 				'body'    => array( 'grant_type' => 'client_credentials' ),
 			)
