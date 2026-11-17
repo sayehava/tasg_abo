@@ -15,7 +15,7 @@ final class FailedEmail extends SubscriptionEmail {
 		$this->setup_subscription_email(
 			'tasg_abo_failed',
 			__( 'Subscription payment failed', 'tasg-abo' ),
-			__( 'Sent when a renewal could not be charged. No order is created and the subscription is cancelled.', 'tasg-abo' )
+			__( 'Sent when the last try of a renewal payment failed. No order is created and the subscription is cancelled.', 'tasg-abo' )
 		);
 
 		parent::__construct();
