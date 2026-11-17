@@ -123,7 +123,7 @@ final class LinkHandler {
 
 				$this->page(
 					__( 'Address saved', 'tasg-abo' ),
-					'<p>' . esc_html__( 'Your next order will be sent to this address:', 'tasg-abo' ) . '</p><p>' . nl2br( esc_html( Address::formatted( $values ) ) ) . '</p>'
+					ThemePage::summary( ( new Repository() )->find( (int) $sub->id ) ?? $sub )
 				);
 			}
 		}
@@ -139,26 +139,32 @@ final class LinkHandler {
 			'state'      => __( 'State or region (optional)', 'tasg-abo' ),
 		);
 
-		$html = '';
+		$html = ThemePage::summary( $sub, false );
 		foreach ( $errors as $error ) {
-			$html .= '<p style="color:#b32d2e">' . esc_html( $error ) . '</p>';
+			$html .= '<div class="tasg-abo-error">' . esc_html( $error ) . '</div>';
 		}
 
-		$html .= '<form method="post" action="">';
-		$html .= '<input type="hidden" name="tasg_abo" value="address"><input type="hidden" name="key" value="' . esc_attr( $sub->cancel_key ) . '">';
+		$html .= '<div class="tasg-abo-card">' . SkipPausePages::form_start( $sub, 'address' ) . '<div class="tasg-abo-fields">';
 
 		foreach ( $labels as $field => $label ) {
-			$html .= '<p><label>' . esc_html( $label ) . '<br><input type="text" name="' . esc_attr( $field ) . '" value="' . esc_attr( (string) ( $values[ $field ] ?? '' ) ) . '" style="width:100%"></label></p>';
+			$wide  = in_array( $field, array( 'company', 'address_1', 'address_2' ), true ) ? ' tasg-abo-wide' : '';
+			$html .= '<p class="form-row' . $wide . '"><label for="tasg-abo-' . esc_attr( $field ) . '">' . esc_html( $label ) . '</label>';
+			$html .= '<input type="text" class="input-text" id="tasg-abo-' . esc_attr( $field ) . '" name="' . esc_attr( $field ) . '" value="' . esc_attr( (string) ( $values[ $field ] ?? '' ) ) . '" autocomplete="shipping ' . esc_attr( str_replace( '_', '-', $field ) ) . '"></p>';
 		}
 
-		$html .= '<p><label>' . esc_html__( 'Country', 'tasg-abo' ) . '<br><select name="country" style="width:100%">';
+		$html .= '<p class="form-row tasg-abo-wide"><label for="tasg-abo-country">' . esc_html__( 'Country', 'tasg-abo' ) . '</label><select id="tasg-abo-country" name="country">';
 		foreach ( WC()->countries->get_shipping_countries() as $code => $name ) {
 			$html .= '<option value="' . esc_attr( $code ) . '"' . selected( (string) ( $values['country'] ?? '' ), $code, false ) . '>' . esc_html( $name ) . '</option>';
 		}
-		$html .= '</select></label></p>';
-		$html .= '<button type="submit" class="button">' . esc_html__( 'Save address', 'tasg-abo' ) . '</button></form>';
+		$html .= '</select></p></div>';
+		$html .= '<div class="tasg-abo-actions"><button type="submit" class="button alt">' . esc_html__( 'Save address', 'tasg-abo' ) . '</button>' . ThemePage::back_link() . '</div></form></div>';
 
-		$this->page( __( 'Check your shipping address', 'tasg-abo' ), $html );
+		$this->page(
+			__( 'Check your shipping address', 'tasg-abo' ),
+			$html,
+			/* translators: %s: date of the next order */
+			sprintf( __( 'This address is used for your next order on %s. To change it for all orders, update your address in your account.', 'tasg-abo' ), ThemePage::date( Actions::next_order( $sub ) ) )
+		);
 	}
 
 	/**
