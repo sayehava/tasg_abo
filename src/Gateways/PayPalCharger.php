@@ -25,11 +25,12 @@ final class PayPalCharger {
 	public const VAULT_META = '_tasg_abo_pp_vault_id';
 
 	public function supports( string $gateway_id ): bool {
-		return Settings::paypal_enabled() && Settings::paypal_configured() && in_array( $gateway_id, self::GATEWAY_IDS, true );
+		return Settings::paypal_enabled() && in_array( $gateway_id, self::GATEWAY_IDS, true );
 	}
 
 	public function charge( \WC_Order $order, object $sub, string $idempotency ): array {
-		$vault = '';
+		$vault  = '';
+		$source = false;
 
 		foreach ( array( (int) $sub->last_order_id, (int) $sub->origin_order_id ) as $order_id ) {
 			$source = $order_id ? wc_get_order( $order_id ) : false;
@@ -40,11 +41,22 @@ final class PayPalCharger {
 			}
 		}
 
-		if ( '' === $vault ) {
+		if ( '' === $vault || ! $source ) {
 			return $this->result( 'failed', '', 'No saved PayPal payment method on the last order.' );
 		}
 
-		$api    = new PayPalApi();
+		// A vault id only works in the PayPal mode (live or sandbox) it was made in.
+		$sandbox = 'yes' === (string) $source->get_meta( PayPalApi::SANDBOX_META );
+
+		if ( ! Settings::paypal_configured( $sandbox ) ) {
+			return $this->result( 'failed', '', $sandbox ? 'PayPal sandbox credentials are missing.' : 'PayPal credentials are missing.' );
+		}
+
+		// The renewal order carries the mode too, so it is clear where to look for the payment.
+		$order->update_meta_data( PayPalApi::SANDBOX_META, $sandbox ? 'yes' : 'no' );
+		$order->save_meta_data();
+
+		$api    = new PayPalApi( $sandbox );
 		$result = $api->request(
 			'POST',
 			'/v2/checkout/orders',
