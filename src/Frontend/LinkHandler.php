@@ -223,19 +223,19 @@ final class LinkHandler {
 			}
 		}
 
-		$html  = '<form method="post" action="">';
-		$html .= '<input type="hidden" name="tasg_abo" value="plan"><input type="hidden" name="key" value="' . esc_attr( $sub->cancel_key ) . '">';
+		$html = ThemePage::summary( $sub, false ) . '<div class="tasg-abo-card">' . SkipPausePages::form_start( $sub, 'plan' ) . '<div class="tasg-abo-options">';
 
 		foreach ( $plans as $id => $plan ) {
-			$price = html_entity_decode( wp_strip_all_tags( wc_price( Pricing::subscriber_price( $product, (int) $id ) ) ), ENT_QUOTES, 'UTF-8' );
+			$price = wc_price( Pricing::subscriber_price( $product, (int) $id ) );
 			$label = $plan->display_name();
-			$name  = '' !== $label ? $label . ' (' . $plan->period_label() . ')' : $plan->period_label();
+			$name  = '' !== $label ? $label : $plan->period_label();
 			$now   = (int) $sub->plan_id === (int) $id ? ' ' . __( '(current)', 'tasg-abo' ) : '';
 
-			$html .= '<p><label><input type="radio" name="plan" value="' . esc_attr( (string) $id ) . '"' . checked( (int) $sub->plan_id === (int) $id, true, false ) . '> ' . esc_html( $name . ': ' . $price . $now ) . '</label></p>';
+			$html .= '<label class="tasg-abo-option"><input type="radio" name="plan" value="' . esc_attr( (string) $id ) . '"' . checked( (int) $sub->plan_id === (int) $id, true, false ) . '><span>';
+			$html .= '<strong>' . esc_html( $name . $now ) . '</strong><small>' . esc_html( $plan->period_label() ) . ' &middot; ' . wp_kses_post( $price ) . '</small></span></label>';
 		}
 
-		$html .= '<button type="submit" class="button">' . esc_html__( 'Save plan', 'tasg-abo' ) . '</button></form>';
+		$html .= '</div><div class="tasg-abo-actions"><button type="submit" class="button alt">' . esc_html__( 'Save plan', 'tasg-abo' ) . '</button>' . ThemePage::back_link() . '</div></form></div>';
 
 		$this->page( __( 'Choose a new plan', 'tasg-abo' ), $html );
 	}
@@ -245,9 +245,11 @@ final class LinkHandler {
 	 * Cards are added in the normal WooCommerce account area, this plugin never sees card data.
 	 */
 	private function payment_form( object $sub, bool $post ): void {
+		// Saved payment methods belong to the customer account: log in right here.
 		if ( ! is_user_logged_in() || get_current_user_id() !== (int) $sub->user_id ) {
-			wp_safe_redirect( wp_login_url( Links::url( $sub, 'payment' ) ) );
-			exit;
+			ob_start();
+			woocommerce_login_form( array( 'redirect' => Links::url( $sub, 'payment' ) ) );
+			$this->page( __( 'Change your payment method', 'tasg-abo' ), '<div class="tasg-abo-card">' . ob_get_clean() . '</div>', __( 'Please log in to your account to choose the payment method for your subscription.', 'tasg-abo' ) );
 		}
 
 		if ( 0 !== strpos( (string) $sub->gateway, 'stripe' ) || ! in_array( $sub->status, array( 'active', 'paused' ), true ) ) {
@@ -270,16 +272,15 @@ final class LinkHandler {
 			}
 		}
 
-		$html  = '<form method="post" action="">';
-		$html .= '<input type="hidden" name="tasg_abo" value="payment"><input type="hidden" name="key" value="' . esc_attr( $sub->cancel_key ) . '">';
-		$html .= '<p><label><input type="radio" name="token" value="0"' . checked( (int) $sub->payment_token_id, 0, false ) . '> ' . esc_html__( 'The payment method of my last order', 'tasg-abo' ) . '</label></p>';
+		$html  = ThemePage::summary( $sub, false ) . '<div class="tasg-abo-card">' . SkipPausePages::form_start( $sub, 'payment' ) . '<div class="tasg-abo-options">';
+		$html .= '<label class="tasg-abo-option"><input type="radio" name="token" value="0"' . checked( (int) $sub->payment_token_id, 0, false ) . '><span><strong>' . esc_html__( 'The payment method of my last order', 'tasg-abo' ) . '</strong></span></label>';
 
 		foreach ( $tokens as $id => $token ) {
-			$html .= '<p><label><input type="radio" name="token" value="' . esc_attr( (string) $id ) . '"' . checked( (int) $sub->payment_token_id === (int) $id, true, false ) . '> ' . esc_html( $token->get_display_name() ) . '</label></p>';
+			$html .= '<label class="tasg-abo-option"><input type="radio" name="token" value="' . esc_attr( (string) $id ) . '"' . checked( (int) $sub->payment_token_id === (int) $id, true, false ) . '><span><strong>' . esc_html( $token->get_display_name() ) . '</strong></span></label>';
 		}
 
-		$html .= '<p><a href="' . esc_url( wc_get_account_endpoint_url( 'add-payment-method' ) ) . '">' . esc_html__( 'Add a new payment method', 'tasg-abo' ) . '</a></p>';
-		$html .= '<button type="submit" class="button">' . esc_html__( 'Save payment method', 'tasg-abo' ) . '</button></form>';
+		$html .= '</div><div class="tasg-abo-actions"><button type="submit" class="button alt">' . esc_html__( 'Save payment method', 'tasg-abo' ) . '</button>' . ThemePage::back_link() . '</div></form>';
+		$html .= '<p class="tasg-abo-note"><a href="' . esc_url( wc_get_account_endpoint_url( 'add-payment-method' ) ) . '">' . esc_html__( 'Add a new payment method', 'tasg-abo' ) . '</a></p></div>';
 
 		$this->page( __( 'Change your payment method', 'tasg-abo' ), $html );
 	}
