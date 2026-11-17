@@ -87,6 +87,8 @@ final class Creator {
 					'gateway'          => (string) $order->get_payment_method(),
 					'last_order_id'    => $order->get_id(),
 					'language'         => $this->order_language( $order, $item ),
+					// A plan with free shipping: every renewal ships free, without an end date.
+					'shipping_mode'    => ! empty( $plan['free_shipping'] ) ? 'free' : 'copy',
 				)
 			);
 			++$made;
