@@ -46,6 +46,42 @@ final class Settings {
 		'orders'  => array( 'tasg_abo_show_orders', 'yes' ),
 	);
 
+	/** Pause lengths the customer can choose from, set by the shop owner. */
+	public const PAUSE_OPTIONS = 'tasg_abo_pause_options';
+
+	/** Units a pause length can have. Minutes are for testing with short test plans. */
+	public const PAUSE_UNITS = array( 'day', 'week', 'month', 'minute' );
+
+	/**
+	 * Pause lengths offered to customers, in the order the owner entered them.
+	 * Default: 1, 2 and 3 months.
+	 *
+	 * @return array<int,array{value:int,unit:string}>
+	 */
+	public static function pause_options(): array {
+		$saved   = get_option( self::PAUSE_OPTIONS, null );
+		$options = is_array( $saved ) ? $saved : array(
+			array( 'value' => 1, 'unit' => 'month' ),
+			array( 'value' => 2, 'unit' => 'month' ),
+			array( 'value' => 3, 'unit' => 'month' ),
+		);
+
+		$clean = array();
+		foreach ( $options as $option ) {
+			$value = (int) ( $option['value'] ?? 0 );
+			$unit  = (string) ( $option['unit'] ?? '' );
+
+			if ( $value > 0 && in_array( $unit, self::PAUSE_UNITS, true ) ) {
+				$clean[] = array(
+					'value' => $value,
+					'unit'  => $unit,
+				);
+			}
+		}
+
+		return $clean;
+	}
+
 	/** Maximum number of "continue or cancel" reminders before a paused subscription is cancelled. */
 	public const PAUSE_MAX_REMINDERS = 3;
 
