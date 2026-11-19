@@ -1753,26 +1753,90 @@ msgstr ""
 msgid "%s was deleted."
 msgstr ""
 
-#: src/Sandbox/SandboxSwitch.php
-msgid "Stripe sandbox: add test keys first"
-msgstr ""
-
-#: src/Sandbox/SandboxSwitch.php
-msgid "Stripe sandbox: ON (click to switch off)"
-msgstr ""
-
-#: src/Sandbox/SandboxSwitch.php
-msgid "Stripe sandbox: off"
-msgstr ""
-
-#: src/Sandbox/SandboxSwitch.php
+#: src/Admin/RenewalTestPage.php
 msgid "You are not allowed to do this."
 msgstr ""
 
-#: src/Sandbox/SandboxSwitch.php
-msgid "Stripe sandbox is on: no real money is charged. Pay with a Stripe test card, for example 4242 4242 4242 4242, any future date and any CVC. The order gets the status Sandbox."
+#: src/Admin/SettingsHub.php
+msgid "Renewal test"
 msgstr ""
 
-#: src/Sandbox/SandboxOrders.php
-msgid "Sandbox order: paid with Stripe test keys, not a real order. No stock, no invoice, no shipping."
+#: src/Admin/RenewalTestPage.php
+msgid "Normal card, saved at the first payment"
+msgstr ""
+
+#: src/Admin/RenewalTestPage.php
+msgid "Card not saved at the first payment (the fault of the earlier tests)"
+msgstr ""
+
+#: src/Admin/RenewalTestPage.php
+msgid "Bank declines the renewal"
+msgstr ""
+
+#: src/Admin/RenewalTestPage.php
+msgid "Bank asks for 3D Secure on the renewal"
+msgstr ""
+
+#: src/Admin/RenewalTestPage.php
+msgid "Paid: the renewal order is completed with your renewal status and the usual emails."
+msgstr ""
+
+#: src/Admin/RenewalTestPage.php
+msgid "Payment still processing: the renewal order waits on hold."
+msgstr ""
+
+#: src/Admin/RenewalTestPage.php
+msgid "Stripe not reachable: tried again a little later, no email to the customer."
+msgstr ""
+
+#: src/Admin/RenewalTestPage.php
+msgid "Declined: the subscription stays active, the customer gets the payment retry email with the link to change the payment method, and it is tried again after 1, 3 and 5 days."
+msgstr ""
+
+#: src/Admin/RenewalTestPage.php
+msgid "Not charged: the test could not save the card."
+msgstr ""
+
+#: src/Admin/RenewalTestPage.php
+msgid "Tries the renewal charge in Stripe test mode with made-up data: a Stripe test customer, a Stripe test card, then the same charge a real renewal makes. Nothing is created in WooCommerce (no order, no product, no subscription) and no real money moves. The test customer is deleted afterwards."
+msgstr ""
+
+#: src/Admin/RenewalTestPage.php
+msgid "It tests the renewal. Whether the checkout saves the card is shown by one real order afterwards."
+msgstr ""
+
+#: src/Admin/RenewalTestPage.php
+msgid "Enter the Stripe test secret key (sk_test_...) in the Stripe plugin first: WooCommerce > Settings > Payments > Stripe. Test mode itself stays off, the shop keeps running live."
+msgstr ""
+
+#: src/Admin/RenewalTestPage.php
+msgid "Run renewal test"
+msgstr ""
+
+#: src/Admin/RenewalTestPage.php
+msgid "Case"
+msgstr ""
+
+#: src/Admin/RenewalTestPage.php
+msgid "First payment"
+msgstr ""
+
+#: src/Admin/RenewalTestPage.php
+msgid "Renewal"
+msgstr ""
+
+#: src/Admin/RenewalTestPage.php
+msgid "What the subscription does"
+msgstr ""
+
+#: src/Admin/RenewalTestPage.php
+msgid "As expected"
+msgstr ""
+
+#: src/Admin/RenewalTestPage.php
+msgid "yes"
+msgstr ""
+
+#: src/Admin/RenewalTestPage.php
+msgid "no"
 msgstr ""
