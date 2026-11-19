@@ -2,7 +2,7 @@
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 0.10.3
+Stable tag: 0.11.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -44,6 +44,11 @@ Customers tick "Subscribe and save" on a product page and choose an interval. Th
 5. Edit a product and enable the subscription fields on the General tab, then tick the plans it offers.
 
 == Changelog ==
+
+= 0.11.0 =
+* Personal Stripe sandbox: a switch in the admin bar for shop managers. With it on, only that shop manager pays with the Stripe test keys and test cards. All other visitors and all live orders keep the live keys, and Stripe test webhooks are recognised by livemode false. While it is on, only Stripe is offered.
+* Sandbox orders run like real ones (subscription, emails, reminder, renewal) but get the order status "Sandbox". They are hidden from the normal order list and analytics, take no stock, get no Germanized Pro invoice and start no shipment or packing slip automation. Every email about them has [SANDBOX] in the subject. Renewals of a sandbox subscription stay in the sandbox.
+* Every Stripe subscription order now notes its Stripe mode at checkout, so renewals use the right keys also after an Adaptive Pricing payment.
 
 = 0.10.3 =
 * Stripe with Adaptive Pricing pays through a Stripe Checkout Session, which Stripe turns into the payment itself. A session for a subscription cart now asks Stripe to keep the payment method for renewals (payment_intent_data setup_future_usage). A session made before the subscription came into the cart is replaced, because Stripe cannot change this later.
