@@ -27,6 +27,7 @@ final class CheckoutRules {
 		add_filter( 'wc_stripe_force_save_payment_method', array( $this, 'force_save_card' ), 10, 2 );
 		add_filter( 'wc_stripe_generate_create_intent_request', array( $this, 'save_for_renewals' ), 30, 2 );
 		add_filter( 'wc_stripe_request_body', array( $this, 'save_on_any_intent' ), 30, 2 );
+		add_action( 'woocommerce_cart_loaded_from_session', array( $this, 'renew_stale_checkout_session' ), 20 );
 		add_filter( 'woocommerce_package_rates', array( $this, 'free_shipping_rates' ), 100, 2 );
 		add_filter( 'woocommerce_available_payment_gateways', array( $this, 'limit_gateways' ) );
 		add_filter( 'wc_stripe_payment_request_supported_types', array( $this, 'hide_express_checkout' ) );
@@ -251,8 +252,13 @@ final class CheckoutRules {
 	 * @param string $api     Stripe endpoint, for example payment_intents or payment_intents/pi_x/confirm.
 	 */
 	public function save_on_any_intent( $request, $api = '' ) {
-		// Charges of a saved method (off_session) are renewals, not a first payment.
-		if ( ! is_array( $request ) || ! empty( $request['off_session'] ) || ! preg_match( '#^payment_intents(/[^/]+(/confirm)?)?$#', (string) $api ) ) {
+		if ( is_array( $request ) && 'checkout/sessions' === $api ) {
+			return $this->save_on_checkout_session( $request );
+		}
+
+		// Only creating or confirming a payment, never charges of a saved method (off_session,
+		// renewals) or later updates of a finished payment.
+		if ( ! is_array( $request ) || ! empty( $request['off_session'] ) || ! preg_match( '#^payment_intents(/[^/]+/confirm)?$#', (string) $api ) ) {
 			return $request;
 		}
 
@@ -264,6 +270,58 @@ final class CheckoutRules {
 		}
 
 		return $this->with_future_usage( $request, $order, $api );
+	}
+
+	/** WC session entry: did the current Stripe checkout session start with a subscription in the cart? */
+	private const SESSION_FOR_SUB = 'tasg_abo_stripe_session_sub';
+
+	/**
+	 * With Adaptive Pricing the Stripe plugin pays through a Stripe Checkout Session that it
+	 * creates when the checkout opens, and Stripe makes the payment from it. The save setting
+	 * must be in the session when it is created, Stripe cannot add it later. Customers cannot
+	 * untick saving for a subscription, so the optional save checkbox goes.
+	 *
+	 * @param array $request Checkout session request.
+	 */
+	private function save_on_checkout_session( array $request ): array {
+		$for_sub = self::cart_has_subscription();
+
+		if ( function_exists( 'WC' ) && WC()->session ) {
+			WC()->session->set( self::SESSION_FOR_SUB, $for_sub ? 'yes' : 'no' );
+		}
+
+		if ( ! $for_sub ) {
+			return $request;
+		}
+
+		$request['payment_intent_data']['setup_future_usage'] = 'off_session';
+		unset( $request['saved_payment_method_options']['payment_method_save'] );
+
+		if ( empty( $request['saved_payment_method_options'] ) ) {
+			unset( $request['saved_payment_method_options'] );
+		}
+
+		Log::info( sprintf( 'Stripe checkout session for a subscription cart: saving for renewals set (customer: %s).', ! empty( $request['customer'] ) ? 'yes' : 'new' ) );
+
+		return $request;
+	}
+
+	/**
+	 * A Stripe checkout session made before the subscription came into the cart (or the other
+	 * way round) has the wrong save setting and cannot be changed, so it is dropped and the
+	 * Stripe plugin makes a new one. Hooked on woocommerce_cart_loaded_from_session.
+	 */
+	public function renew_stale_checkout_session(): void {
+		if ( ! function_exists( 'WC' ) || ! WC()->session || ! WC()->session->get( 'wc_stripe_checkout_session' ) ) {
+			return;
+		}
+
+		$made_for_sub = 'yes' === WC()->session->get( self::SESSION_FOR_SUB );
+
+		if ( $made_for_sub !== self::cart_has_subscription() ) {
+			WC()->session->set( 'wc_stripe_checkout_session', null );
+			WC()->session->set( self::SESSION_FOR_SUB, null );
+		}
 	}
 
 	/**
