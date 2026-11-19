@@ -102,23 +102,43 @@ final class StripeCharger {
 			return $this->result( 'failed', '', '', 'Missing Stripe key, customer or payment method on the last order.' );
 		}
 
-		$response = $this->request(
-			'payment_intents',
-			array(
-				'amount'                                     => $this->minor_units( (float) $order->get_total(), $order->get_currency() ),
-				'currency'                                   => strtolower( $order->get_currency() ),
-				'customer'                                   => $customer,
-				'payment_method'                             => $method,
-				'off_session'                                => 'true',
-				'confirm'                                    => 'true',
-				'automatic_payment_methods[enabled]'         => 'true',
-				'automatic_payment_methods[allow_redirects]' => 'never',
-				'description'                                => 'Subscription #' . (int) $sub->id,
-				'metadata[subscription_id]'                  => (int) $sub->id,
-			),
+		return $this->charge_method(
 			$key,
+			$customer,
+			$method,
+			$this->minor_units( (float) $order->get_total(), $order->get_currency() ),
+			strtolower( $order->get_currency() ),
+			'Subscription #' . (int) $sub->id,
+			array( 'subscription_id' => (int) $sub->id ),
 			$idempotency
 		);
+	}
+
+	/**
+	 * The renewal charge itself: a saved payment method of a Stripe customer, charged
+	 * without the customer present (off session). Used by renewals and by the renewal test.
+	 *
+	 * @param array $metadata Stripe metadata of the payment.
+	 * @return array{status:string,id:string,charge:string,message:string}
+	 */
+	public function charge_method( string $key, string $customer, string $method, int $amount, string $currency, string $description, array $metadata, string $idempotency ): array {
+		$body = array(
+			'amount'                                     => $amount,
+			'currency'                                   => $currency,
+			'customer'                                   => $customer,
+			'payment_method'                             => $method,
+			'off_session'                                => 'true',
+			'confirm'                                    => 'true',
+			'automatic_payment_methods[enabled]'         => 'true',
+			'automatic_payment_methods[allow_redirects]' => 'never',
+			'description'                                => $description,
+		);
+
+		foreach ( $metadata as $name => $value ) {
+			$body[ 'metadata[' . $name . ']' ] = $value;
+		}
+
+		$response = $this->request( 'payment_intents', $body, $key, $idempotency );
 
 		if ( null === $response ) {
 			return $this->result( 'error', '', '', 'Stripe could not be reached.' );
