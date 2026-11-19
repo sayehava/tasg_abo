@@ -208,7 +208,7 @@ final class RenewalHandler {
 			// Standard WooCommerce payment completion: stock, emails and hooks run as usual.
 			$order->payment_complete( $order->get_transaction_id() );
 
-			$target = Settings::renewal_status();
+			$target = \TasgAbo\Sandbox\SandboxOrders::is_order( $order ) ? \TasgAbo\Sandbox\SandboxOrders::STATUS : Settings::renewal_status();
 			if ( $order->get_status() !== $target ) {
 				$order->update_status( $target, __( 'Status set by the subscription settings.', 'tasg-abo' ) );
 			}
