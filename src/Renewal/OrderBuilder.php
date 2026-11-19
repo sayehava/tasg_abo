@@ -61,6 +61,12 @@ final class OrderBuilder {
 
 		$order->update_meta_data( '_tasg_abo_renewal_of', (int) $sub->id );
 
+		// A subscription that started in the Stripe sandbox stays there: renewals are sandbox orders too.
+		$first = wc_get_order( (int) $sub->origin_order_id );
+		if ( \TasgAbo\Sandbox\SandboxOrders::is_order( $first ) ) {
+			$order->update_meta_data( \TasgAbo\Sandbox\SandboxOrders::META, 'yes' );
+		}
+
 		// A renewal of a test subscription is a test order too: real order, marked.
 		if ( ! empty( $sub->is_test ) ) {
 			\TasgAbo\TestMarker::apply( $order );
