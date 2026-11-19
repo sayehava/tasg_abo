@@ -110,6 +110,7 @@ final class SettingsHub {
 			'subscriptions' => __( 'Subscriptions', 'tasg-abo' ),
 			'emails'        => __( 'Emails', 'tasg-abo' ),
 			'diagnostics'   => __( 'Diagnostics', 'tasg-abo' ),
+			'renewal-test'  => __( 'Renewal test', 'tasg-abo' ),
 		);
 	}
 
