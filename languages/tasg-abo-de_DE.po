@@ -1753,26 +1753,90 @@ msgstr "Mit dieser Zahlungsmethode wird noch ein Abo bezahlt. Wählen Sie dafür
 msgid "%s was deleted."
 msgstr "%s wurde gelöscht."
 
-#: src/Sandbox/SandboxSwitch.php
-msgid "Stripe sandbox: add test keys first"
-msgstr "Stripe-Sandbox: zuerst Testschlüssel eintragen"
-
-#: src/Sandbox/SandboxSwitch.php
-msgid "Stripe sandbox: ON (click to switch off)"
-msgstr "Stripe-Sandbox: AN (zum Ausschalten klicken)"
-
-#: src/Sandbox/SandboxSwitch.php
-msgid "Stripe sandbox: off"
-msgstr "Stripe-Sandbox: aus"
-
-#: src/Sandbox/SandboxSwitch.php
+#: src/Admin/RenewalTestPage.php
 msgid "You are not allowed to do this."
 msgstr "Sie dürfen das nicht tun."
 
-#: src/Sandbox/SandboxSwitch.php
-msgid "Stripe sandbox is on: no real money is charged. Pay with a Stripe test card, for example 4242 4242 4242 4242, any future date and any CVC. The order gets the status Sandbox."
-msgstr "Die Stripe-Sandbox ist an: Es wird kein echtes Geld abgebucht. Bezahlen Sie mit einer Stripe-Testkarte, zum Beispiel 4242 4242 4242 4242, einem beliebigen Datum in der Zukunft und einer beliebigen Prüfnummer. Die Bestellung bekommt den Status Sandbox."
+#: src/Admin/SettingsHub.php
+msgid "Renewal test"
+msgstr "Verlängerungstest"
 
-#: src/Sandbox/SandboxOrders.php
-msgid "Sandbox order: paid with Stripe test keys, not a real order. No stock, no invoice, no shipping."
-msgstr "Sandbox-Bestellung: mit Stripe-Testschlüsseln bezahlt, keine echte Bestellung. Kein Lagerabgang, keine Rechnung, kein Versand."
+#: src/Admin/RenewalTestPage.php
+msgid "Normal card, saved at the first payment"
+msgstr "Normale Karte, bei der ersten Zahlung gespeichert"
+
+#: src/Admin/RenewalTestPage.php
+msgid "Card not saved at the first payment (the fault of the earlier tests)"
+msgstr "Karte bei der ersten Zahlung nicht gespeichert (der Fehler der früheren Tests)"
+
+#: src/Admin/RenewalTestPage.php
+msgid "Bank declines the renewal"
+msgstr "Bank lehnt die Verlängerung ab"
+
+#: src/Admin/RenewalTestPage.php
+msgid "Bank asks for 3D Secure on the renewal"
+msgstr "Bank verlangt 3D Secure bei der Verlängerung"
+
+#: src/Admin/RenewalTestPage.php
+msgid "Paid: the renewal order is completed with your renewal status and the usual emails."
+msgstr "Bezahlt: Die Folgebestellung wird mit Ihrem Status für Folgebestellungen und den üblichen E-Mails abgeschlossen."
+
+#: src/Admin/RenewalTestPage.php
+msgid "Payment still processing: the renewal order waits on hold."
+msgstr "Zahlung wird noch verarbeitet: Die Folgebestellung wartet in der Warteschleife."
+
+#: src/Admin/RenewalTestPage.php
+msgid "Stripe not reachable: tried again a little later, no email to the customer."
+msgstr "Stripe nicht erreichbar: Etwas später wird es erneut versucht, keine E-Mail an den Kunden."
+
+#: src/Admin/RenewalTestPage.php
+msgid "Declined: the subscription stays active, the customer gets the payment retry email with the link to change the payment method, and it is tried again after 1, 3 and 5 days."
+msgstr "Abgelehnt: Das Abo bleibt aktiv, der Kunde bekommt die E-Mail zur fehlgeschlagenen Zahlung mit dem Link zum Ändern der Zahlungsmethode, und es wird nach 1, 3 und 5 Tagen erneut versucht."
+
+#: src/Admin/RenewalTestPage.php
+msgid "Not charged: the test could not save the card."
+msgstr "Nicht belastet: Der Test konnte die Karte nicht speichern."
+
+#: src/Admin/RenewalTestPage.php
+msgid "Tries the renewal charge in Stripe test mode with made-up data: a Stripe test customer, a Stripe test card, then the same charge a real renewal makes. Nothing is created in WooCommerce (no order, no product, no subscription) and no real money moves. The test customer is deleted afterwards."
+msgstr "Probiert die Abbuchung einer Verlängerung im Stripe-Testmodus mit erfundenen Daten aus: ein Stripe-Testkunde, eine Stripe-Testkarte, dann dieselbe Abbuchung wie bei einer echten Verlängerung. In WooCommerce wird nichts angelegt (keine Bestellung, kein Produkt, kein Abo), und es fließt kein echtes Geld. Der Testkunde wird danach gelöscht."
+
+#: src/Admin/RenewalTestPage.php
+msgid "It tests the renewal. Whether the checkout saves the card is shown by one real order afterwards."
+msgstr "Getestet wird die Verlängerung. Ob die Kasse die Karte speichert, zeigt danach eine echte Bestellung."
+
+#: src/Admin/RenewalTestPage.php
+msgid "Enter the Stripe test secret key (sk_test_...) in the Stripe plugin first: WooCommerce > Settings > Payments > Stripe. Test mode itself stays off, the shop keeps running live."
+msgstr "Tragen Sie zuerst den geheimen Stripe-Testschlüssel (sk_test_...) im Stripe-Plugin ein: WooCommerce > Einstellungen > Zahlungen > Stripe. Der Testmodus selbst bleibt aus, der Shop läuft weiter live."
+
+#: src/Admin/RenewalTestPage.php
+msgid "Run renewal test"
+msgstr "Verlängerungstest starten"
+
+#: src/Admin/RenewalTestPage.php
+msgid "Case"
+msgstr "Fall"
+
+#: src/Admin/RenewalTestPage.php
+msgid "First payment"
+msgstr "Erste Zahlung"
+
+#: src/Admin/RenewalTestPage.php
+msgid "Renewal"
+msgstr "Verlängerung"
+
+#: src/Admin/RenewalTestPage.php
+msgid "What the subscription does"
+msgstr "Was das Abo macht"
+
+#: src/Admin/RenewalTestPage.php
+msgid "As expected"
+msgstr "Wie erwartet"
+
+#: src/Admin/RenewalTestPage.php
+msgid "yes"
+msgstr "ja"
+
+#: src/Admin/RenewalTestPage.php
+msgid "no"
+msgstr "nein"
