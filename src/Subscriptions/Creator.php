@@ -23,6 +23,7 @@ final class Creator {
 	public function register(): void {
 		add_action( 'woocommerce_order_status_processing', array( $this, 'maybe_create' ) );
 		add_action( 'woocommerce_order_status_completed', array( $this, 'maybe_create' ) );
+		add_action( 'woocommerce_order_status_' . \TasgAbo\Sandbox\SandboxOrders::STATUS, array( $this, 'maybe_create' ) );
 	}
 
 	public function maybe_create( $order_id ): void {
