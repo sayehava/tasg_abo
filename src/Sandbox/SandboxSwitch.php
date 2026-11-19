@@ -70,4 +70,46 @@ final class SandboxSwitch {
 		exit;
 	}
 
+	public function checkout_notice(): void {
+		if ( StripeSandbox::on_for_user() ) {
+			wc_print_notice( __( 'Stripe sandbox is on: no real money is charged. Pay with a Stripe test card, for example 4242 4242 4242 4242, any future date and any CVC. The order gets the status Sandbox.', 'tasg-abo' ), 'notice' );
+		}
+	}
+
+	/**
+	 * While the sandbox is on, only Stripe can be chosen: PayPal and the others have no
+	 * sandbox here and would charge real money for an order marked as sandbox.
+	 *
+	 * @param array $gateways Available gateways.
+	 */
+	public function only_stripe( $gateways ) {
+		if ( ! is_array( $gateways ) || ! StripeSandbox::on_for_user() ) {
+			return $gateways;
+		}
+
+		foreach ( array_keys( $gateways ) as $id ) {
+			if ( 0 !== strpos( (string) $id, 'stripe' ) ) {
+				unset( $gateways[ $id ] );
+			}
+		}
+
+		return $gateways;
+	}
+
+	/**
+	 * A Stripe checkout session belongs to one mode (live or test). After switching, the
+	 * stored one is dropped, so the Stripe plugin makes a new one with the right keys.
+	 */
+	public function renew_payment_form(): void {
+		if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+			return;
+		}
+
+		$mode = StripeSandbox::on_for_user() ? 'test' : 'live';
+
+		if ( WC()->session->get( 'tasg_abo_stripe_form_mode' ) !== $mode ) {
+			WC()->session->set( 'wc_stripe_checkout_session', null );
+			WC()->session->set( 'tasg_abo_stripe_form_mode', $mode );
+		}
+	}
 }
