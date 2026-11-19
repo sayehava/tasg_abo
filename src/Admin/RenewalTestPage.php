@@ -129,4 +129,72 @@ final class RenewalTestPage {
 		);
 	}
 
+	/** What a real subscription does with this renewal answer (the rules of RenewalHandler). */
+	private function next_step( string $status ): string {
+		switch ( $status ) {
+			case 'succeeded':
+				return __( 'Paid: the renewal order is completed with your renewal status and the usual emails.', 'tasg-abo' );
+			case 'processing':
+				return __( 'Payment still processing: the renewal order waits on hold.', 'tasg-abo' );
+			case 'error':
+				return __( 'Stripe not reachable: tried again a little later, no email to the customer.', 'tasg-abo' );
+			case 'failed':
+				return __( 'Declined: the subscription stays active, the customer gets the payment retry email with the link to change the payment method, and it is tried again after 1, 3 and 5 days.', 'tasg-abo' );
+		}
+
+		return __( 'Not charged: the test could not save the card.', 'tasg-abo' );
+	}
+
+	public function render(): void {
+		$results = get_transient( 'tasg_abo_renewal_test_' . get_current_user_id() );
+		$results = is_array( $results ) ? $results : array();
+
+		echo '<h2>' . esc_html__( 'Renewal test', 'tasg-abo' ) . '</h2>';
+		echo '<p>' . esc_html__( 'Tries the renewal charge in Stripe test mode with made-up data: a Stripe test customer, a Stripe test card, then the same charge a real renewal makes. Nothing is created in WooCommerce (no order, no product, no subscription) and no real money moves. The test customer is deleted afterwards.', 'tasg-abo' ) . '</p>';
+		echo '<p>' . esc_html__( 'It tests the renewal. Whether the checkout saves the card is shown by one real order afterwards.', 'tasg-abo' ) . '</p>';
+
+		if ( '' === $this->test_key() ) {
+			echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'Enter the Stripe test secret key (sk_test_...) in the Stripe plugin first: WooCommerce > Settings > Payments > Stripe. Test mode itself stays off, the shop keeps running live.', 'tasg-abo' ) . '</p></div>';
+			return;
+		}
+
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="' . esc_attr( self::ACTION ) . '">';
+		wp_nonce_field( self::ACTION );
+		submit_button( __( 'Run renewal test', 'tasg-abo' ), 'primary', 'submit', false );
+		echo '</form>';
+
+		if ( ! $results ) {
+			return;
+		}
+
+		echo '<table class="widefat striped" style="margin-top:16px"><thead><tr><th>' . esc_html__( 'Case', 'tasg-abo' ) . '</th><th>' . esc_html__( 'First payment', 'tasg-abo' ) . '</th><th>' . esc_html__( 'Renewal', 'tasg-abo' ) . '</th><th>' . esc_html__( 'What the subscription does', 'tasg-abo' ) . '</th><th>' . esc_html__( 'As expected', 'tasg-abo' ) . '</th></tr></thead><tbody>';
+
+		foreach ( $this->cases() as $id => $case ) {
+			if ( ! isset( $results[ $id ] ) ) {
+				continue;
+			}
+
+			$r = $results[ $id ];
+			echo '<tr><td>' . esc_html( $case['label'] ) . '</td><td>' . esc_html( $r['first'] ) . '</td><td><strong>' . esc_html( $r['status'] ) . '</strong><br><small>' . esc_html( $r['message'] ) . '</small></td>';
+			echo '<td>' . esc_html( $this->next_step( $r['status'] ) ) . '</td><td>' . ( $r['ok'] ? '<span style="color:#008a20">&#10004; ' . esc_html__( 'yes', 'tasg-abo' ) . '</span>' : '<span style="color:#b32d2e">&#10008; ' . esc_html__( 'no', 'tasg-abo' ) . '</span>' ) . '</td></tr>';
+		}
+
+		echo '</tbody></table>';
+	}
+
+	/** Small Stripe call for the test steps (customer, card, first payment). */
+	private function stripe( string $key, string $method, string $path, array $body ): array {
+		$reply = wp_remote_request(
+			self::API . $path,
+			array(
+				'method'  => $method,
+				'timeout' => 45,
+				'headers' => array( 'Authorization' => 'Bearer ' . $key ),
+				'body'    => $body,
+			)
+		);
+		$data  = is_wp_error( $reply ) ? null : json_decode( wp_remote_retrieve_body( $reply ), true );
+
+		return is_array( $data ) ? $data : array();
+	}
 }
