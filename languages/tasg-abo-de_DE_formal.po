@@ -1752,3 +1752,27 @@ msgstr "Mit dieser Zahlungsmethode wird noch ein Abo bezahlt. Wählen Sie dafür
 #: src/Frontend/PaymentPage.php
 msgid "%s was deleted."
 msgstr "%s wurde gelöscht."
+
+#: src/Sandbox/SandboxSwitch.php
+msgid "Stripe sandbox: add test keys first"
+msgstr "Stripe-Sandbox: zuerst Testschlüssel eintragen"
+
+#: src/Sandbox/SandboxSwitch.php
+msgid "Stripe sandbox: ON (click to switch off)"
+msgstr "Stripe-Sandbox: AN (zum Ausschalten klicken)"
+
+#: src/Sandbox/SandboxSwitch.php
+msgid "Stripe sandbox: off"
+msgstr "Stripe-Sandbox: aus"
+
+#: src/Sandbox/SandboxSwitch.php
+msgid "You are not allowed to do this."
+msgstr "Sie dürfen das nicht tun."
+
+#: src/Sandbox/SandboxSwitch.php
+msgid "Stripe sandbox is on: no real money is charged. Pay with a Stripe test card, for example 4242 4242 4242 4242, any future date and any CVC. The order gets the status Sandbox."
+msgstr "Die Stripe-Sandbox ist an: Es wird kein echtes Geld abgebucht. Bezahlen Sie mit einer Stripe-Testkarte, zum Beispiel 4242 4242 4242 4242, einem beliebigen Datum in der Zukunft und einer beliebigen Prüfnummer. Die Bestellung bekommt den Status Sandbox."
+
+#: src/Sandbox/SandboxOrders.php
+msgid "Sandbox order: paid with Stripe test keys, not a real order. No stock, no invoice, no shipping."
+msgstr "Sandbox-Bestellung: mit Stripe-Testschlüsseln bezahlt, keine echte Bestellung. Kein Lagerabgang, keine Rechnung, kein Versand."
