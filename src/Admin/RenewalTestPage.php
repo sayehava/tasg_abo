@@ -70,4 +70,63 @@ final class RenewalTestPage {
 		exit;
 	}
 
+	/**
+	 * One case: test customer, save the card like the checkout would, renewal charge with
+	 * the real renewal code, then delete the test customer again.
+	 *
+	 * @param array $case Case from cases().
+	 * @return array{first:string,status:string,message:string,ok:bool}
+	 */
+	private function run_case( string $key, array $case ): array {
+		$customer = $this->stripe( $key, 'POST', 'customers', array( 'description' => 'Tasg Abo renewal test (fake data)' ) );
+		$cus_id   = (string) ( $customer['id'] ?? '' );
+
+		if ( '' === $cus_id ) {
+			return array( 'first' => 'customer: ' . (string) ( $customer['error']['message'] ?? 'no answer' ), 'status' => '', 'message' => '', 'ok' => false );
+		}
+
+		$method = '';
+
+		if ( 'attach' === $case['first'] ) {
+			$pm     = $this->stripe( $key, 'POST', 'payment_methods/' . $case['card'] . '/attach', array( 'customer' => $cus_id ) );
+			$method = (string) ( $pm['id'] ?? '' );
+			$first  = '' !== $method ? 'card saved on the customer' : 'saving failed: ' . (string) ( $pm['error']['message'] ?? '' );
+		} else {
+			$body = array(
+				'amount'                                     => 50,
+				'currency'                                   => 'eur',
+				'customer'                                   => $cus_id,
+				'payment_method'                             => $case['card'],
+				'confirm'                                    => 'true',
+				'automatic_payment_methods[enabled]'         => 'true',
+				'automatic_payment_methods[allow_redirects]' => 'never',
+				'description'                                => 'Tasg Abo renewal test: first payment',
+			);
+
+			if ( 'pay_save' === $case['first'] ) {
+				$body['setup_future_usage'] = 'off_session';
+			}
+
+			$pi     = $this->stripe( $key, 'POST', 'payment_intents', $body );
+			$method = (string) ( $pi['payment_method'] ?? '' );
+			$first  = 'first payment ' . (string) ( $pi['status'] ?? (string) ( $pi['error']['message'] ?? 'failed' ) ) . ( 'pay_save' === $case['first'] ? ', card saved for later' : ', card not saved' );
+		}
+
+		$result = array( 'status' => '', 'message' => '' );
+
+		if ( '' !== $method ) {
+			$result = ( new StripeCharger() )->charge_method( $key, $cus_id, $method, 50, 'eur', 'Tasg Abo renewal test: renewal', array( 'tasg_abo_test' => 'yes' ), 'tasg-abo-test-' . wp_generate_uuid4() );
+		}
+
+		$this->stripe( $key, 'DELETE', 'customers/' . $cus_id, array() );
+		Log::info( sprintf( 'Renewal test "%s": %s, renewal %s %s', $case['card'], $first, $result['status'], $result['message'] ) );
+
+		return array(
+			'first'   => $first,
+			'status'  => (string) $result['status'],
+			'message' => (string) $result['message'],
+			'ok'      => $result['status'] === $case['expect'],
+		);
+	}
+
 }
