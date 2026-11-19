@@ -2,7 +2,7 @@
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 0.11.0
+Stable tag: 0.11.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -44,6 +44,11 @@ Customers tick "Subscribe and save" on a product page and choose an interval. Th
 5. Edit a product and enable the subscription fields on the General tab, then tick the plans it offers.
 
 == Changelog ==
+
+= 0.11.1 =
+* The Stripe sandbox of 0.11.0 is replaced by a renewal test (Subscriptions > Renewal test). It creates nothing in WooCommerce: a Stripe test customer gets a Stripe test card, the same code as a real renewal charges it, and the page shows what the subscription would do. Cases: normal card, card not saved at the first payment, bank declines, bank asks for 3D Secure. It only runs with a Stripe test secret key, and the test customer is deleted afterwards.
+* The renewal charge is one function (StripeCharger::charge_method), used by renewals and by the test.
+* Stripe subscription orders still note their Stripe mode at checkout.
 
 = 0.11.0 =
 * Personal Stripe sandbox: a switch in the admin bar for shop managers. With it on, only that shop manager pays with the Stripe test keys and test cards. All other visitors and all live orders keep the live keys, and Stripe test webhooks are recognised by livemode false. While it is on, only Stripe is offered.
