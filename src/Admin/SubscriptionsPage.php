@@ -138,8 +138,7 @@ final class SubscriptionsPage {
 			if ( $retry['tries'] > 0 && $retry['retry_at'] > 0 ) {
 				$term .= ' [payment declined, try ' . $retry['tries'] . ' of ' . count( \TasgAbo\Renewal\DeclineRetry::DAYS ) . ' on ' . wp_date( 'Y-m-d H:i', $retry['retry_at'] ) . ']';
 			}
-			$sandbox = \TasgAbo\Sandbox\SandboxOrders::is_order( wc_get_order( (int) $row->origin_order_id ) ) ? ' (sandbox)' : '';
-			echo '<td>' . esc_html( $row->status . ( ! empty( $row->is_test ) ? ' (test)' : '' ) . $sandbox . $term ) . '</td>';
+			echo '<td>' . esc_html( $row->status . ( ! empty( $row->is_test ) ? ' (test)' : '' ) . $term ) . '</td>';
 			echo '<td>' . esc_html( (string) $row->next_payment ) . '</td><td>';
 			$this->shipping_form( (string) (int) $row->id, (string) $row->shipping_mode, $until, __( 'Save', 'tasg-abo' ) );
 			echo '</td><td>';
