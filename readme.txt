@@ -2,7 +2,7 @@
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 0.10.2
+Stable tag: 0.10.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -44,6 +44,10 @@ Customers tick "Subscribe and save" on a product page and choose an interval. Th
 5. Edit a product and enable the subscription fields on the General tab, then tick the plans it offers.
 
 == Changelog ==
+
+= 0.10.3 =
+* Stripe with Adaptive Pricing pays through a Stripe Checkout Session, which Stripe turns into the payment itself. A session for a subscription cart now asks Stripe to keep the payment method for renewals (payment_intent_data setup_future_usage). A session made before the subscription came into the cart is replaced, because Stripe cannot change this later.
+* Later updates of a finished Stripe payment are no longer touched.
 
 = 0.10.2 =
 * Stripe: the save for renewals setting is now also added on the last step before a payment request goes to Stripe, because Optimized Checkout can create the payment without the intent request filter. Every decision is logged ("saving for renewals ...").
