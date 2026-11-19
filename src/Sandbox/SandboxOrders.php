@@ -96,4 +96,69 @@ final class SandboxOrders {
 		return 'yes' === $order->get_meta( self::META );
 	}
 
+	/**
+	 * Paid sandbox orders get the Sandbox status instead of Processing or Completed.
+	 *
+	 * @param string         $status   Status WooCommerce would set.
+	 * @param int            $order_id Order id.
+	 * @param \WC_Order|null $order    Order.
+	 */
+	public function paid_status( $status, $order_id = 0, $order = null ) {
+		$order = $order instanceof \WC_Order ? $order : wc_get_order( $order_id );
+
+		return self::is_order( $order ) ? self::STATUS : $status;
+	}
+
+	public function no_stock( $can, $order = null ) {
+		return self::is_order( $order ) ? false : $can;
+	}
+
+	public function no_invoice( $needs, $order = null ) {
+		return self::is_order( $order ) ? false : $needs;
+	}
+
+	public function no_stock_by_id( $reduce, $order_id = 0 ) {
+		return self::is_order( wc_get_order( $order_id ) ) ? false : $reduce;
+	}
+
+	/**
+	 * The paid emails of WooCommerce go out on Processing or Completed, so for the
+	 * Sandbox status they are sent here: the customer's order email and the shop's
+	 * new order email (WooCommerce sends that one only once per order).
+	 *
+	 * @param int            $order_id Order id.
+	 * @param \WC_Order|null $order    Order.
+	 */
+	public function send_paid_emails( $order_id, $order = null ): void {
+		$emails = WC()->mailer()->get_emails();
+
+		foreach ( array( 'WC_Email_Customer_Processing_Order', 'WC_Email_New_Order' ) as $class ) {
+			if ( isset( $emails[ $class ] ) ) {
+				$emails[ $class ]->trigger( (int) $order_id, $order instanceof \WC_Order ? $order : false );
+			}
+		}
+	}
+
+	/**
+	 * Every email about a sandbox order or a sandbox subscription gets SANDBOX in front
+	 * of its subject, our subscription emails as well as the WooCommerce ones.
+	 *
+	 * @param \WC_Emails $mailer WooCommerce mailer.
+	 */
+	public function mark_subjects( $mailer ): void {
+		foreach ( $mailer->get_emails() as $email ) {
+			add_filter( 'woocommerce_email_subject_' . $email->id, array( $this, 'subject' ), 99, 2 );
+		}
+	}
+
+	public function subject( $subject, $object = null ) {
+		$order = $object;
+
+		// Our subscription emails carry the subscription row: its first order decides.
+		if ( is_object( $object ) && isset( $object->origin_order_id ) ) {
+			$order = wc_get_order( (int) $object->origin_order_id );
+		}
+
+		return self::is_order( $order ) && 0 !== strpos( (string) $subject, '[SANDBOX]' ) ? '[SANDBOX] ' . $subject : $subject;
+	}
 }
