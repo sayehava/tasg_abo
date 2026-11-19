@@ -116,9 +116,6 @@ final class Plugin {
 		( new YayMail\Integration() )->register();
 		( new Privacy\PrivacyTools() )->register();
 		( new Checkout\CheckoutRules() )->register();
-		( new Sandbox\StripeSandbox() )->register();
-		( new Sandbox\SandboxOrders() )->register();
-		( new Sandbox\SandboxSwitch() )->register();
 		( new Subscriptions\Creator( new Subscriptions\Repository() ) )->register();
 		( new Cancellation\CancelPage() )->register();
 		( new Elementor\Integration() )->register();
@@ -138,6 +135,7 @@ final class Plugin {
 				'subscriptions' => new Admin\SubscriptionsPage(),
 				'emails'        => new Admin\EmailDesigner(),
 				'diagnostics'   => new Admin\DiagnosticsPage(),
+				'renewal-test'  => new Admin\RenewalTestPage(),
 			);
 
 			foreach ( $sections as $section ) {
