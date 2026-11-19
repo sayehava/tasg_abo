@@ -1752,3 +1752,27 @@ msgstr ""
 #: src/Frontend/PaymentPage.php
 msgid "%s was deleted."
 msgstr ""
+
+#: src/Sandbox/SandboxSwitch.php
+msgid "Stripe sandbox: add test keys first"
+msgstr ""
+
+#: src/Sandbox/SandboxSwitch.php
+msgid "Stripe sandbox: ON (click to switch off)"
+msgstr ""
+
+#: src/Sandbox/SandboxSwitch.php
+msgid "Stripe sandbox: off"
+msgstr ""
+
+#: src/Sandbox/SandboxSwitch.php
+msgid "You are not allowed to do this."
+msgstr ""
+
+#: src/Sandbox/SandboxSwitch.php
+msgid "Stripe sandbox is on: no real money is charged. Pay with a Stripe test card, for example 4242 4242 4242 4242, any future date and any CVC. The order gets the status Sandbox."
+msgstr ""
+
+#: src/Sandbox/SandboxOrders.php
+msgid "Sandbox order: paid with Stripe test keys, not a real order. No stock, no invoice, no shipping."
+msgstr ""
