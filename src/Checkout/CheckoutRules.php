@@ -28,6 +28,7 @@ final class CheckoutRules {
 		add_filter( 'wc_stripe_generate_create_intent_request', array( $this, 'save_for_renewals' ), 30, 2 );
 		add_filter( 'wc_stripe_request_body', array( $this, 'save_on_any_intent' ), 30, 2 );
 		add_action( 'woocommerce_cart_loaded_from_session', array( $this, 'renew_stale_checkout_session' ), 20 );
+		add_action( 'woocommerce_checkout_order_created', array( $this, 'note_stripe_mode' ) );
 		add_filter( 'woocommerce_package_rates', array( $this, 'free_shipping_rates' ), 100, 2 );
 		add_filter( 'woocommerce_available_payment_gateways', array( $this, 'limit_gateways' ) );
 		add_filter( 'wc_stripe_payment_request_supported_types', array( $this, 'hide_express_checkout' ) );
@@ -270,6 +271,22 @@ final class CheckoutRules {
 		}
 
 		return $this->with_future_usage( $request, $order, $api );
+	}
+
+	/**
+	 * Every Stripe subscription order notes the Stripe mode (live or test) it was paid in,
+	 * so renewals use the same keys. Adaptive Pricing payments pass no intent filter, so
+	 * this is done when the checkout creates the order.
+	 *
+	 * @param \WC_Order $order Order just created at checkout.
+	 */
+	public function note_stripe_mode( $order ): void {
+		if ( ! $order instanceof \WC_Order || 0 !== strpos( (string) $order->get_payment_method(), 'stripe' ) || ! self::order_has_subscription( $order ) || ! class_exists( 'WC_Stripe_Mode' ) ) {
+			return;
+		}
+
+		$order->update_meta_data( StripeCharger::MODE_META, \WC_Stripe_Mode::is_test() ? 'test' : 'live' );
+		$order->save_meta_data();
 	}
 
 	/** WC session entry: did the current Stripe checkout session start with a subscription in the cart? */
